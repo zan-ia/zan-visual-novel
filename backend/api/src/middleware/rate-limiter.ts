@@ -19,7 +19,11 @@ export function rateLimiter(req: Request, res: Response, next: NextFunction): vo
   if (record.count > MAX_REQUESTS) {
     res.status(429).json({
       success: false,
-      error: { statusCode: 429, message: 'Muitas requisições. Tente novamente em breve.', code: 'RATE_LIMITED' },
+      error: {
+        statusCode: 429,
+        message: 'Muitas requisições. Tente novamente em breve.',
+        code: 'RATE_LIMITED',
+      },
     });
     return;
   }

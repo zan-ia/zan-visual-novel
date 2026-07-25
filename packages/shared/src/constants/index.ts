@@ -22,10 +22,10 @@ export const REFUND_MAX_SCENE_INDEX = 2;
 // ── Credit Packages ──────────────────────────────────────
 
 export const CREDIT_PACKAGES = [
-  { id: 'small', name: 'Pacote Pequeno', credits: 10, priceCents: 500 },    // R$ 5,00
-  { id: 'medium', name: 'Pacote Médio', credits: 25, priceCents: 1000 },    // R$ 10,00
-  { id: 'large', name: 'Pacote Grande', credits: 60, priceCents: 2000 },    // R$ 20,00
-  { id: 'xlarge', name: 'Pacote Extra', credits: 150, priceCents: 5000 },   // R$ 50,00
+  { id: 'small', name: 'Pacote Pequeno', credits: 10, priceCents: 500 }, // R$ 5,00
+  { id: 'medium', name: 'Pacote Médio', credits: 25, priceCents: 1000 }, // R$ 10,00
+  { id: 'large', name: 'Pacote Grande', credits: 60, priceCents: 2000 }, // R$ 20,00
+  { id: 'xlarge', name: 'Pacote Extra', credits: 150, priceCents: 5000 }, // R$ 50,00
 ] as const;
 
 // ── Saves ────────────────────────────────────────────────

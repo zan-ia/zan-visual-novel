@@ -49,7 +49,9 @@ export class VNEngine {
       this.state = this.createInitialState();
       const firstChapter = story.chapters[0];
       if (!firstChapter) throw new Error('Story has no chapters');
-      const firstScene = firstChapter.scenes.find(s => s.id === firstChapter.startSceneId) ?? firstChapter.scenes[0];
+      const firstScene =
+        firstChapter.scenes.find((s) => s.id === firstChapter.startSceneId) ??
+        firstChapter.scenes[0];
       if (!firstScene) throw new Error('Chapter has no scenes');
       this.state.currentSceneId = firstScene.id;
     }
@@ -153,7 +155,11 @@ export class VNEngine {
 
   /** Get the current engine state */
   getState(): VNState {
-    return { ...this.state, flags: new Map(this.state.flags), variables: new Map(this.state.variables) };
+    return {
+      ...this.state,
+      flags: new Map(this.state.flags),
+      variables: new Map(this.state.variables),
+    };
   }
 
   /** Get the loaded story */
@@ -249,16 +255,26 @@ export class VNEngine {
       const expectedValue = cond.value;
 
       switch (cond.operator) {
-        case 'eq': return currentValue === expectedValue;
-        case 'neq': return currentValue !== expectedValue;
-        case 'gt': return Number(currentValue) > Number(expectedValue);
-        case 'lt': return Number(currentValue) < Number(expectedValue);
-        case 'gte': return Number(currentValue) >= Number(expectedValue);
-        case 'lte': return Number(currentValue) <= Number(expectedValue);
-        case 'in': return Array.isArray(expectedValue) && expectedValue.includes(currentValue);
-        case 'not_in': return Array.isArray(expectedValue) && !expectedValue.includes(currentValue);
-        case 'exists': return currentValue !== undefined && currentValue !== null;
-        default: return false;
+        case 'eq':
+          return currentValue === expectedValue;
+        case 'neq':
+          return currentValue !== expectedValue;
+        case 'gt':
+          return Number(currentValue) > Number(expectedValue);
+        case 'lt':
+          return Number(currentValue) < Number(expectedValue);
+        case 'gte':
+          return Number(currentValue) >= Number(expectedValue);
+        case 'lte':
+          return Number(currentValue) <= Number(expectedValue);
+        case 'in':
+          return Array.isArray(expectedValue) && expectedValue.includes(currentValue);
+        case 'not_in':
+          return Array.isArray(expectedValue) && !expectedValue.includes(currentValue);
+        case 'exists':
+          return currentValue !== undefined && currentValue !== null;
+        default:
+          return false;
       }
     });
   }
@@ -274,7 +290,10 @@ export class VNEngine {
           this.state.flags.set(effect.variableName, effect.value);
           break;
         case 'add':
-          this.state.flags.set(effect.variableName, Number(currentValue ?? 0) + Number(effect.value));
+          this.state.flags.set(
+            effect.variableName,
+            Number(currentValue ?? 0) + Number(effect.value),
+          );
           break;
         case 'toggle':
           this.state.flags.set(effect.variableName, !currentValue);
@@ -286,7 +305,10 @@ export class VNEngine {
           break;
         }
       }
-      this.emit('flag:changed', { name: effect.variableName, value: this.state.flags.get(effect.variableName) });
+      this.emit('flag:changed', {
+        name: effect.variableName,
+        value: this.state.flags.get(effect.variableName),
+      });
     }
   }
 

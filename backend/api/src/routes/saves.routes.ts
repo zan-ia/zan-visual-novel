@@ -10,12 +10,24 @@ export const savesRouter = Router();
 savesRouter.get('/', authenticate, async (req, res) => {
   try {
     const vnId = req.query.vnId as string;
-    const saves = await db.select().from(schema.saves).where(
-      and(eq(schema.saves.userId, req.user!.userId), vnId ? eq(schema.saves.vnId, vnId) : undefined),
-    ).orderBy(schema.saves.updatedAt);
+    const saves = await db
+      .select()
+      .from(schema.saves)
+      .where(
+        and(
+          eq(schema.saves.userId, req.user!.userId),
+          vnId ? eq(schema.saves.vnId, vnId) : undefined,
+        ),
+      )
+      .orderBy(schema.saves.updatedAt);
     res.json({ success: true, data: saves });
   } catch {
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
   }
 });
 
@@ -23,52 +35,99 @@ savesRouter.get('/', authenticate, async (req, res) => {
 savesRouter.post('/', authenticate, async (req, res) => {
   try {
     const data = createSaveSchema.parse(req.body);
-    const [existing] = await db.select().from(schema.saves).where(
-      and(eq(schema.saves.userId, req.user!.userId), eq(schema.saves.vnId, data.vnId), eq(schema.saves.slotNumber, data.slotNumber)),
-    ).limit(1);
+    const [existing] = await db
+      .select()
+      .from(schema.saves)
+      .where(
+        and(
+          eq(schema.saves.userId, req.user!.userId),
+          eq(schema.saves.vnId, data.vnId),
+          eq(schema.saves.slotNumber, data.slotNumber),
+        ),
+      )
+      .limit(1);
 
     let save;
     if (existing) {
-      [save] = await db.update(schema.saves).set({
-        label: data.label,
-        currentSceneId: data.currentSceneId,
-        flags: data.flags,
-        choiceHistory: data.choiceHistory,
-        updatedAt: new Date(),
-      }).where(eq(schema.saves.id, existing.id)).returning();
+      [save] = await db
+        .update(schema.saves)
+        .set({
+          label: data.label,
+          currentSceneId: data.currentSceneId,
+          flags: data.flags,
+          choiceHistory: data.choiceHistory,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.saves.id, existing.id))
+        .returning();
     } else {
-      [save] = await db.insert(schema.saves).values({
-        userId: req.user!.userId,
-        vnId: data.vnId,
-        slotNumber: data.slotNumber,
-        label: data.label,
-        currentSceneId: data.currentSceneId,
-        flags: data.flags,
-        choiceHistory: data.choiceHistory,
-      }).returning();
+      [save] = await db
+        .insert(schema.saves)
+        .values({
+          userId: req.user!.userId,
+          vnId: data.vnId,
+          slotNumber: data.slotNumber,
+          label: data.label,
+          currentSceneId: data.currentSceneId,
+          flags: data.flags,
+          choiceHistory: data.choiceHistory,
+        })
+        .returning();
     }
 
     res.status(201).json({ success: true, data: save });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      res
+        .status(400)
+        .json({
+          success: false,
+          error: {
+            statusCode: 400,
+            message: err.errors[0]?.message ?? 'Dados inválidos',
+            code: 'VALIDATION_ERROR',
+          },
+        });
       return;
     }
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
   }
 });
 
 // PUT /api/v1/saves/:id — Update save
 savesRouter.put('/:id', authenticate, async (req, res) => {
   try {
-    const [existing] = await db.select().from(schema.saves).where(and(eq(schema.saves.id, req.params.id), eq(schema.saves.userId, req.user!.userId))).limit(1);
+    const [existing] = await db
+      .select()
+      .from(schema.saves)
+      .where(and(eq(schema.saves.id, req.params.id), eq(schema.saves.userId, req.user!.userId)))
+      .limit(1);
     if (!existing) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Save não encontrado', code: 'NOT_FOUND' } });
+      res
+        .status(404)
+        .json({
+          success: false,
+          error: { statusCode: 404, message: 'Save não encontrado', code: 'NOT_FOUND' },
+        });
       return;
     }
-    const [save] = await db.update(schema.saves).set({ ...req.body, updatedAt: new Date() }).where(eq(schema.saves.id, req.params.id)).returning();
+    const [save] = await db
+      .update(schema.saves)
+      .set({ ...req.body, updatedAt: new Date() })
+      .where(eq(schema.saves.id, req.params.id))
+      .returning();
     res.json({ success: true, data: save });
   } catch {
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
   }
 });

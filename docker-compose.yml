@@ -1,0 +1,104 @@
+# =============================================================================
+# Docker — Zan Visual Novel Development Environment
+# =============================================================================
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose down           # Stop all services
+#   docker compose logs -f api    # Follow API logs
+#   docker compose --profile dev up  # Start with dev tools
+# =============================================================================
+
+services:
+  # ── PostgreSQL 16 ──────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: zan-vn-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-zan_vn}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/api/drizzle:/docker-entrypoint-initdb.d  # Auto-run migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-zan_vn}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zan-vn-network
+
+  # ── Redis 7 ────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: zan-vn-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zan-vn-network
+
+  # ── API Server (development) ───────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: ./backend/api/Dockerfile
+      target: development
+    container_name: zan-vn-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-3001}:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-zan_vn}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-in-production}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:5173}
+      DASHBOARD_URL: ${DASHBOARD_URL:-http://localhost:5174}
+    volumes:
+      - ./backend/api/src:/app/src:ro              # Hot reload (via tsx watch)
+      - ./packages/shared/src:/app/packages/shared/src:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zan-vn-network
+
+  # ── pgAdmin (dev tools, optional) ──────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zan-vn-pgadmin
+    restart: unless-stopped
+    profiles: ["dev"]
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@zan-vn.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - zan-vn-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  zan-vn-network:
+    driver: bridge

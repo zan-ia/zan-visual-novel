@@ -119,7 +119,8 @@ export interface Choice {
   effects?: ChoiceEffect[];
 }
 
-export type ConditionOperator = 'eq' | 'neq' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'not_in' | 'exists';
+export type ConditionOperator =
+  'eq' | 'neq' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'not_in' | 'exists';
 
 export interface ChoiceCondition {
   id: string;

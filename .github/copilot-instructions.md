@@ -39,7 +39,18 @@ Consult these sources for project-specific rules (loaded automatically via `appl
 | Instructions | `.github/instructions/` | Per-filetype rules (CSS, HTML, TypeScript, etc.) |
 | Agents       | `.github/agents/`       | Specialized agent personas                       |
 | Skills       | `.github/skills/`       | Reusable workflows                               |
+| MCP Servers  | `.vscode/mcp.json`      | External tool connections (Stitch, GitHub, etc.) |
 | Prompts      | `.github/prompts/`      | Task-specific slash commands                     |
+
+## MCP Servers
+
+This project uses MCP (Model Context Protocol) servers to connect AI agents to external tools:
+
+| Server     | Purpose                                  | Auth                                | Skill                                        |
+| ---------- | ---------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| **Stitch** | AI-powered UI design & screen generation | API Key (`${input:stitch-api-key}`) | [`stitch-mcp`](./skills/stitch-mcp/SKILL.md) |
+
+> **Stitch MCP reference:** `.github/skills/stitch-mcp/SKILL.md` — full auth setup, tool reference, and troubleshooting.
 
 ## Harness Architecture
 

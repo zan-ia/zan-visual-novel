@@ -93,11 +93,15 @@ export const createSaveSchema = z.object({
   label: z.string().max(100).default('Auto Save'),
   currentSceneId: z.string().uuid(),
   flags: z.record(z.unknown()).default({}),
-  choiceHistory: z.array(z.object({
-    sceneId: z.string(),
-    choiceId: z.string(),
-    timestamp: z.string(),
-  })).default([]),
+  choiceHistory: z
+    .array(
+      z.object({
+        sceneId: z.string(),
+        choiceId: z.string(),
+        timestamp: z.string(),
+      }),
+    )
+    .default([]),
 });
 
 export type CreateSaveInput = z.infer<typeof createSaveSchema>;
@@ -128,7 +132,12 @@ export type SpendCreditsInput = z.infer<typeof spendCreditsSchema>;
 
 // ── LLM Schemas ─────────────────────────────────────────
 
-export const llmModelTypeSchema = z.enum(['lfm-230m', 'lfm-350m', 'lfm-1.2b-thinking', 'lfm-vl-450m']);
+export const llmModelTypeSchema = z.enum([
+  'lfm-230m',
+  'lfm-350m',
+  'lfm-1.2b-thinking',
+  'lfm-vl-450m',
+]);
 
 export const llmGenerateSchema = z.object({
   prompt: z.string().min(1).max(2000),

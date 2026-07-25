@@ -39,14 +39,11 @@ export function useVNEngine(): UseVNEngineReturn {
     }
   }, []);
 
-  const startGame = useCallback(
-    (story: StoryData, saveData?: SaveData) => {
-      const scene = engineRef.current.start(story, saveData);
-      setCurrentScene(scene);
-      setAvailableChoices(engineRef.current.getAvailableChoices());
-    },
-    [],
-  );
+  const startGame = useCallback((story: StoryData, saveData?: SaveData) => {
+    const scene = engineRef.current.start(story, saveData);
+    setCurrentScene(scene);
+    setAvailableChoices(engineRef.current.getAvailableChoices());
+  }, []);
 
   const continueGame = useCallback(() => {
     setIsLoading(true);
@@ -61,28 +58,22 @@ export function useVNEngine(): UseVNEngineReturn {
     }
   }, []);
 
-  const makeChoice = useCallback(
-    (choiceId: string) => {
-      setIsLoading(true);
-      try {
-        const scene = engineRef.current.choose(choiceId);
-        setCurrentScene(scene);
-        setAvailableChoices(engineRef.current.getAvailableChoices());
-      } catch (err) {
-        console.error('Failed to make choice:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [],
-  );
+  const makeChoice = useCallback((choiceId: string) => {
+    setIsLoading(true);
+    try {
+      const scene = engineRef.current.choose(choiceId);
+      setCurrentScene(scene);
+      setAvailableChoices(engineRef.current.getAvailableChoices());
+    } catch (err) {
+      console.error('Failed to make choice:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const createSave = useCallback(
-    (slot: number, label?: string) => {
-      return engineRef.current.createSave(slot, label);
-    },
-    [],
-  );
+  const createSave = useCallback((slot: number, label?: string) => {
+    return engineRef.current.createSave(slot, label);
+  }, []);
 
   const setLLMProvider = useCallback((provider: ILLMProvider) => {
     engineRef.current.setLLMProvider(provider);

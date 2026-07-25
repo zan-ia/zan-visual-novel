@@ -24,7 +24,11 @@ export class ApiClient {
 
   // ── Auth ───────────────────────────────────────────────
 
-  async register(data: { email: string; password: string; displayName: string }): Promise<ApiResponse<AuthTokens>> {
+  async register(data: {
+    email: string;
+    password: string;
+    displayName: string;
+  }): Promise<ApiResponse<AuthTokens>> {
     return this.post('/auth/register', data, { auth: false });
   }
 
@@ -108,7 +112,11 @@ export class ApiClient {
     return this.request<T>(url.toString(), { method: 'GET' }, opts);
   }
 
-  private async post<T>(path: string, body: unknown, opts?: { auth?: boolean }): Promise<ApiResponse<T>> {
+  private async post<T>(
+    path: string,
+    body: unknown,
+    opts?: { auth?: boolean },
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(
       `${this.config.baseUrl}/api/v1${path}`,
       {
@@ -120,7 +128,11 @@ export class ApiClient {
     );
   }
 
-  private async put<T>(path: string, body: unknown, opts?: { auth?: boolean }): Promise<ApiResponse<T>> {
+  private async put<T>(
+    path: string,
+    body: unknown,
+    opts?: { auth?: boolean },
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(
       `${this.config.baseUrl}/api/v1${path}`,
       {
@@ -132,7 +144,11 @@ export class ApiClient {
     );
   }
 
-  private async patch<T>(path: string, body: unknown, opts?: { auth?: boolean }): Promise<ApiResponse<T>> {
+  private async patch<T>(
+    path: string,
+    body: unknown,
+    opts?: { auth?: boolean },
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(
       `${this.config.baseUrl}/api/v1${path}`,
       {
@@ -170,7 +186,10 @@ export class ApiClient {
         response = await fetch(url, { ...init, headers });
       } else {
         this.config.onAuthError();
-        return { success: false, error: { statusCode: 401, message: 'Unauthorized', code: 'UNAUTHORIZED' } };
+        return {
+          success: false,
+          error: { statusCode: 401, message: 'Unauthorized', code: 'UNAUTHORIZED' },
+        };
       }
     }
 
