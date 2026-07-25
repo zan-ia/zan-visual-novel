@@ -22,12 +22,10 @@ savesRouter.get('/', authenticate, async (req, res) => {
       .orderBy(schema.saves.updatedAt);
     res.json({ success: true, data: saves });
   } catch {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -78,24 +76,20 @@ savesRouter.post('/', authenticate, async (req, res) => {
     res.status(201).json({ success: true, data: save });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -108,12 +102,10 @@ savesRouter.put('/:id', authenticate, async (req, res) => {
       .where(and(eq(schema.saves.id, req.params.id), eq(schema.saves.userId, req.user!.userId)))
       .limit(1);
     if (!existing) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Save não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Save não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
     const [save] = await getDb()
@@ -123,11 +115,9 @@ savesRouter.put('/:id', authenticate, async (req, res) => {
       .returning();
     res.json({ success: true, data: save });
   } catch {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });

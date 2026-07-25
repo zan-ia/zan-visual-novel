@@ -2,8 +2,6 @@
 // Core domain types for Zan Visual Novel
 // ============================================================
 
-import type { z } from 'zod';
-
 // ── User & Auth ──────────────────────────────────────────
 
 export type UserRole = 'player' | 'creator' | 'admin';

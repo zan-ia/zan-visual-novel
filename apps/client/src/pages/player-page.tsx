@@ -31,20 +31,37 @@ export function PlayerPage() {
   // Load VN data and existing saves
   useEffect(() => {
     if (!vnId) return;
-    Promise.all([
-      api.getVN(vnId),
-      api.listVNs(), // needed for title context
-    ]).then(([vnRes]) => {
-      if (vnRes.success && vnRes.data) {
-        const vn = vnRes.data as any;
-        setStoryTitle(vn.title ?? 'Visual Novel');
-        startGame(vn);
-      } else {
-        setError('Não foi possível carregar esta visual novel.');
-      }
-    }).catch(() => setError('Erro ao carregar a história.'));
 
-    loadSaves();
+    let cancelled = false;
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) setError('Tempo limite excedido. Tente novamente.');
+    }, 15_000);
+
+    api.getVN(vnId)
+      .then((vnRes) => {
+        if (cancelled) return;
+        clearTimeout(timeoutId);
+
+        if (vnRes.success && vnRes.data) {
+          const vn = vnRes.data as any;
+          setStoryTitle(vn.title ?? 'Visual Novel');
+          startGame(vn);
+          loadSaves();
+        } else {
+          setError(vnRes.error?.message ?? 'Não foi possível carregar esta visual novel.');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          clearTimeout(timeoutId);
+          setError('Erro ao carregar a história.');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [vnId]);
 
   // Auto-save every 60 seconds
