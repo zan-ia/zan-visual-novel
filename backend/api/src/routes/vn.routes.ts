@@ -3,8 +3,11 @@ import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared
 import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
 import { eq, and, desc, inArray, sql } from 'drizzle-orm';
+import { z } from 'zod';
 
 export const vnRouter = Router();
+
+const uuidSchema = z.string().uuid('ID inválido');
 
 // GET /api/v1/vns — List published VNs (public) or user's VNs (authenticated)
 vnRouter.get('/', optionalAuth, async (req, res) => {
@@ -68,38 +71,41 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: { statusCode: 400, message: 'Parâmetros inválidos', code: 'VALIDATION_ERROR' },
-        });
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Parâmetros inválidos', code: 'VALIDATION_ERROR' },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
 // GET /api/v1/vns/:id — Get VN with full data (chapters, scenes, choices)
 vnRouter.get('/:id', optionalAuth, async (req, res) => {
   try {
+    const id = uuidSchema.safeParse(req.params.id);
+    if (!id.success) {
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'ID inválido', code: 'INVALID_ID' },
+      });
+      return;
+    }
+
     const [vn] = await getDb()
       .select()
       .from(schema.visualNovels)
-      .where(eq(schema.visualNovels.id, req.params.id))
+      .where(eq(schema.visualNovels.id, id.data))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -138,12 +144,10 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
 
     res.json({ success: true, data: { ...vn, chapters: chaptersWithScenes } });
   } catch {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -168,30 +172,28 @@ vnRouter.post('/', authenticate, async (req, res) => {
 
     // Insert tags
     if (data.tags.length > 0) {
-      await getDb().insert(schema.vnTags).values(data.tags.map((tag) => ({ vnId: vn!.id, tag })));
+      await getDb()
+        .insert(schema.vnTags)
+        .values(data.tags.map((tag) => ({ vnId: vn!.id, tag })));
     }
 
     res.status(201).json({ success: true, data: vn });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -205,21 +207,17 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
       .where(eq(schema.visualNovels.id, req.params.id))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -230,23 +228,19 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
     res.json({ success: true, data: { ...vn, ...data } });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
