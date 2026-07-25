@@ -1,6 +1,6 @@
 ---
 name: devops
-description: "Reference knowledge for DevOps and Site Reliability Engineering (SRE) — CI/CD pipelines, deployment strategies, observability, infrastructure as code, incident response, and operational best practices. Use when: designing or reviewing CI/CD workflows, choosing deployment strategies, configuring monitoring/logging/tracing, setting up infrastructure, planning incident response, or evaluating operational maturity. Activates for: devops, ci/cd, deployment, observability, monitoring, sre, infrastructure, incident, runbook, on-call."
+description: 'Reference knowledge for DevOps and Site Reliability Engineering (SRE) — CI/CD pipelines, deployment strategies, observability, infrastructure as code, incident response, and operational best practices. Use when: designing or reviewing CI/CD workflows, choosing deployment strategies, configuring monitoring/logging/tracing, setting up infrastructure, planning incident response, or evaluating operational maturity. Activates for: devops, ci/cd, deployment, observability, monitoring, sre, infrastructure, incident, runbook, on-call.'
 user-invocable: true
 disable-model-invocation: false
 context: fork

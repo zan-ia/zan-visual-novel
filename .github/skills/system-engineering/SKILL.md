@@ -1,6 +1,6 @@
 ---
 name: system-engineering
-description: "Reference knowledge for system design and engineering — scalability, reliability, consistency, distributed systems, and architectural trade-offs. Use when: designing new systems, evaluating architectural choices, planning for scale, or making reliability vs. cost trade-offs. Activates for: system design, scalability, reliability, distributed system, architecture, consistency, sharding, replication, cap theorem, queue, cache."
+description: 'Reference knowledge for system design and engineering — scalability, reliability, consistency, distributed systems, and architectural trade-offs. Use when: designing new systems, evaluating architectural choices, planning for scale, or making reliability vs. cost trade-offs. Activates for: system design, scalability, reliability, distributed system, architecture, consistency, sharding, replication, cap theorem, queue, cache.'
 user-invocable: true
 disable-model-invocation: false
 context: fork

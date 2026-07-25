@@ -1,7 +1,7 @@
 ---
 name: harness-engineering-reference
-description: "Reference knowledge for harness engineering — tool naming conventions, agent creation rules, proactive audit mindset, and improvement embedding strategies. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, troubleshooting tool rename alerts, fixing agent permission violations, or learning harness engineering best practices."
-argument-hint: "[audit | create-agent | fix-tools | learn] — what do you need?"
+description: 'Reference knowledge for harness engineering — tool naming conventions, agent creation rules, proactive audit mindset, and improvement embedding strategies. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, troubleshooting tool rename alerts, fixing agent permission violations, or learning harness engineering best practices.'
+argument-hint: '[audit | create-agent | fix-tools | learn] — what do you need?'
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -52,20 +52,20 @@ Complete reference for maintaining and evolving the Zan.IA project harness (agen
 
 ```yaml
 ---
-name: "nome-do-agente"
-description: "Portuguese description. Use when: ..."
+name: 'nome-do-agente'
+description: 'Portuguese description. Use when: ...'
 tools:
-  - "read"
-  - "search"
-  - "agent" # ← REQUIRED if agents: is declared
+  - 'read'
+  - 'search'
+  - 'agent' # ← REQUIRED if agents: is declared
 agents:
-  - "subagent-1"
+  - 'subagent-1'
 user-invocable: true
 disable-model-invocation: false
 handoffs:
-  - label: "🔍 Label"
+  - label: '🔍 Label'
     agent: target-agent
-    prompt: "Instructions for the handoff"
+    prompt: 'Instructions for the handoff'
     send: false
 ---
 ```
@@ -170,13 +170,13 @@ This is the MOST IMPORTANT meta-lesson. Not all storage is equal.
 
 Every agent MUST fit exactly one archetype. This determines tool permissions, invocation patterns, and design constraints.
 
-| Archetype       | Purpose                                                          | Tool Profile           | Invocation                       | Zan.IA Examples                                           |
-| --------------- | ---------------------------------------------------------------- | ---------------------- | -------------------------------- | --------------------------------------------------------- |
-| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates           | Full toolkit + `agent` | User-facing + subagent-invocable | `orchestrator`                                            |
-| **Worker**      | Executes a pipeline phase — structured input → structured output | Domain-specific        | Subagent-invocable               | `planner`, `implementer`, `reviewer`                  |
+| Archetype       | Purpose                                                          | Tool Profile           | Invocation                       | Zan.IA Examples                                          |
+| --------------- | ---------------------------------------------------------------- | ---------------------- | -------------------------------- | -------------------------------------------------------- |
+| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates           | Full toolkit + `agent` | User-facing + subagent-invocable | `orchestrator`                                           |
+| **Worker**      | Executes a pipeline phase — structured input → structured output | Domain-specific        | Subagent-invocable               | `planner`, `implementer`, `reviewer`                     |
 | **Specialist**  | Deep domain expertise, operates independently                    | Domain-specific tools  | User-invocable or on-demand      | `content-creator`, `performance-auditor`, `refactor-css` |
-| **Auditor**     | Read-only analysis, produces reports — NEVER modifies            | read, search only      | On-demand or post-cycle          | `reviewer` (review mode)                                   |
-| **Gatekeeper**  | Enforces quality gates automatically                             | read, search, hooks    | Automatic (hooks)                | _(future)_                                                |
+| **Auditor**     | Read-only analysis, produces reports — NEVER modifies            | read, search only      | On-demand or post-cycle          | `reviewer` (review mode)                                 |
+| **Gatekeeper**  | Enforces quality gates automatically                             | read, search, hooks    | Automatic (hooks)                | _(future)_                                               |
 
 ### Archetype-Specific Rules
 
@@ -360,12 +360,12 @@ Measure harness health with these quantitative and qualitative KPIs.
 
 ### Test Levels
 
-| Level             | What                                               | How                                      | When                              |
-| ----------------- | -------------------------------------------------- | ---------------------------------------- | --------------------------------- |
-| **L1 — Static**   | Frontmatter validity, tool names, cross-references | Audit checklist                          | Every change                      |
-| **L2 — Build**    | `npm run check` + `npm run build`                  | Run both commands                        | Every change touching paths/tools |
+| Level             | What                                               | How                                       | When                              |
+| ----------------- | -------------------------------------------------- | ----------------------------------------- | --------------------------------- |
+| **L1 — Static**   | Frontmatter validity, tool names, cross-references | Audit checklist                           | Every change                      |
+| **L2 — Build**    | `npm run check` + `npm run build`                  | Run both commands                         | Every change touching paths/tools |
 | **L3 — Dry-Run**  | Trivial task through full pipeline                 | `/start-improvement` with cosmetic change | P0 and P1 changes                 |
-| **L4 — Baseline** | Compare KPIs before/after                          | Chronicle 7-day before/after comparison  | P0 changes, monthly               |
+| **L4 — Baseline** | Compare KPIs before/after                          | Chronicle 7-day before/after comparison   | P0 changes, monthly               |
 
 ---
 

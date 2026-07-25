@@ -1,6 +1,6 @@
 ---
-description: "Use when: writing or reviewing CSS in Svelte components, creating new components with scoped styles, or modifying src/lib/app.css. Covers design tokens, scoped CSS conventions, BEM naming, responsive breakpoints, and animation best practices."
-applyTo: "src/**/*.svelte, src/lib/app.css"
+description: 'Use when: writing or reviewing CSS in Svelte components, creating new components with scoped styles, or modifying src/lib/app.css. Covers design tokens, scoped CSS conventions, BEM naming, responsive breakpoints, and animation best practices.'
+applyTo: 'src/**/*.svelte, src/lib/app.css'
 ---
 
 # CSS Rules and Patterns — SvelteKit
@@ -23,20 +23,20 @@ font-family: 'Geist', sans-serif;
 
 ### Available Tokens (Material Design 3 — Dark Mode)
 
-| Category | Tokens |
-|-----------|--------|
-| **Primary Colors** | `--color-primary`, `--color-primary-container`, `--color-on-primary`, `--color-on-primary-container` |
-| **Surface Colors** | `--color-surface`, `--color-surface-dim`, `--color-surface-container`, `--color-surface-container-lowest`, `--color-background`, `--color-on-surface` |
-| **Secondary Colors** | `--color-secondary`, `--color-secondary-container`, `--color-on-secondary` |
-| **Tertiary Colors** | `--color-tertiary`, `--color-tertiary-container`, `--color-on-tertiary-container` |
-| **Error Colors** | `--color-error`, `--color-on-error` |
-| **Border Colors** | `--color-outline`, `--color-outline-variant` |
-| **Typography** | `--font-display` (Space Grotesk), `--font-body` (Geist), `--font-code` (JetBrains Mono) |
-| **Font Sizes** | `--font-size-display-lg`, `--font-size-headline-lg`, `--font-size-headline-md`, `--font-size-body-lg`, `--font-size-body-md`, `--font-size-label-sm`, `--font-size-code-md` |
-| **Line Heights** | `--line-height-display-lg`, `--line-height-headline-lg`, `--line-height-body-md` |
-| **Spacing** | `--spacing-xs` (4px), `--spacing-sm` (8px), `--spacing-md` (16px), `--spacing-lg` (24px), `--spacing-xl` (32px), `--spacing-2xl` (48px), `--spacing-gutter` (24px), `--spacing-margin-mobile` (16px), `--spacing-margin-desktop` (64px) |
-| **Borders** | `--radius-sm` (8px), `--radius-md` (12px), `--radius-lg` (16px), `--radius-xl` (24px), `--radius-full` (9999px) |
-| **Shadows** | `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl`, `--shadow-glow-primary`, `--shadow-glow-primary-hover`, `--shadow-whatsapp` |
+| Category             | Tokens                                                                                                                                                                                                                                  |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary Colors**   | `--color-primary`, `--color-primary-container`, `--color-on-primary`, `--color-on-primary-container`                                                                                                                                    |
+| **Surface Colors**   | `--color-surface`, `--color-surface-dim`, `--color-surface-container`, `--color-surface-container-lowest`, `--color-background`, `--color-on-surface`                                                                                   |
+| **Secondary Colors** | `--color-secondary`, `--color-secondary-container`, `--color-on-secondary`                                                                                                                                                              |
+| **Tertiary Colors**  | `--color-tertiary`, `--color-tertiary-container`, `--color-on-tertiary-container`                                                                                                                                                       |
+| **Error Colors**     | `--color-error`, `--color-on-error`                                                                                                                                                                                                     |
+| **Border Colors**    | `--color-outline`, `--color-outline-variant`                                                                                                                                                                                            |
+| **Typography**       | `--font-display` (Space Grotesk), `--font-body` (Geist), `--font-code` (JetBrains Mono)                                                                                                                                                 |
+| **Font Sizes**       | `--font-size-display-lg`, `--font-size-headline-lg`, `--font-size-headline-md`, `--font-size-body-lg`, `--font-size-body-md`, `--font-size-label-sm`, `--font-size-code-md`                                                             |
+| **Line Heights**     | `--line-height-display-lg`, `--line-height-headline-lg`, `--line-height-body-md`                                                                                                                                                        |
+| **Spacing**          | `--spacing-xs` (4px), `--spacing-sm` (8px), `--spacing-md` (16px), `--spacing-lg` (24px), `--spacing-xl` (32px), `--spacing-2xl` (48px), `--spacing-gutter` (24px), `--spacing-margin-mobile` (16px), `--spacing-margin-desktop` (64px) |
+| **Borders**          | `--radius-sm` (8px), `--radius-md` (12px), `--radius-lg` (16px), `--radius-xl` (24px), `--radius-full` (9999px)                                                                                                                         |
+| **Shadows**          | `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl`, `--shadow-glow-primary`, `--shadow-glow-primary-hover`, `--shadow-whatsapp`                                                                                                 |
 
 ## 2. Scoped CSS (Style per Component)
 
@@ -65,11 +65,13 @@ Each Svelte component has its own `<style>` with automatic scoping. **Do not** p
 ```
 
 ### What goes in `src/lib/app.css` (global)
+
 - Design tokens (`:root { ... }`)
 - Basic reset (`*`, `html`, `body`)
 - Reusable utility classes (`.glass-panel`, `@keyframes` animations)
 
 ### What goes in the component `<style>`
+
 - Component-specific styles
 - Layout, colors, typography for that component
 - Component-exclusive animations
@@ -80,31 +82,40 @@ Use the **component__element--modifier** pattern with kebab-case.
 
 ```css
 /* ✅ Correct */
-.testimonials__carousel { }
-.testimonial__card { }
-.testimonial__star { }
-.testimonials__dot--active { }
-.hero__title { }
-.solutions__grid { }
+.testimonials__carousel {
+}
+.testimonial__card {
+}
+.testimonial__star {
+}
+.testimonials__dot--active {
+}
+.hero__title {
+}
+.solutions__grid {
+}
 
 /* ❌ Wrong */
-.testimonialsCarousel { }
-.testimonial-card { }
-.heroTitle { }
+.testimonialsCarousel {
+}
+.testimonial-card {
+}
+.heroTitle {
+}
 ```
 
 ### Prefixes by Component
 
-| Component | Prefix | Example |
-|-----------|---------|---------|
-| **Header** | `.header__*` | `.header__nav`, `.header__logo` |
-| **Hero** | `.hero__*` | `.hero__title`, `.hero__cta` |
-| **Solutions** | `.solutions__*` | `.solutions__grid`, `.solutions__card` |
-| **Authority** | `.authority__*` | `.authority__counter` |
-| **Differential** | `.differential__*` | `.differential__item` |
-| **Testimonials** | `.testimonials__*` / `.testimonial__*` | `.testimonial__card` |
-| **CTA** | `.cta__*` | `.cta__button` |
-| **Footer** | `.footer__*` | `.footer__link` |
+| Component        | Prefix                                 | Example                                |
+| ---------------- | -------------------------------------- | -------------------------------------- |
+| **Header**       | `.header__*`                           | `.header__nav`, `.header__logo`        |
+| **Hero**         | `.hero__*`                             | `.hero__title`, `.hero__cta`           |
+| **Solutions**    | `.solutions__*`                        | `.solutions__grid`, `.solutions__card` |
+| **Authority**    | `.authority__*`                        | `.authority__counter`                  |
+| **Differential** | `.differential__*`                     | `.differential__item`                  |
+| **Testimonials** | `.testimonials__*` / `.testimonial__*` | `.testimonial__card`                   |
+| **CTA**          | `.cta__*`                              | `.cta__button`                         |
+| **Footer**       | `.footer__*`                           | `.footer__link`                        |
 
 ## 4. Glass Panel (Global Component)
 
@@ -155,23 +166,37 @@ Define global `@keyframes` in `src/lib/app.css`. Component-specific animations i
 ```css
 /* In app.css — global animations */
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 ```
 
 ### Guidelines
+
 - Duration: 300ms (micro), 500ms (entrance), 2-6s (loops)
 - Timing: `ease-out` for entrances, `ease-in-out` for loops
 - **Always** respect `prefers-reduced-motion`:
   ```css
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -189,19 +214,21 @@ Keep specificity low. Svelte's scoped CSS already adds a unique hash, preventing
 
 ```css
 /* ✅ Correct — direct class */
-.hero__cta { }
+.hero__cta {
+}
 
 /* ❌ Avoid — unnecessary nesting */
-section .hero .hero__container .hero__cta { }
+section .hero .hero__container .hero__cta {
+}
 ```
 
 ### Prohibitions
 
-| ❌ Practice | Reason | Alternative |
-|-----------|--------|-------------|
-| **Tailwind CSS** | The project uses vanilla CSS with design tokens | Use BEM classes + `var(--color-*)`, `var(--spacing-*)` |
-| **`!important`** | Violates the cascade and hinders maintenance | Increase specificity with class selectors. Only exception: `prefers-reduced-motion` |
-| **Hex hardcoded** | Misaligns with MD3 theme and breaks dark mode | Always use `var(--color-*)`. Exception: `rgba()` for opacity in glass/overlays |
+| ❌ Practice       | Reason                                          | Alternative                                                                         |
+| ----------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Tailwind CSS**  | The project uses vanilla CSS with design tokens | Use BEM classes + `var(--color-*)`, `var(--spacing-*)`                              |
+| **`!important`**  | Violates the cascade and hinders maintenance    | Increase specificity with class selectors. Only exception: `prefers-reduced-motion` |
+| **Hex hardcoded** | Misaligns with MD3 theme and breaks dark mode   | Always use `var(--color-*)`. Exception: `rgba()` for opacity in glass/overlays      |
 
 ## 8. Icons (Material Symbols)
 
@@ -210,9 +237,14 @@ section .hero .hero__container .hero__cta { }
 ```
 
 Use `font-variation-settings` to control weight/fill:
+
 ```css
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 ```
 

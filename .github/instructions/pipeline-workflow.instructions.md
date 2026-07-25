@@ -1,6 +1,6 @@
 ---
-description: "Use when: working with pipeline agents, prompts, or skills — orchestrating development workflow, creating issues, branches, or PRs via agents. Defines the complete Plan→Implement→Review cycle with HITL, severity classification, and conventions."
-applyTo: ".github/agents/**, .github/prompts/**, .github/skills/**"
+description: 'Use when: working with pipeline agents, prompts, or skills — orchestrating development workflow, creating issues, branches, or PRs via agents. Defines the complete Plan→Implement→Review cycle with HITL, severity classification, and conventions.'
+applyTo: '.github/agents/**, .github/prompts/**, .github/skills/**'
 ---
 
 # Development Pipeline — Workflow
@@ -132,10 +132,11 @@ The orchestrator creates a GitHub issue using `#tool:github/create_issue` with:
 After issue approval, the orchestrator creates a branch from `main`:
 
 **Naming convention:**
-| Type | Prefix | Example |
-|------|---------|---------|
-| Bug | `fix/` | `fix/fix-header-colors` |
-| Feature | `feat/` | `feat/add-pricing-section` |
+
+| Type        | Prefix     | Example                         |
+| ----------- | ---------- | ------------------------------- |
+| Bug         | `fix/`     | `fix/fix-header-colors`         |
+| Feature     | `feat/`    | `feat/add-pricing-section`      |
 | Improvement | `improve/` | `improve/optimize-font-loading` |
 
 Rules:
@@ -216,18 +217,19 @@ The orchestrator invokes the `reviewer` subagent with:
 The reviewer analyzes the diff (`git diff`) against the plan and verifies:
 
 **Quality Checklist:**
-| Dimension | What to check |
-|----------|----------------|
-| **Code** | Scoped CSS, design tokens, BEM naming, Svelte 5 Runes, no Tailwind, no hex hardcoded |
-| **Architecture** | Correct component composition, no layout breakage, correct imports |
-| **Design** | Glass-panel applied, correct typography, MD3 palette, standardized badges and sections |
-| **Readability** | Descriptive names, clean code, comments where needed |
-| **Performance** | `will-change` only during interaction, `contain` where applicable, no `width`/`height` animations |
-| **Maintainability** | Consistent patterns, token reuse, no duplication |
-| **Specificity** | Low-specificity CSS, no `!important` |
-| **Dependencies** | Correct Material Symbols, Google Fonts with swap+preconnect, no new CDN deps |
-| **Tests** | `npm run check` without errors, clean `npm run build`, acceptance criteria met |
-| **Accessibility** | ARIA labels, heading hierarchy, alt texts, `prefers-reduced-motion` |
+
+| Dimension           | What to check                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------- |
+| **Code**            | Scoped CSS, design tokens, BEM naming, Svelte 5 Runes, no Tailwind, no hex hardcoded              |
+| **Architecture**    | Correct component composition, no layout breakage, correct imports                                |
+| **Design**          | Glass-panel applied, correct typography, MD3 palette, standardized badges and sections            |
+| **Readability**     | Descriptive names, clean code, comments where needed                                              |
+| **Performance**     | `will-change` only during interaction, `contain` where applicable, no `width`/`height` animations |
+| **Maintainability** | Consistent patterns, token reuse, no duplication                                                  |
+| **Specificity**     | Low-specificity CSS, no `!important`                                                              |
+| **Dependencies**    | Correct Material Symbols, Google Fonts with swap+preconnect, no new CDN deps                      |
+| **Tests**           | `npm run check` without errors, clean `npm run build`, acceptance criteria met                    |
+| **Accessibility**   | ARIA labels, heading hierarchy, alt texts, `prefers-reduced-motion`                               |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: aesthetic-engineering
-description: "Reference knowledge for visual design and aesthetic engineering — design systems, color theory, typography, layout principles, motion design, and brand consistency. Use when: creating or reviewing visual designs, choosing colors and typography, designing layouts, defining motion, or establishing design systems. Activates for: design, visual, ui design, ux design, typography, color, layout, motion, animation, brand, design system, style guide."
+description: 'Reference knowledge for visual design and aesthetic engineering — design systems, color theory, typography, layout principles, motion design, and brand consistency. Use when: creating or reviewing visual designs, choosing colors and typography, designing layouts, defining motion, or establishing design systems. Activates for: design, visual, ui design, ux design, typography, color, layout, motion, animation, brand, design system, style guide.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -83,7 +83,7 @@ Tools: WebAIM Contrast Checker, Stark, Polypane
   --color-text: var(--gray-900);
 
   /* Dark mode */
-  [data-theme="dark"] {
+  [data-theme='dark'] {
     --color-primary: #66aaff;
     --color-text: #f3f4f6;
   }
@@ -137,8 +137,8 @@ Use a modular scale (e.g., 1.125, 1.25, 1.333, 1.5) to derive sizes:
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter.woff2") format("woff2");
+  font-family: 'Inter';
+  src: url('/fonts/Inter.woff2') format('woff2');
   font-display: swap;
 }
 ```

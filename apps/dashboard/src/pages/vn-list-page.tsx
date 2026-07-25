@@ -30,30 +30,39 @@ export function VNListPage() {
 
       <Grid container spacing={3}>
         {vns.map((vn) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={vn.id}>
+          <Box key={vn.id} sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4' } }}>
             <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/studio/${vn.id}`)}>
               <CardContent>
                 <Typography variant="h6">{vn.title}</Typography>
                 <Typography variant="body2" color="text.secondary" mb={1}>
                   {vn.totalChapters} capítulos
                 </Typography>
-                <Chip label={vn.status === 'published' ? 'Publicado' : 'Rascunho'}
-                  color={vn.status === 'published' ? 'success' : 'default'} size="small" />
+                <Chip
+                  label={vn.status === 'published' ? 'Publicado' : 'Rascunho'}
+                  color={vn.status === 'published' ? 'success' : 'default'}
+                  size="small"
+                />
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={(e) => { e.stopPropagation(); navigate(`/studio/${vn.id}`); }}>
+                <Button
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/studio/${vn.id}`);
+                  }}
+                >
                   Editar
                 </Button>
               </CardActions>
             </Card>
-          </Grid>
+          </Box>
         ))}
         {vns.length === 0 && (
-          <Grid size={12}>
+          <Box sx={{ gridColumn: 'span 12' }}>
             <Typography color="text.secondary" textAlign="center">
               Você ainda não criou nenhuma visual novel. Clique em "Nova VN" para começar!
             </Typography>
-          </Grid>
+          </Box>
         )}
       </Grid>
     </Box>

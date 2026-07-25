@@ -1,6 +1,16 @@
 import {
-  Box, Typography, Button, CircularProgress, IconButton, Drawer, List, ListItemButton,
-  ListItemText, Chip, Alert, Snackbar,
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Chip,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
@@ -17,8 +27,14 @@ export function PlayerPage() {
   const { api } = useAuth();
   const navigate = useNavigate();
   const {
-    currentScene, availableChoices, isLLMScene, isLoading,
-    startGame, continueGame, makeChoice, createSave, setLLMProvider,
+    currentScene,
+    availableChoices,
+    isLLMScene,
+    isLoading,
+    startGame,
+    continueGame,
+    makeChoice,
+    createSave,
   } = useVNEngine();
 
   const [storyTitle, setStoryTitle] = useState('');
@@ -26,7 +42,7 @@ export function PlayerPage() {
   const [saveDrawerOpen, setSaveDrawerOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const autoSaveTimer = useRef<ReturnType<typeof setInterval>>();
+  const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // Load VN data and existing saves
   useEffect(() => {
@@ -37,7 +53,8 @@ export function PlayerPage() {
       if (!cancelled) setError('Tempo limite excedido. Tente novamente.');
     }, 15_000);
 
-    api.getVN(vnId)
+    api
+      .getVN(vnId)
       .then((vnRes) => {
         if (cancelled) return;
         clearTimeout(timeoutId);
@@ -88,58 +105,68 @@ export function PlayerPage() {
       await api.createSave(save);
       setToast('Progresso salvo!');
       loadSaves();
-    } catch { /* silent */ }
-  }, [createSave, vnId]);
-
-  const handleSaveToSlot = useCallback(async (slot: number) => {
-    try {
-      const save = createSave(slot, `Save ${slot}`);
-      await api.createSave(save);
-      setToast(`Salvo no slot ${slot}!`);
-      setSaveDrawerOpen(false);
-      loadSaves();
     } catch {
-      setError('Erro ao salvar.');
+      /* silent */
     }
   }, [createSave, vnId]);
 
-  const handleLoadSave = useCallback(async (save: SaveData) => {
-    if (!vnId) return;
-    const res = await api.getVN(vnId);
-    if (res.success && res.data) {
-      startGame(res.data as any, save);
-      setToast('Save carregado!');
-      setSaveDrawerOpen(false);
-    }
-  }, [startGame, vnId]);
-
-  const handleLLMGeneration = useCallback(async () => {
-    try {
-      const res = await api.generateLLM({
-        prompt: 'Continue a história naturalmente',
-        context: { storyTitle, currentScene: currentScene?.content?.[0]?.text ?? '', flags: {} },
-        config: { modelType: 'lfm-230m', temperature: 0.7, maxTokens: 500, topP: 0.9, systemPrompt: '', persona: '' },
-      });
-      if (res.success && res.data) {
-        setToast('IA gerou a continuação!');
+  const handleSaveToSlot = useCallback(
+    async (slot: number) => {
+      try {
+        const save = createSave(slot, `Save ${slot}`);
+        await api.createSave(save);
+        setToast(`Salvo no slot ${slot}!`);
+        setSaveDrawerOpen(false);
+        loadSaves();
+      } catch {
+        setError('Erro ao salvar.');
       }
-    } catch { /* fallback to local */ }
-  }, [currentScene, storyTitle]);
+    },
+    [createSave, vnId],
+  );
+
+  const handleLoadSave = useCallback(
+    async (save: SaveData) => {
+      if (!vnId) return;
+      const res = await api.getVN(vnId);
+      if (res.success && res.data) {
+        startGame(res.data as any, save);
+        setToast('Save carregado!');
+        setSaveDrawerOpen(false);
+      }
+    },
+    [startGame, vnId],
+  );
 
   // ── Render ─────────────────────────────────────────────
 
   if (error) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60dvh', gap: 2 }}>
-        <Alert severity="error" sx={{ maxWidth: 500 }}>{error}</Alert>
-        <Button variant="outlined" onClick={() => navigate('/library')}>Voltar à Biblioteca</Button>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60dvh',
+          gap: 2,
+        }}
+      >
+        <Alert severity="error" sx={{ maxWidth: 500 }}>
+          {error}
+        </Alert>
+        <Button variant="outlined" onClick={() => navigate('/library')}>
+          Voltar à Biblioteca
+        </Button>
       </Box>
     );
   }
 
   if (!currentScene) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60dvh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60dvh' }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -161,14 +188,31 @@ export function PlayerPage() {
         <IconButton onClick={handleQuickSave} aria-label="Salvar rápido" title="Quick Save">
           <SaveIcon />
         </IconButton>
-        <IconButton onClick={() => { loadSaves(); setSaveDrawerOpen(true); }} aria-label="Abrir saves" title="Saves">
+        <IconButton
+          onClick={() => {
+            loadSaves();
+            setSaveDrawerOpen(true);
+          }}
+          aria-label="Abrir saves"
+          title="Saves"
+        >
           <FolderOpenIcon />
         </IconButton>
       </Box>
 
       {/* Progress bar */}
-      <Box sx={{ width: '100%', height: 3, bgcolor: 'rgba(255,255,255,0.05)', mb: 3, borderRadius: 1 }}>
-        <Box sx={{ width: '30%', height: '100%', bgcolor: 'primary.main', borderRadius: 1, transition: 'width 0.5s' }} />
+      <Box
+        sx={{ width: '100%', height: 3, bgcolor: 'rgba(255,255,255,0.05)', mb: 3, borderRadius: 1 }}
+      >
+        <Box
+          sx={{
+            width: '30%',
+            height: '100%',
+            bgcolor: 'primary.main',
+            borderRadius: 1,
+            transition: 'width 0.5s',
+          }}
+        />
       </Box>
 
       {/* Scene content */}
@@ -187,7 +231,9 @@ export function PlayerPage() {
         ) : (
           <Button
             variant="contained"
-            onClick={() => { continueGame(); }}
+            onClick={() => {
+              continueGame();
+            }}
             fullWidth
             sx={{ py: 1.5, fontSize: '1.1rem', borderRadius: 3 }}
           >
@@ -199,21 +245,34 @@ export function PlayerPage() {
       {/* Save/Load Drawer */}
       <Drawer anchor="right" open={saveDrawerOpen} onClose={() => setSaveDrawerOpen(false)}>
         <Box sx={{ width: 300, p: 3 }}>
-          <Typography variant="h6" mb={2}>Saves</Typography>
+          <Typography variant="h6" mb={2}>
+            Saves
+          </Typography>
 
-          <Typography variant="subtitle2" color="text.secondary" mb={1}>Salvar</Typography>
+          <Typography variant="subtitle2" color="text.secondary" mb={1}>
+            Salvar
+          </Typography>
           <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
             {[1, 2, 3, 4, 5].map((slot) => (
-              <Button key={slot} variant="outlined" size="small" onClick={() => handleSaveToSlot(slot)}>
+              <Button
+                key={slot}
+                variant="outlined"
+                size="small"
+                onClick={() => handleSaveToSlot(slot)}
+              >
                 Slot {slot}
               </Button>
             ))}
           </Box>
 
-          <Typography variant="subtitle2" color="text.secondary" mb={1}>Carregar</Typography>
+          <Typography variant="subtitle2" color="text.secondary" mb={1}>
+            Carregar
+          </Typography>
           <List dense>
             {saves.length === 0 && (
-              <Typography variant="body2" color="text.secondary">Nenhum save encontrado.</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Nenhum save encontrado.
+              </Typography>
             )}
             {saves.map((save) => (
               <ListItemButton key={save.id} onClick={() => handleLoadSave(save)}>

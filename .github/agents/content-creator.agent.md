@@ -1,12 +1,12 @@
 ﻿---
-name: "content-creator"
+name: 'content-creator'
 model: OpenCode Go / Qwen3.7 Plus (opencodego)
-description: "Generates and updates project content — documentation, copy, templates, and communication materials. Use when: creating or updating textual content, descriptions, documentation pages, or any written material for the project."
+description: 'Generates and updates project content — documentation, copy, templates, and communication materials. Use when: creating or updating textual content, descriptions, documentation pages, or any written material for the project.'
 tools:
-  - "read"
-  - "todo"
-  - "search"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'todo'
+  - 'search'
+  - 'vscode/askQuestions'
 user-invocable: true
 disable-model-invocation: false
 agents: []

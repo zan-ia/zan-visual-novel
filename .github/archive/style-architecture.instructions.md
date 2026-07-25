@@ -1,6 +1,6 @@
 ---
-description: "Use when: designing new visual components, defining CSS patterns, choosing design tokens, or ensuring visual consistency across Svelte components. Covers glass-panel, gradients, grid layouts, badges, section headers, and typography patterns."
-applyTo: "src/**"
+description: 'Use when: designing new visual components, defining CSS patterns, choosing design tokens, or ensuring visual consistency across Svelte components. Covers glass-panel, gradients, grid layouts, badges, section headers, and typography patterns.'
+applyTo: 'src/**'
 ---
 
 # Style Architecture — SvelteKit Patterns
@@ -15,14 +15,14 @@ Defined in `src/lib/app.css`. Based on **Material Design 3** (dark mode).
 
 See `src/lib/app.css` for the full list. Key tokens:
 
-| Token | Typical Use |
-|-------|-----------|
-| `--color-primary` / `--color-primary-container` | Highlights, icons, badges |
-| `--color-surface` / `--color-surface-container` | Card/section backgrounds |
-| `--color-surface-container-lowest` | Page background (`html`, `body`) |
-| `--color-background` | Alternative background |
-| `--color-on-surface` | Main text |
-| `--color-outline` / `--color-outline-variant` | Borders |
+| Token                                           | Typical Use                      |
+| ----------------------------------------------- | -------------------------------- |
+| `--color-primary` / `--color-primary-container` | Highlights, icons, badges        |
+| `--color-surface` / `--color-surface-container` | Card/section backgrounds         |
+| `--color-surface-container-lowest`              | Page background (`html`, `body`) |
+| `--color-background`                            | Alternative background           |
+| `--color-on-surface`                            | Main text                        |
+| `--color-outline` / `--color-outline-variant`   | Borders                          |
 
 ### How to Use in Components
 
@@ -45,13 +45,13 @@ See `src/lib/app.css` for the full list. Key tokens:
 
 ### Standard Opacities
 
-| Use | Opacity | CSS |
-|-----|-----------|-----|
-| Main text | 100% | `color: var(--color-on-surface)` |
-| Secondary text | 70% | `opacity: 0.7` |
-| Tertiary text | 50% | `opacity: 0.5` |
-| Subtle border | 10% | `border-color: rgba(186,242,255,0.1)` |
-| Badge bg | 10-20% | `background: rgba(186,242,255,0.2)` |
+| Use            | Opacity | CSS                                   |
+| -------------- | ------- | ------------------------------------- |
+| Main text      | 100%    | `color: var(--color-on-surface)`      |
+| Secondary text | 70%     | `opacity: 0.7`                        |
+| Tertiary text  | 50%     | `opacity: 0.5`                        |
+| Subtle border  | 10%     | `border-color: rgba(186,242,255,0.1)` |
+| Badge bg       | 10-20%  | `background: rgba(186,242,255,0.2)`   |
 
 ## 2. Glass Panel Pattern
 
@@ -99,11 +99,7 @@ background: linear-gradient(
 );
 
 /* Glow gradient (hero, highlights) */
-background: radial-gradient(
-  ellipse at 50% 0%,
-  rgba(186, 242, 255, 0.15) 0%,
-  transparent 60%
-);
+background: radial-gradient(ellipse at 50% 0%, rgba(186, 242, 255, 0.15) 0%, transparent 60%);
 ```
 
 ## 4. Grid Layout Pattern (Scoped CSS)
@@ -126,11 +122,11 @@ background: radial-gradient(
 
 ### Grids by Component
 
-| Component | Mobile | Desktop |
-|-----------|--------|---------|
-| Solutions | 1 col | 3 cols |
-| Authority | 1 col | 3 cols |
-| Differential | 1 col | 2 cols |
+| Component    | Mobile            | Desktop           |
+| ------------ | ----------------- | ----------------- |
+| Solutions    | 1 col             | 3 cols            |
+| Authority    | 1 col             | 3 cols            |
+| Differential | 1 col             | 2 cols            |
 | Testimonials | horizontal scroll | horizontal scroll |
 
 ## 5. Badge / Tag Pattern
@@ -186,15 +182,15 @@ background: radial-gradient(
 
 ## 7. Typography Pattern
 
-| Element | Font Token | Size Token | Weight |
-|----------|-------------|---------------|------|
-| Hero title (h1) | `--font-display` | `--font-size-display-lg` | 700 |
-| Section title (h2) | `--font-display` | `--font-size-headline-lg` | 600 |
-| Subtitle | `--font-body` | `--font-size-body-md` | 400 |
-| Card title (h3) | `--font-display` | `--font-size-headline-md` | 500 |
-| Body | `--font-body` | `--font-size-body-md` | 400 |
-| Code/data | `--font-code` | `--font-size-code-md` | 400 |
-| Badge | `--font-code` | `--font-size-label-sm` | 500 |
+| Element            | Font Token       | Size Token                | Weight |
+| ------------------ | ---------------- | ------------------------- | ------ |
+| Hero title (h1)    | `--font-display` | `--font-size-display-lg`  | 700    |
+| Section title (h2) | `--font-display` | `--font-size-headline-lg` | 600    |
+| Subtitle           | `--font-body`    | `--font-size-body-md`     | 400    |
+| Card title (h3)    | `--font-display` | `--font-size-headline-md` | 500    |
+| Body               | `--font-body`    | `--font-size-body-md`     | 400    |
+| Code/data          | `--font-code`    | `--font-size-code-md`     | 400    |
+| Badge              | `--font-code`    | `--font-size-label-sm`    | 500    |
 
 ## 8. Icon Pattern (Material Symbols)
 
@@ -221,12 +217,12 @@ background: radial-gradient(
 
 ### Icon Sizes
 
-| Class | Size | Use |
-|--------|---------|-----|
-| `text-xl` | 20px | Inline with text |
-| `text-2xl` | 24px | Icon wrapper |
+| Class      | Size | Use                      |
+| ---------- | ---- | ------------------------ |
+| `text-xl`  | 20px | Inline with text         |
+| `text-2xl` | 24px | Icon wrapper             |
 | `text-3xl` | 30px | Large wrapper (services) |
-| `text-4xl` | 40px | Hero / highlight |
+| `text-4xl` | 40px | Hero / highlight         |
 
 ## 9. Section Composition (Template)
 

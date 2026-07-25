@@ -22,19 +22,43 @@ export function LoginPage() {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
+    <Box
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}
+    >
       <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-        <Typography variant="h4" mb={1} textAlign="center">Creator Studio</Typography>
+        <Typography variant="h4" mb={1} textAlign="center">
+          Creator Studio
+        </Typography>
         <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
           Acesse seu painel de criação
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
-          <TextField fullWidth label="Email" type="email" value={email}
-            onChange={(e) => setEmail(e.target.value)} margin="normal" required />
-          <TextField fullWidth label="Senha" type="password" value={password}
-            onChange={(e) => setPassword(e.target.value)} margin="normal" required />
-          {error && <Typography color="error" variant="body2" mt={1}>{error}</Typography>}
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, py: 1.5 }}>Entrar</Button>
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            margin="normal"
+            required
+          />
+          {error && (
+            <Typography color="error" variant="body2" mt={1}>
+              {error}
+            </Typography>
+          )}
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, py: 1.5 }}>
+            Entrar
+          </Button>
         </Box>
       </Paper>
     </Box>

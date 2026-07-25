@@ -1,7 +1,7 @@
 ---
-name: "Svelte 5 Runes"
-description: "Svelte 5 Runes mode conventions for .svelte files. Use when: writing or editing Svelte components, using reactivity, props, effects, or derived values."
-applyTo: "src/**/*.svelte"
+name: 'Svelte 5 Runes'
+description: 'Svelte 5 Runes mode conventions for .svelte files. Use when: writing or editing Svelte components, using reactivity, props, effects, or derived values.'
+applyTo: 'src/**/*.svelte'
 ---
 
 # Svelte 5 Runes — Conventions
@@ -101,6 +101,7 @@ All Svelte components use **Runes mode** (Svelte 5). Do not use Svelte 4 pattern
 ## Scoped CSS
 
 Each component has its own `<style>` with Svelte's automatic scoping. Use:
+
 - Design tokens: `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
 - BEM-like naming: `component__element--modifier`
 - Media queries for responsiveness (768px breakpoint)

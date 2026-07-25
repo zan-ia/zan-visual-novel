@@ -1,7 +1,7 @@
 ---
-description: "Initiates the product definition process — vision, target audience, MVP, success metrics. The software-engineer agent leads the definition using the product-engineering and requirements-engineering skills."
+description: 'Initiates the product definition process — vision, target audience, MVP, success metrics. The software-engineer agent leads the definition using the product-engineering and requirements-engineering skills.'
 argument-hint: "Describe the product or initial idea (e.g., 'A web-based visual novel engine...')"
-agent: "software-engineer"
+agent: 'software-engineer'
 ---
 
 # Define Product
@@ -34,6 +34,7 @@ If the user's description is vague or incomplete, use `vscode_askQuestions` to c
 Using the `product-engineering` and `requirements-engineering` skills:
 
 #### a) Vision Document
+
 File: `.github/artifacts/requirements/product-vision.md`
 
 - Problem being solved
@@ -43,9 +44,11 @@ File: `.github/artifacts/requirements/product-vision.md`
 - Initial scope (MVP)
 
 #### b) Personas
+
 File: `.github/artifacts/requirements/personas.md`
 
 For each persona (minimum 2, maximum 5):
+
 - Name and role
 - Demographics and context
 - Goals and needs
@@ -53,6 +56,7 @@ For each persona (minimum 2, maximum 5):
 - Typical usage scenario
 
 #### c) PRD (Product Requirements Document)
+
 File: `.github/artifacts/requirements/prd.md`
 
 - Executive summary
@@ -78,6 +82,7 @@ After PRD approval:
 ### 5. Handoff
 
 Present the final summary and offer next steps:
+
 - Start detailed requirements gathering (`/gather-requirements`)
 - Start development of the first feature (`/start-feature`)
 - Create technical documentation (`/create-documentation`)

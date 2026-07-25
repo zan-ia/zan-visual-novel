@@ -1,7 +1,7 @@
 ---
-description: "Initiates the requirements engineering process — elicitation, analysis, specification, and validation of functional requirements, non-functional requirements, and business rules. The software-engineer agent leads using the requirements-engineering skill."
+description: 'Initiates the requirements engineering process — elicitation, analysis, specification, and validation of functional requirements, non-functional requirements, and business rules. The software-engineer agent leads using the requirements-engineering skill.'
 argument-hint: "Describe the scope for requirements gathering (e.g., 'Authentication and authorization module')"
-agent: "software-engineer"
+agent: 'software-engineer'
 ---
 
 # Gather Requirements
@@ -48,6 +48,7 @@ Using the `requirements-engineering` skill, Section 1.2:
 Choose the appropriate format (`requirements-engineering` skill, Section 1.3):
 
 #### For agile teams:
+
 File: `.github/artifacts/requirements/user-stories.md`
 
 ```
@@ -59,6 +60,7 @@ User stories with:
 ```
 
 #### For formal documentation:
+
 File: `.github/artifacts/requirements/srs.md`
 
 ```
@@ -94,9 +96,9 @@ Using the `requirements-engineering` skill, Section 1.4:
 
 File: `.github/artifacts/requirements/traceability-matrix.md`
 
-| ID | Requirement | Source | Priority | Issue | Test |
-|----|-------------|--------|----------|-------|------|
-| FR-001 | ... | Stakeholder | Must | #XX | — |
+| ID     | Requirement | Source      | Priority | Issue | Test |
+| ------ | ----------- | ----------- | -------- | ----- | ---- |
+| FR-001 | ...         | Stakeholder | Must     | #XX   | —    |
 
 ### 8. Create GitHub Issues
 
@@ -110,6 +112,7 @@ Using the `project-management` skill:
 ### 9. Handoff
 
 Present the summary and offer next steps:
+
 - Start development (`/start-feature`)
 - Create technical documentation (`/create-documentation`)
 - Create additional diagrams (`/create-diagram`)

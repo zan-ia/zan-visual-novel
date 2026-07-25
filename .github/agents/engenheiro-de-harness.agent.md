@@ -1,30 +1,30 @@
 ---
-name: "engenheiro-de-harness"
+name: 'engenheiro-de-harness'
 model: OpenCode Go / Deepseek V4 Pro (opencodego)
-description: "Harness engineer (auto-learn mode). Observes the pipeline passively, audits and iteratively refines all harness components (agents, instructions, prompts, skills) following Continual Harness principles. Uses Chronicle (session_store_sql) to extract patterns, anti-patterns, and improvement points from historical sessions. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, post-PR harness review, or optimizing the development pipeline."
+description: 'Harness engineer (auto-learn mode). Observes the pipeline passively, audits and iteratively refines all harness components (agents, instructions, prompts, skills) following Continual Harness principles. Uses Chronicle (session_store_sql) to extract patterns, anti-patterns, and improvement points from historical sessions. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, post-PR harness review, or optimizing the development pipeline.'
 tools:
-  - "read"
-  - "edit"
-  - "todo"
-  - "agent"
-  - "search"
-  - "github/*"
-  - "memory/*"
-  - "vscode/memory"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'edit'
+  - 'todo'
+  - 'agent'
+  - 'search'
+  - 'github/*'
+  - 'memory/*'
+  - 'vscode/memory'
+  - 'vscode/askQuestions'
 agents:
-  - "orchestrator"
-  - "agent"
+  - 'orchestrator'
+  - 'agent'
 user-invocable: true
 disable-model-invocation: false
 handoffs:
-  - label: "🔍 Explore Codebase"
+  - label: '🔍 Explore Codebase'
     agent: agent
-    prompt: "Explore the current harness state in .github/ — list all agents, instructions, prompts, and skills. Identify any inconsistencies in tool declarations, agent references, or applyTo patterns."
+    prompt: 'Explore the current harness state in .github/ — list all agents, instructions, prompts, and skills. Identify any inconsistencies in tool declarations, agent references, or applyTo patterns.'
     send: false
-  - label: "🚀 Trigger Pipeline Improvement"
+  - label: '🚀 Trigger Pipeline Improvement'
     agent: orchestrator
-    prompt: "Create a harness improvement issue based on the Chronicle analysis. Follow the Plan→Implement→Review cycle for harness changes."
+    prompt: 'Create a harness improvement issue based on the Chronicle analysis. Follow the Plan→Implement→Review cycle for harness changes.'
     send: false
 ---
 
@@ -314,7 +314,7 @@ Before deploying harness changes, validate they don't break the pipeline.
 | --------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **L1 — Static Analysis**    | Frontmatter validity, tool names, cross-references              | Manual audit checklist (see Audit Checklist section)                              | Every harness change                                       |
 | **L2 — Build Verify**       | `npm run check` and `npm run build` pass                        | Run both commands                                                                 | Every harness change that touches file paths or tool names |
-| **L3 — Dry-Run Pipeline**   | Run a trivial task through the full Plan→Implement→Review cycle | Use `/start-improvement` with a cosmetic change (e.g., "fix typo in Footer")       | P0 and P1 changes                                          |
+| **L3 — Dry-Run Pipeline**   | Run a trivial task through the full Plan→Implement→Review cycle | Use `/start-improvement` with a cosmetic change (e.g., "fix typo in Footer")      | P0 and P1 changes                                          |
 | **L4 — Chronicle Baseline** | Compare KPIs before/after harness change                        | Query Chronicle for 7 days before and after change, compare Pipeline Success Rate | P0 changes, monthly review                                 |
 
 ### Test Checklist (run before marking harness change complete)

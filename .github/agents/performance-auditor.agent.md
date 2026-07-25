@@ -1,15 +1,15 @@
 ﻿---
-name: "performance-auditor"
+name: 'performance-auditor'
 model: OpenCode Go / Glm 5.2 (opencodego)
-description: "Audits and optimizes project performance. Analyzes load times, Core Web Vitals, resource usage, and rendering efficiency. Use when: investigating performance bottlenecks, optimizing delivery, or auditing responsiveness."
+description: 'Audits and optimizes project performance. Analyzes load times, Core Web Vitals, resource usage, and rendering efficiency. Use when: investigating performance bottlenecks, optimizing delivery, or auditing responsiveness.'
 tools:
-  - "read"
-  - "search"
-  - "web"
-  - "browser"
-  - "todo"
-  - "vscode/askQuestions"
-  - "github/*"
+  - 'read'
+  - 'search'
+  - 'web'
+  - 'browser'
+  - 'todo'
+  - 'vscode/askQuestions'
+  - 'github/*'
 user-invocable: true
 disable-model-invocation: false
 ---

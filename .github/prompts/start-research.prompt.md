@@ -1,7 +1,7 @@
 ---
-description: "Initiates a research/spike pipeline. The engineer agent scopes the research question and creates a workflow artifact, then hands off to the orchestrator who delegates investigation."
+description: 'Initiates a research/spike pipeline. The engineer agent scopes the research question and creates a workflow artifact, then hands off to the orchestrator who delegates investigation.'
 argument-hint: "Describe the research question (e.g., 'Should we use streaming or Promise for provider interfaces?')"
-agent: "engineer"
+agent: 'engineer'
 ---
 
 # Start Research Pipeline

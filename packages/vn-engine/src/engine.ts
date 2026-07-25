@@ -1,6 +1,5 @@
 import type {
   StoryData,
-  Chapter,
   Scene,
   Choice,
   VNState,
@@ -50,8 +49,8 @@ export class VNEngine {
       const firstChapter = story.chapters[0];
       if (!firstChapter) throw new Error('Story has no chapters');
       const firstScene =
-        firstChapter.scenes.find((s) => s.id === firstChapter.startSceneId) ??
-        firstChapter.scenes[0];
+        firstChapter.scenes?.find((s) => s.id === firstChapter.startSceneId) ??
+        firstChapter.scenes?.[0];
       if (!firstScene) throw new Error('Chapter has no scenes');
       this.state.currentSceneId = firstScene.id;
     }
@@ -147,8 +146,8 @@ export class VNEngine {
         temperature: 0.7,
         maxTokens: 500,
         topP: 0.9,
-        systemPrompt: this.story.llmConfig?.systemPrompt ?? '',
-        persona: this.story.llmConfig?.persona ?? '',
+        systemPrompt: this.story.iaSystemPrompt ?? '',
+        persona: this.story.iaPersona ?? '',
       },
     });
   }
@@ -231,7 +230,7 @@ export class VNEngine {
   private findScene(sceneId: string): Scene | undefined {
     if (!this.story) return undefined;
     for (const chapter of this.story.chapters) {
-      const scene = chapter.scenes.find((s) => s.id === sceneId);
+      const scene = chapter.scenes?.find((s) => s.id === sceneId);
       if (scene) return scene;
     }
     return undefined;
@@ -333,7 +332,7 @@ export class VNEngine {
     const names = new Set<string>();
     if (!this.story) return [];
     for (const chapter of this.story.chapters) {
-      for (const scene of chapter.scenes) {
+      for (const scene of chapter.scenes ?? []) {
         for (const block of scene.content) {
           if (block.speaker) names.add(block.speaker);
         }
@@ -349,12 +348,4 @@ export class VNEngine {
 }
 
 // Re-export types used by engine consumers
-export type StoryData = {
-  id: string;
-  title: string;
-  chapters: Chapter[];
-  llmConfig?: {
-    systemPrompt: string;
-    persona: string;
-  };
-};
+// NOTE: StoryData, Chapter, Scene, etc. are imported from @zan-vn/shared — see top of file.

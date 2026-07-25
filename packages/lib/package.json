@@ -11,11 +11,12 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "echo 'lint ok'",
+    "lint": "eslint src/",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@zan-vn/shared": "*"
+    "@zan-vn/shared": "*",
+    "@zan-vn/vn-engine": "*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

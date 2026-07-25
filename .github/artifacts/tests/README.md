@@ -4,11 +4,11 @@ Diretório de artefatos de teste para regressão completa da plataforma.
 
 ## Estrutura
 
-| Arquivo | Conteúdo |
-|---------|----------|
-| `test-specification.md` | Plano de teste formal (IEEE 829 adaptado) com matriz de rastreabilidade, 34 casos de teste e fluxos E2E |
-| `task-browser-scripts.md` | Scripts executáveis passo a passo para o agente `task-browser` do GitHub Copilot |
-| `test-data-seed.md` | Especificação da massa de dados de teste (usuários, VNs, capítulos, cenas, saves, créditos) |
+| Arquivo                   | Conteúdo                                                                                                |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `test-specification.md`   | Plano de teste formal (IEEE 829 adaptado) com matriz de rastreabilidade, 34 casos de teste e fluxos E2E |
+| `task-browser-scripts.md` | Scripts executáveis passo a passo para o agente `task-browser` do GitHub Copilot                        |
+| `test-data-seed.md`       | Especificação da massa de dados de teste (usuários, VNs, capítulos, cenas, saves, créditos)             |
 
 ## Como Usar
 
@@ -42,18 +42,18 @@ Preencha a tabela de relatório em `test-specification.md` após cada execução
 
 ## Cobertura
 
-| Módulo | Casos de Teste |
-|--------|---------------|
-| Client — Auth | 4 |
-| Client — Library | 3 |
-| Client — Player | 8 |
-| Client — Profile/Layout | 2 |
-| Dashboard — Auth | 1 |
-| Dashboard — VN List | 2 |
-| Dashboard — Editor | 7 |
-| Dashboard — Analytics/Layout | 2 |
-| Backend API | 5 |
-| **Total** | **34** |
+| Módulo                       | Casos de Teste |
+| ---------------------------- | -------------- |
+| Client — Auth                | 4              |
+| Client — Library             | 3              |
+| Client — Player              | 8              |
+| Client — Profile/Layout      | 2              |
+| Dashboard — Auth             | 1              |
+| Dashboard — VN List          | 2              |
+| Dashboard — Editor           | 7              |
+| Dashboard — Analytics/Layout | 2              |
+| Backend API                  | 5              |
+| **Total**                    | **34**         |
 
 ## Ordem de Execução Recomendada
 

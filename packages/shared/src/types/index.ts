@@ -64,6 +64,14 @@ export interface VisualNovel {
   tags?: string[];
 }
 
+/** Visual Novel with chapters populated (runtime story data) */
+export interface VisualNovelWithChapters extends Omit<VisualNovel, 'chapters'> {
+  chapters: Chapter[];
+}
+
+/** Alias for runtime story data */
+export type StoryData = VisualNovelWithChapters;
+
 // ── Chapters & Scenes ────────────────────────────────────
 
 export type ChapterStatus = 'draft' | 'published';

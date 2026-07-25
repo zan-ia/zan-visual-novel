@@ -1,6 +1,6 @@
 ---
 name: requirements-engineering
-description: "Complete requirements engineering — elicitation, analysis, specification, validation, and management of functional and non-functional requirements. Use when: gathering requirements, writing requirements specification (SRS), defining use cases, user stories, acceptance criteria, or validating requirements with stakeholders. Activates for: requirements, elicitation, SRS, use case, user story, acceptance criteria, functional requirements, non-functional requirements."
+description: 'Complete requirements engineering — elicitation, analysis, specification, validation, and management of functional and non-functional requirements. Use when: gathering requirements, writing requirements specification (SRS), defining use cases, user stories, acceptance criteria, or validating requirements with stakeholders. Activates for: requirements, elicitation, SRS, use case, user story, acceptance criteria, functional requirements, non-functional requirements.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -25,15 +25,15 @@ flowchart LR
 
 ### 1.1 Elicitação — Técnicas
 
-| Técnica | Quando usar | Entregável |
-|---------|-------------|------------|
-| **Entrevistas** | Stakeholders disponíveis, necessidade de profundidade | Notas de entrevista |
-| **Questionários** | Muitos stakeholders, dispersão geográfica | Respostas tabuladas |
-| **Observação** | Processos existentes, entender fluxo real | Relatório de observação |
-| **Brainstorming** | Fase inicial, exploração de ideias | Mapa mental, lista de ideias |
-| **Análise de documentos** | Sistemas legados, regulamentações | Resumo de achados |
-| **Prototipação** | Requisitos incertos, validar com usuário | Protótipo (baixa/alta fidelidade) |
-| **Workshop facilitado** | Múltiplos stakeholders, alinhamento | Acordos documentados |
+| Técnica                   | Quando usar                                           | Entregável                        |
+| ------------------------- | ----------------------------------------------------- | --------------------------------- |
+| **Entrevistas**           | Stakeholders disponíveis, necessidade de profundidade | Notas de entrevista               |
+| **Questionários**         | Muitos stakeholders, dispersão geográfica             | Respostas tabuladas               |
+| **Observação**            | Processos existentes, entender fluxo real             | Relatório de observação           |
+| **Brainstorming**         | Fase inicial, exploração de ideias                    | Mapa mental, lista de ideias      |
+| **Análise de documentos** | Sistemas legados, regulamentações                     | Resumo de achados                 |
+| **Prototipação**          | Requisitos incertos, validar com usuário              | Protótipo (baixa/alta fidelidade) |
+| **Workshop facilitado**   | Múltiplos stakeholders, alinhamento                   | Acordos documentados              |
 
 ### 1.2 Análise — Classificação
 
@@ -46,14 +46,14 @@ O que o sistema DEVE fazer. Comportamentos, funcionalidades, regras de negócio.
 **Requisitos Não-Funcionais (RNF):**
 COMO o sistema deve ser. Qualidades, restrições, atributos.
 
-| Categoria | Exemplos |
-|-----------|----------|
-| **Performance** | Tempo de resposta < 200ms, suportar 10k usuários simultâneos |
-| **Segurança** | Criptografia AES-256, autenticação OAuth 2.0, RBAC |
-| **Usabilidade** | Acessibilidade WCAG 2.1 AA, taxa de erro < 5% |
-| **Confiabilidade** | Uptime 99.9%, MTTR < 1h, backup diário |
-| **Manutenibilidade** | Cobertura de testes > 80%, documentação atualizada |
-| **Portabilidade** | Compatível com Chrome, Firefox, Safari, Edge |
+| Categoria            | Exemplos                                                     |
+| -------------------- | ------------------------------------------------------------ |
+| **Performance**      | Tempo de resposta < 200ms, suportar 10k usuários simultâneos |
+| **Segurança**        | Criptografia AES-256, autenticação OAuth 2.0, RBAC           |
+| **Usabilidade**      | Acessibilidade WCAG 2.1 AA, taxa de erro < 5%                |
+| **Confiabilidade**   | Uptime 99.9%, MTTR < 1h, backup diário                       |
+| **Manutenibilidade** | Cobertura de testes > 80%, documentação atualizada           |
+| **Portabilidade**    | Compatível com Chrome, Firefox, Safari, Edge                 |
 
 **Regras de Negócio (RN):**
 Políticas, condições, restrições do domínio.
@@ -112,10 +112,10 @@ Estrutura completa de um Software Requirements Specification:
 
 ### 1.5 Gestão — Matriz de Rastreabilidade
 
-| ID | Requisito | Fonte | Prioridade | Status | Issue | Teste |
-|----|-----------|-------|------------|--------|-------|-------|
-| RF-001 | Login com email/senha | Stakeholder A | Must | Implementado | #42 | TC-001 |
-| RF-002 | Recuperação de senha | UX Research | Should | Pendente | #43 | — |
+| ID     | Requisito             | Fonte         | Prioridade | Status       | Issue | Teste  |
+| ------ | --------------------- | ------------- | ---------- | ------------ | ----- | ------ |
+| RF-001 | Login com email/senha | Stakeholder A | Must       | Implementado | #42   | TC-001 |
+| RF-002 | Recuperação de senha  | UX Research   | Should     | Pendente     | #43   | —      |
 
 ---
 
@@ -127,25 +127,31 @@ Estrutura completa de um Software Requirements Specification:
 # Visão do Produto: [Nome]
 
 ## Problema
+
 [Qual problema real estamos resolvendo? Para quem?]
 
 ## Solução Proposta
+
 [Como o produto resolve esse problema? Diferencial.]
 
 ## Público-Alvo
+
 - **Primário:** [descrição da persona principal]
 - **Secundário:** [descrição da persona secundária]
 
 ## Escopo Inicial (MVP)
+
 - [Funcionalidade essencial 1]
 - [Funcionalidade essencial 2]
 - [Funcionalidade essencial 3]
 
 ## Fora do Escopo (v1)
+
 - [Funcionalidade adiada]
 - [Funcionalidade adiada]
 
 ## Métricas de Sucesso
+
 - [Métrica 1]: [valor-alvo]
 - [Métrica 2]: [valor-alvo]
 ```
@@ -161,33 +167,42 @@ Estrutura completa de um Software Requirements Specification:
 **Data:** [data]
 
 ## Resumo Executivo
+
 [2-3 parágrafos explicando o QUÊ, POR QUÊ, e PARA QUEM]
 
 ## Objetivos
+
 - [Objetivo de negócio 1]
 - [Objetivo de usuário 1]
 
 ## Requisitos Funcionais
+
 ### RF-001: [Nome]
+
 **Prioridade:** Must | Should | Could | Won't
 **Descrição:** [detalhamento]
 **Critérios de Aceitação:**
+
 - [ ] Given/When/Then
-**Dependências:** [outros RFs, sistemas externos]
+      **Dependências:** [outros RFs, sistemas externos]
 
 ## Requisitos Não-Funcionais
+
 [Performance, segurança, usabilidade, etc.]
 
 ## Design & UX
+
 [Wireframes, fluxos, protótipos - links ou embeds]
 
 ## Roadmap
-| Versão | Escopo | Data Alvo |
-|--------|--------|-----------|
-| v1.0 | MVP | Q3 2026 |
-| v1.1 | Melhorias | Q4 2026 |
+
+| Versão | Escopo    | Data Alvo |
+| ------ | --------- | --------- |
+| v1.0   | MVP       | Q3 2026   |
+| v1.1   | Melhorias | Q4 2026   |
 
 ## Riscos e Suposições
+
 - **Risco:** [descrição] → **Mitigação:** [ação]
 ```
 
@@ -215,6 +230,7 @@ Usar os frameworks documentados na skill `product-engineering`:
 6. **Criar issues** — Transformar requisitos em issues do GitHub quando aplicável
 
 ### Regras:
+
 - SEMPRE use `vscode_askQuestions` para interagir com o usuário — NUNCA faça perguntas em texto livre
 - SEMPRE use `manage_todo_list` para estruturar as etapas
 - SEMPRE salve artefatos em `.github/artifacts/requirements/`

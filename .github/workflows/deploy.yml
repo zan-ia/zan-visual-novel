@@ -6,7 +6,7 @@ name: Deploy
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
 
 concurrency:
@@ -44,7 +44,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod --confirm"
+          vercel-args: '--prod --confirm'
           working-directory: ./
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

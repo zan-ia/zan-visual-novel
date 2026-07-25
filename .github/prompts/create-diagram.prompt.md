@@ -1,7 +1,7 @@
 ---
-description: "Creates diagrams and visual artifacts — ERD, sequence, flowchart, class, state, C4 Model, Gantt, mindmap. The software-engineer agent leads using the diagramming skill and integrated Mermaid tools."
+description: 'Creates diagrams and visual artifacts — ERD, sequence, flowchart, class, state, C4 Model, Gantt, mindmap. The software-engineer agent leads using the diagramming skill and integrated Mermaid tools.'
 argument-hint: "Describe the desired diagram (e.g., 'ERD diagram of the users and orders schema')"
-agent: "software-engineer"
+agent: 'software-engineer'
 ---
 
 # Create Diagram
@@ -34,6 +34,7 @@ Use `vscode_askQuestions` to understand the need:
 ### 2. Activate Mermaid Tools
 
 Call `activate_mermaid_diagram_tools` to enable:
+
 - `get-syntax-docs-mermaid` — consult syntax
 - `mermaid-diagram-validator` — validate code
 - `mermaid-diagram-preview` — preview diagram
@@ -77,22 +78,24 @@ Add a brief README in the diagrams directory explaining each diagram:
 ```markdown
 # Project Diagrams
 
-| File | Type | Description |
-|------|------|-------------|
-| main-erd.mmd | ERD | Complete data model |
+| File               | Type     | Description         |
+| ------------------ | -------- | ------------------- |
+| main-erd.mmd       | ERD      | Complete data model |
 | login-sequence.mmd | Sequence | Authentication flow |
-| ...
+| ...                |
 ```
 
 ### 7. Integrate with Documentation
 
 If the diagram is part of larger documentation:
+
 - Reference the diagram in the document (link to `.mmd` or image)
 - Update relevant documentation
 
 ### 8. Handoff
 
 Offer next steps:
+
 - Create another diagram (`/create-diagram`)
 - Integrate with documentation (`/create-documentation`)
 - Start development based on diagrams (`/start-feature`)

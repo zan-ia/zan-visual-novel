@@ -1,6 +1,6 @@
 ---
 name: diagramming
-description: "Create diagrams and visual artifacts using Mermaid — ERD, flowcharts, sequence, class, state, C4 Model, mind maps, Gantt charts, and more. Use when: creating entity-relationship diagrams (ERD), process flowcharts, sequence diagrams, UML class diagrams, state machines, mind maps, Gantt charts, or any technical visualization. Activates for: diagram, ERD, flowchart, sequence, class, state, mindmap, gantt, mermaid, architecture, visual, chart."
+description: 'Create diagrams and visual artifacts using Mermaid — ERD, flowcharts, sequence, class, state, C4 Model, mind maps, Gantt charts, and more. Use when: creating entity-relationship diagrams (ERD), process flowcharts, sequence diagrams, UML class diagrams, state machines, mind maps, Gantt charts, or any technical visualization. Activates for: diagram, ERD, flowchart, sequence, class, state, mindmap, gantt, mermaid, architecture, visual, chart.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -81,6 +81,7 @@ erDiagram
 ```
 
 ### Convenções:
+
 - **PK**: Primary Key
 - **FK**: Foreign Key
 - **UK**: Unique Key
@@ -117,6 +118,7 @@ sequenceDiagram
 ```
 
 ### Convenções:
+
 - `->>`: chamada síncrona
 - `-->>`: resposta/retorno
 - `actor`: usuário/papel externo
@@ -149,6 +151,7 @@ flowchart TD
 ```
 
 ### Convenções:
+
 - `[]`: processo/ação (retângulo)
 - `{}`: decisão/condição (losango)
 - `()``: início/fim (cápsula)
@@ -191,6 +194,7 @@ classDiagram
 ```
 
 ### Convenções:
+
 - `+`: público, `-`: privado, `#`: protegido
 - `<<interface>>`, `<<abstract>>`: estereótipos
 - Herança: `ClasseFilha --|> ClassePai`
@@ -315,6 +319,7 @@ flowchart LR
 7. **Salvar** — Salve o código `.mmd` e/ou exporte a imagem em `.github/artifacts/diagrams/`
 
 ### Regras:
+
 - SEMPRE use `activate_mermaid_diagram_tools` antes de criar diagramas
 - SEMPRE valide a sintaxe com o validador antes do preview
 - SEMPRE salve os arquivos `.mmd` (código fonte) em `.github/artifacts/diagrams/`

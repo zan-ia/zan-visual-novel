@@ -28,7 +28,15 @@ export function LoginPage() {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh', p: 2 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100dvh',
+        p: 2,
+      }}
+    >
       <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <Typography variant="h4" sx={{ mb: 1, textAlign: 'center' }}>
           Zan Visual Novel

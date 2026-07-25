@@ -1,6 +1,6 @@
 ---
 name: product-engineering
-description: "Reference knowledge for product engineering — user stories, prioritization frameworks, MVP scoping, metrics, roadmapping, and product discovery. Use when: writing user stories, prioritizing a backlog, defining MVPs, choosing metrics, planning a roadmap, or evaluating product decisions. Activates for: product, user story, prioritization, mvp, roadmap, metrics, kpi, okr, jobs to be done, prd, requirements."
+description: 'Reference knowledge for product engineering — user stories, prioritization frameworks, MVP scoping, metrics, roadmapping, and product discovery. Use when: writing user stories, prioritizing a backlog, defining MVPs, choosing metrics, planning a roadmap, or evaluating product decisions. Activates for: product, user story, prioritization, mvp, roadmap, metrics, kpi, okr, jobs to be done, prd, requirements.'
 user-invocable: true
 disable-model-invocation: false
 context: fork

@@ -1,30 +1,30 @@
 ---
-name: "harness-engineer"
+name: 'harness-engineer'
 model: OpenCode Go / Deepseek V4 Pro (opencodego)
-description: "Harness engineer (auto-learn mode). Observes the pipeline passively, audits and iteratively refines all harness components (agents, instructions, prompts, skills) following Continual Harness principles. Uses Chronicle (session_store_sql) to extract patterns, anti-patterns, and improvement points from historical sessions. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, post-PR harness review, or optimizing the development pipeline."
+description: 'Harness engineer (auto-learn mode). Observes the pipeline passively, audits and iteratively refines all harness components (agents, instructions, prompts, skills) following Continual Harness principles. Uses Chronicle (session_store_sql) to extract patterns, anti-patterns, and improvement points from historical sessions. Use when: auditing harness consistency, creating/modifying agents/instructions/prompts/skills, post-PR harness review, or optimizing the development pipeline.'
 tools:
-  - "read"
-  - "edit"
-  - "todo"
-  - "agent"
-  - "search"
-  - "github/*"
-  - "memory/*"
-  - "vscode/memory"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'edit'
+  - 'todo'
+  - 'agent'
+  - 'search'
+  - 'github/*'
+  - 'memory/*'
+  - 'vscode/memory'
+  - 'vscode/askQuestions'
 agents:
-  - "orchestrator"
-  - "agent"
+  - 'orchestrator'
+  - 'agent'
 user-invocable: true
 disable-model-invocation: false
 handoffs:
-  - label: "🔍 Explore Codebase"
+  - label: '🔍 Explore Codebase'
     agent: agent
-    prompt: "Explore the current harness state in .github/ — list all agents, instructions, prompts, and skills. Identify any inconsistencies in tool declarations, agent references, or applyTo patterns."
+    prompt: 'Explore the current harness state in .github/ — list all agents, instructions, prompts, and skills. Identify any inconsistencies in tool declarations, agent references, or applyTo patterns.'
     send: false
-  - label: "🚀 Trigger Pipeline Improvement"
+  - label: '🚀 Trigger Pipeline Improvement'
     agent: orchestrator
-    prompt: "Create a harness improvement issue based on the Chronicle analysis. Follow the Plan→Implement→Review cycle for harness changes."
+    prompt: 'Create a harness improvement issue based on the Chronicle analysis. Follow the Plan→Implement→Review cycle for harness changes.'
     send: false
 ---
 
@@ -51,13 +51,13 @@ You are NOT invoked by the user directly during pipeline runs. You run **between
 
 Every agent in the project harness MUST fit exactly one of these archetypes. This taxonomy governs tool permissions, invocation patterns, and design constraints.
 
-| Archetype       | Purpose                                                                                         | Tool Profile                                                   | Invocation                       | Examples                                                    |
-| --------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
-| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates, tracks pipeline state                   | Full toolkit + agent tool                                      | User-facing + subagent-invocable | `orchestrator`                                              |
-| **Worker**      | Executes a specific phase of a pipeline — receives structured input, produces structured output | Domain-specific (edit for implementer, read-only for reviewer) | Subagent-invocable (usually)     | `planner`, `implementer`, `reviewer`                    |
-| **Specialist**  | Deep expertise in one domain, operates independently or on-demand                               | Domain-specific tools                                          | User-invocable or on-demand      | `content-creator`, `performance-auditor`, `refactor-css`   |
+| Archetype       | Purpose                                                                                         | Tool Profile                                                   | Invocation                       | Examples                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------ |
+| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates, tracks pipeline state                   | Full toolkit + agent tool                                      | User-facing + subagent-invocable | `orchestrator`                                               |
+| **Worker**      | Executes a specific phase of a pipeline — receives structured input, produces structured output | Domain-specific (edit for implementer, read-only for reviewer) | Subagent-invocable (usually)     | `planner`, `implementer`, `reviewer`                         |
+| **Specialist**  | Deep expertise in one domain, operates independently or on-demand                               | Domain-specific tools                                          | User-invocable or on-demand      | `content-creator`, `performance-auditor`, `refactor-css`     |
 | **Auditor**     | Read-only analysis, produces reports, detects issues — NEVER modifies files                     | read, search, specialized analysis tools                       | On-demand or post-cycle          | `performance-auditor` (audit mode), `reviewer` (review mode) |
-| **Gatekeeper**  | Validates quality gates, enforces conventions, blocks violations                                | read, search, hooks                                            | Automatic (hooks) or on-demand   | _(future: CI validator agent)_                              |
+| **Gatekeeper**  | Validates quality gates, enforces conventions, blocks violations                                | read, search, hooks                                            | Automatic (hooks) or on-demand   | _(future: CI validator agent)_                               |
 
 ### Archetype Decision Tree
 
@@ -314,7 +314,7 @@ Before deploying harness changes, validate they don't break the pipeline.
 | --------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **L1 — Static Analysis**    | Frontmatter validity, tool names, cross-references              | Manual audit checklist (see Audit Checklist section)                              | Every harness change                                       |
 | **L2 — Build Verify**       | `npm run check` and `npm run build` pass                        | Run both commands                                                                 | Every harness change that touches file paths or tool names |
-| **L3 — Dry-Run Pipeline**   | Run a trivial task through the full Plan→Implement→Review cycle | Use `/start-improvement` with a cosmetic change (e.g., "fix typo in Footer")       | P0 and P1 changes                                          |
+| **L3 — Dry-Run Pipeline**   | Run a trivial task through the full Plan→Implement→Review cycle | Use `/start-improvement` with a cosmetic change (e.g., "fix typo in Footer")      | P0 and P1 changes                                          |
 | **L4 — Chronicle Baseline** | Compare KPIs before/after harness change                        | Query Chronicle for 7 days before and after change, compare Pipeline Success Rate | P0 changes, monthly review                                 |
 
 ### Test Checklist (run before marking harness change complete)
@@ -447,11 +447,11 @@ Read all `.agent.md` frontmatter and cross-reference:
 
 Build a permission matrix:
 
-| Agent          | Declared Tools                                              | Declared Subagents                          | Issues Found                  |
-| -------------- | ----------------------------------------------------------- | ------------------------------------------- | ----------------------------- |
+| Agent          | Declared Tools                                              | Declared Subagents                      | Issues Found                  |
+| -------------- | ----------------------------------------------------------- | --------------------------------------- | ----------------------------- |
 | `orchestrator` | read, search, edit, execute, web, todo, vscode/askQuestions | planner, implementer, reviewer, Explore | (check)                       |
-| `planner`   | read, search, web, todo, vscode/askQuestions                | Explore                                     | (check)                       |
-| `reviewer`      | read, search, todo, vscode/askQuestions                     | (none)                                      | (check handoffs→orchestrator) |
+| `planner`      | read, search, web, todo, vscode/askQuestions                | Explore                                 | (check)                       |
+| `reviewer`     | read, search, todo, vscode/askQuestions                     | (none)                                  | (check handoffs→orchestrator) |
 
 ### Layer 2: Hooks (Future — when `.github/hooks/` is supported)
 

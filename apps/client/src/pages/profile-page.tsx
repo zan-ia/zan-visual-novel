@@ -14,10 +14,14 @@ export function ProfilePage() {
 
   return (
     <Box maxWidth={600} mx="auto">
-      <Typography variant="h3" mb={3}>Meu Perfil</Typography>
+      <Typography variant="h3" mb={3}>
+        Meu Perfil
+      </Typography>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h6">{user?.displayName}</Typography>
-        <Typography color="text.secondary" mb={2}>{user?.email}</Typography>
+        <Typography color="text.secondary" mb={2}>
+          {user?.email}
+        </Typography>
         <Typography variant="h4" color="primary" mb={3}>
           {user?.creditsBalance ?? 0} créditos
         </Typography>

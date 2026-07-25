@@ -1,14 +1,33 @@
 import {
-  Box, Typography, TextField, Button, Paper, Tabs, Tab, IconButton, List, ListItemButton,
-  ListItemText, ListItemIcon, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
-  Select, MenuItem, FormControl, InputLabel, Snackbar,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Tabs,
+  Tab,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Snackbar,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PublishIcon from '@mui/icons-material/Publish';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Chapter, Scene, TextBlock, Choice } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
@@ -70,14 +89,22 @@ export function VNEditorPage() {
 
   // Load scenes when chapter changes
   useEffect(() => {
-    if (!selectedChapterId) { setScenes([]); return; }
+    if (!selectedChapterId) {
+      setScenes([]);
+      return;
+    }
     const chapter = chapters.find((c) => c.id === selectedChapterId);
     setScenes((chapter as any)?.scenes ?? []);
   }, [selectedChapterId, chapters]);
 
   // Load scene content and choices when scene changes
   useEffect(() => {
-    if (!selectedSceneId) { setSceneContent([]); setChoices([]); setSceneTitle(''); return; }
+    if (!selectedSceneId) {
+      setSceneContent([]);
+      setChoices([]);
+      setSceneTitle('');
+      return;
+    }
     const scene = scenes.find((s) => s.id === selectedSceneId);
     if (scene) {
       setSceneContent(scene.content ?? []);
@@ -102,7 +129,9 @@ export function VNEditorPage() {
         await api.updateVN(vnId!, data);
         setToast('Visual Novel salva!');
       }
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePublish = async () => {
@@ -111,7 +140,9 @@ export function VNEditorPage() {
     try {
       await api.updateVN(vnId, { status: 'published' });
       setToast('Visual Novel publicada! 🎉');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── Chapters ───────────────────────────────────────────
@@ -121,10 +152,16 @@ export function VNEditorPage() {
     // Chapter creation via API would go here
     // For MVP, we manage locally
     const newChapter: Chapter = {
-      id: `ch-${Date.now()}`, vnId, title: chapterTitle, orderIndex: chapters.length,
-      status: 'draft', priceCredits: 0, startSceneId: null,
+      id: `ch-${Date.now()}`,
+      vnId,
+      title: chapterTitle,
+      orderIndex: chapters.length,
+      status: 'draft',
+      priceCredits: 0,
+      startSceneId: null,
       scenes: [],
-      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     setChapters([...chapters, newChapter]);
     setSelectedChapterId(newChapter.id);
@@ -143,11 +180,16 @@ export function VNEditorPage() {
   const handleAddScene = () => {
     if (!selectedChapterId) return;
     const newScene: Scene = {
-      id: `sc-${Date.now()}`, chapterId: selectedChapterId,
-      title: `Cena ${scenes.length + 1}`, type: 'narration',
-      content: [], nextSceneId: null, metadata: null,
+      id: `sc-${Date.now()}`,
+      chapterId: selectedChapterId,
+      title: `Cena ${scenes.length + 1}`,
+      type: 'narration',
+      content: [],
+      nextSceneId: null,
+      metadata: null,
       choices: [],
-      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     const updated = [...scenes, newScene];
     setScenes(updated);
@@ -179,9 +221,12 @@ export function VNEditorPage() {
   const handleAddChoice = () => {
     if (!newChoiceText.trim() || !selectedSceneId) return;
     const choice: Choice = {
-      id: `chc-${Date.now()}`, sceneId: selectedSceneId,
-      text: newChoiceText, targetSceneId: newChoiceTarget || selectedSceneId,
-      orderIndex: choices.length, isDefault: false,
+      id: `chc-${Date.now()}`,
+      sceneId: selectedSceneId,
+      text: newChoiceText,
+      targetSceneId: newChoiceTarget || selectedSceneId,
+      orderIndex: choices.length,
+      isDefault: false,
     };
     setChoices([...choices, choice]);
     setNewChoiceText('');
@@ -199,10 +244,19 @@ export function VNEditorPage() {
           {isNew ? 'Nova Visual Novel' : title || 'Editor de VN'}
         </Typography>
         <Box display="flex" gap={1}>
-          <Button variant="outlined" startIcon={<PlayArrowIcon />} onClick={() => setTab('preview')}>
+          <Button
+            variant="outlined"
+            startIcon={<PlayArrowIcon />}
+            onClick={() => setTab('preview')}
+          >
             Preview
           </Button>
-          <Button variant="contained" startIcon={<PublishIcon />} onClick={handlePublish} disabled={loading}>
+          <Button
+            variant="contained"
+            startIcon={<PublishIcon />}
+            onClick={handlePublish}
+            disabled={loading}
+          >
             Publicar
           </Button>
         </Box>
@@ -218,16 +272,30 @@ export function VNEditorPage() {
       {/* ── Details Tab ─────────────────────────────────── */}
       {tab === 'details' && (
         <Paper sx={{ p: 4, maxWidth: 800 }}>
-          <TextField fullWidth label="Título" value={title}
-            onChange={(e) => setTitle(e.target.value)} margin="normal" required />
-          <TextField fullWidth label="Sinopse" value={synopsis}
-            onChange={(e) => setSynopsis(e.target.value)} margin="normal"
-            multiline rows={4} />
+          <TextField
+            fullWidth
+            label="Título"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Sinopse"
+            value={synopsis}
+            onChange={(e) => setSynopsis(e.target.value)}
+            margin="normal"
+            multiline
+            rows={4}
+          />
           <Box mt={3} display="flex" gap={2}>
             <Button variant="contained" onClick={handleSaveVN} disabled={loading}>
               {loading ? 'Salvando...' : 'Salvar'}
             </Button>
-            <Button variant="outlined" onClick={() => navigate('/studio')}>Cancelar</Button>
+            <Button variant="outlined" onClick={() => navigate('/studio')}>
+              Cancelar
+            </Button>
           </Box>
         </Paper>
       )}
@@ -238,15 +306,31 @@ export function VNEditorPage() {
           <Paper sx={{ width: 300, p: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Capítulos</Typography>
-              <IconButton onClick={() => setChapterDialogOpen(true)} color="primary"><AddIcon /></IconButton>
+              <IconButton onClick={() => setChapterDialogOpen(true)} color="primary">
+                <AddIcon />
+              </IconButton>
             </Box>
             <List dense>
               {chapters.map((ch) => (
-                <ListItemButton key={ch.id} selected={selectedChapterId === ch.id}
-                  onClick={() => setSelectedChapterId(ch.id)}>
-                  <ListItemIcon><DragIndicatorIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary={ch.title} secondary={`${(ch as any)?.scenes?.length ?? 0} cenas`} />
-                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleDeleteChapter(ch.id); }}>
+                <ListItemButton
+                  key={ch.id}
+                  selected={selectedChapterId === ch.id}
+                  onClick={() => setSelectedChapterId(ch.id)}
+                >
+                  <ListItemIcon>
+                    <DragIndicatorIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={ch.title}
+                    secondary={`${(ch as any)?.scenes?.length ?? 0} cenas`}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteChapter(ch.id);
+                    }}
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </ListItemButton>
@@ -283,13 +367,21 @@ export function VNEditorPage() {
           <Paper sx={{ width: 280, p: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="subtitle1">Cenas</Typography>
-              <IconButton onClick={handleAddScene} color="primary"><AddIcon /></IconButton>
+              <IconButton onClick={handleAddScene} color="primary">
+                <AddIcon />
+              </IconButton>
             </Box>
             <List dense>
-              {scenes.map((sc, i) => (
-                <ListItemButton key={sc.id} selected={selectedSceneId === sc.id}
-                  onClick={() => setSelectedSceneId(sc.id)}>
-                  <ListItemText primary={sc.title} secondary={`${sc.content?.length ?? 0} blocos · ${(sc as any)?.choices?.length ?? 0} escolhas`} />
+              {scenes.map((sc) => (
+                <ListItemButton
+                  key={sc.id}
+                  selected={selectedSceneId === sc.id}
+                  onClick={() => setSelectedSceneId(sc.id)}
+                >
+                  <ListItemText
+                    primary={sc.title}
+                    secondary={`${sc.content?.length ?? 0} blocos · ${(sc as any)?.choices?.length ?? 0} escolhas`}
+                  />
                   <Chip label={sc.type} size="small" variant="outlined" />
                 </ListItemButton>
               ))}
@@ -300,11 +392,20 @@ export function VNEditorPage() {
           {selectedScene && (
             <Box flex={1} display="flex" gap={2} flexDirection="column">
               <Paper sx={{ p: 3 }}>
-                <TextField fullWidth label="Título da Cena" value={sceneTitle}
-                  onChange={(e) => setSceneTitle(e.target.value)} margin="normal" />
+                <TextField
+                  fullWidth
+                  label="Título da Cena"
+                  value={sceneTitle}
+                  onChange={(e) => setSceneTitle(e.target.value)}
+                  margin="normal"
+                />
                 <FormControl fullWidth margin="normal">
                   <InputLabel>Tipo</InputLabel>
-                  <Select value={sceneType} onChange={(e) => setSceneType(e.target.value)} label="Tipo">
+                  <Select
+                    value={sceneType}
+                    onChange={(e) => setSceneType(e.target.value)}
+                    label="Tipo"
+                  >
                     <MenuItem value="narration">Narração</MenuItem>
                     <MenuItem value="dialogue">Diálogo</MenuItem>
                     <MenuItem value="choice">Escolha</MenuItem>
@@ -315,16 +416,30 @@ export function VNEditorPage() {
 
               {/* Text blocks */}
               <Paper sx={{ p: 3 }}>
-                <Typography variant="subtitle1" mb={2}>Blocos de Texto</Typography>
+                <Typography variant="subtitle1" mb={2}>
+                  Blocos de Texto
+                </Typography>
                 {sceneContent.map((block, i) => (
-                  <Box key={i} sx={{ mb: 2, p: 2, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 1, position: 'relative' }}>
+                  <Box
+                    key={i}
+                    sx={{
+                      mb: 2,
+                      p: 2,
+                      bgcolor: 'rgba(255,255,255,0.03)',
+                      borderRadius: 1,
+                      position: 'relative',
+                    }}
+                  >
                     <Box display="flex" gap={1} mb={1}>
                       <Chip label={block.type} size="small" color="primary" variant="outlined" />
                       {block.speaker && <Chip label={block.speaker} size="small" />}
                     </Box>
                     <Typography variant="body2">{block.text}</Typography>
-                    <IconButton size="small" sx={{ position: 'absolute', top: 4, right: 4 }}
-                      onClick={() => handleRemoveTextBlock(i)}>
+                    <IconButton
+                      size="small"
+                      sx={{ position: 'absolute', top: 4, right: 4 }}
+                      onClick={() => handleRemoveTextBlock(i)}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
@@ -339,34 +454,69 @@ export function VNEditorPage() {
                     </Select>
                   </FormControl>
                   {blockType === 'dialogue' && (
-                    <TextField size="small" label="Personagem" value={currentSpeaker}
-                      onChange={(e) => setCurrentSpeaker(e.target.value)} sx={{ width: 150 }} />
+                    <TextField
+                      size="small"
+                      label="Personagem"
+                      value={currentSpeaker}
+                      onChange={(e) => setCurrentSpeaker(e.target.value)}
+                      sx={{ width: 150 }}
+                    />
                   )}
-                  <TextField size="small" label="Texto" value={currentTextBlock}
-                    onChange={(e) => setCurrentTextBlock(e.target.value)} sx={{ flex: 1, minWidth: 200 }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddTextBlock()} />
-                  <Button variant="outlined" size="small" onClick={handleAddTextBlock}>Adicionar</Button>
+                  <TextField
+                    size="small"
+                    label="Texto"
+                    value={currentTextBlock}
+                    onChange={(e) => setCurrentTextBlock(e.target.value)}
+                    sx={{ flex: 1, minWidth: 200 }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddTextBlock()}
+                  />
+                  <Button variant="outlined" size="small" onClick={handleAddTextBlock}>
+                    Adicionar
+                  </Button>
                 </Box>
               </Paper>
 
               {/* Choices editor */}
               <Paper sx={{ p: 3 }}>
-                <Typography variant="subtitle1" mb={2}>Escolhas</Typography>
+                <Typography variant="subtitle1" mb={2}>
+                  Escolhas
+                </Typography>
                 {choices.map((ch) => (
                   <Box key={ch.id} display="flex" gap={1} alignItems="center" mb={1}>
-                    <Chip label={`→ ${ch.targetSceneId?.slice(0, 8)}...`} size="small" variant="outlined" />
-                    <Typography variant="body2" sx={{ flex: 1 }}>{ch.text}</Typography>
-                    <IconButton size="small" onClick={() => setChoices(choices.filter((c) => c.id !== ch.id))}>
+                    <Chip
+                      label={`→ ${ch.targetSceneId?.slice(0, 8)}...`}
+                      size="small"
+                      variant="outlined"
+                    />
+                    <Typography variant="body2" sx={{ flex: 1 }}>
+                      {ch.text}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => setChoices(choices.filter((c) => c.id !== ch.id))}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
                 ))}
                 <Box display="flex" gap={1} mt={2}>
-                  <TextField size="small" label="Texto da escolha" value={newChoiceText}
-                    onChange={(e) => setNewChoiceText(e.target.value)} sx={{ flex: 1 }} />
-                  <TextField size="small" label="ID da cena alvo" value={newChoiceTarget}
-                    onChange={(e) => setNewChoiceTarget(e.target.value)} sx={{ width: 180 }} />
-                  <Button variant="outlined" size="small" onClick={handleAddChoice}>+</Button>
+                  <TextField
+                    size="small"
+                    label="Texto da escolha"
+                    value={newChoiceText}
+                    onChange={(e) => setNewChoiceText(e.target.value)}
+                    sx={{ flex: 1 }}
+                  />
+                  <TextField
+                    size="small"
+                    label="ID da cena alvo"
+                    value={newChoiceTarget}
+                    onChange={(e) => setNewChoiceTarget(e.target.value)}
+                    sx={{ width: 180 }}
+                  />
+                  <Button variant="outlined" size="small" onClick={handleAddChoice}>
+                    +
+                  </Button>
                 </Box>
               </Paper>
             </Box>
@@ -377,28 +527,49 @@ export function VNEditorPage() {
       {/* ── Preview Tab ──────────────────────────────────── */}
       {tab === 'preview' && selectedScene && (
         <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
-          <Typography variant="h6" mb={3}>Preview — {selectedScene.title}</Typography>
+          <Typography variant="h6" mb={3}>
+            Preview — {selectedScene.title}
+          </Typography>
           <Box sx={{ bgcolor: 'rgba(0,0,0,0.3)', p: 3, borderRadius: 2, mb: 3 }}>
             {selectedScene.content?.map((block, i) => {
               if (block.type === 'dialogue') {
                 return (
                   <Box key={i} mb={2}>
-                    {block.speaker && <Typography variant="caption" color="primary.main" fontWeight="bold">{block.speaker}</Typography>}
+                    {block.speaker && (
+                      <Typography variant="caption" color="primary.main" fontWeight="bold">
+                        {block.speaker}
+                      </Typography>
+                    )}
                     <Typography>"{block.text}"</Typography>
                   </Box>
                 );
               }
               if (block.type === 'thought') {
-                return <Typography key={i} mb={2} color="text.secondary" fontStyle="italic">({block.text})</Typography>;
+                return (
+                  <Typography key={i} mb={2} color="text.secondary" fontStyle="italic">
+                    ({block.text})
+                  </Typography>
+                );
               }
-              return <Typography key={i} mb={2}>{block.text}</Typography>;
+              return (
+                <Typography key={i} mb={2}>
+                  {block.text}
+                </Typography>
+              );
             }) ?? <Typography color="text.secondary">Cena vazia.</Typography>}
           </Box>
           {choices.length > 0 && (
             <Box>
-              <Typography variant="subtitle2" mb={1}>Escolhas:</Typography>
+              <Typography variant="subtitle2" mb={1}>
+                Escolhas:
+              </Typography>
               {choices.map((ch) => (
-                <Button key={ch.id} variant="outlined" fullWidth sx={{ mb: 1, justifyContent: 'flex-start' }}>
+                <Button
+                  key={ch.id}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 1, justifyContent: 'flex-start' }}
+                >
                   {ch.text}
                 </Button>
               ))}
@@ -411,18 +582,31 @@ export function VNEditorPage() {
       <Dialog open={chapterDialogOpen} onClose={() => setChapterDialogOpen(false)}>
         <DialogTitle>Novo Capítulo</DialogTitle>
         <DialogContent>
-          <TextField autoFocus fullWidth label="Título do capítulo" value={chapterTitle}
-            onChange={(e) => setChapterTitle(e.target.value)} margin="dense" />
+          <TextField
+            autoFocus
+            fullWidth
+            label="Título do capítulo"
+            value={chapterTitle}
+            onChange={(e) => setChapterTitle(e.target.value)}
+            margin="dense"
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setChapterDialogOpen(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleAddChapter}>Criar</Button>
+          <Button variant="contained" onClick={handleAddChapter}>
+            Criar
+          </Button>
         </DialogActions>
       </Dialog>
 
       {/* ── Toast ────────────────────────────────────────── */}
-      <Snackbar open={!!toast} autoHideDuration={2000} onClose={() => setToast(null)} message={toast}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} />
+      <Snackbar
+        open={!!toast}
+        autoHideDuration={2000}
+        onClose={() => setToast(null)}
+        message={toast}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Box>
   );
 }

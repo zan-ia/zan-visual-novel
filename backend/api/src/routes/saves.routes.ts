@@ -3,8 +3,11 @@ import { createSaveSchema } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { eq, and } from 'drizzle-orm';
+import { z } from 'zod';
 
 export const savesRouter = Router();
+
+const uuidSchema = z.string().uuid('ID inválido');
 
 // GET /api/v1/saves — Get saves for a VN
 savesRouter.get('/', authenticate, async (req, res) => {
@@ -96,10 +99,11 @@ savesRouter.post('/', authenticate, async (req, res) => {
 // PUT /api/v1/saves/:id — Update save
 savesRouter.put('/:id', authenticate, async (req, res) => {
   try {
+    const id = uuidSchema.parse(req.params.id);
     const [existing] = await getDb()
       .select()
       .from(schema.saves)
-      .where(and(eq(schema.saves.id, req.params.id), eq(schema.saves.userId, req.user!.userId)))
+      .where(and(eq(schema.saves.id, id), eq(schema.saves.userId, req.user!.userId)))
       .limit(1);
     if (!existing) {
       res.status(404).json({
@@ -111,7 +115,7 @@ savesRouter.put('/:id', authenticate, async (req, res) => {
     const [save] = await getDb()
       .update(schema.saves)
       .set({ ...req.body, updatedAt: new Date() })
-      .where(eq(schema.saves.id, req.params.id))
+      .where(eq(schema.saves.id, id))
       .returning();
     res.json({ success: true, data: save });
   } catch {

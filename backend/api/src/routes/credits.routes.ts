@@ -22,12 +22,10 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
     const data = checkoutSchema.parse(req.body);
     const pkg = CREDIT_PACKAGES.find((p) => p.id === data.packageId);
     if (!pkg) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: { statusCode: 400, message: 'Pacote inválido', code: 'INVALID_PACKAGE' },
-        });
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Pacote inválido', code: 'INVALID_PACKAGE' },
+      });
       return;
     }
 
@@ -39,12 +37,10 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
       .where(eq(schema.users.id, req.user!.userId))
       .limit(1);
     if (!user) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -53,14 +49,16 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
       .update(schema.users)
       .set({ creditsBalance: newBalance })
       .where(eq(schema.users.id, req.user!.userId));
-    await getDb().insert(schema.creditTransactions).values({
-      userId: req.user!.userId,
-      type: 'purchase',
-      amount: pkg.credits,
-      balanceBefore: user.balance,
-      balanceAfter: newBalance,
-      description: `Compra: ${pkg.name} (${pkg.credits} créditos)`,
-    });
+    await getDb()
+      .insert(schema.creditTransactions)
+      .values({
+        userId: req.user!.userId,
+        type: 'purchase',
+        amount: pkg.credits,
+        balanceBefore: user.balance,
+        balanceAfter: newBalance,
+        description: `Compra: ${pkg.name} (${pkg.credits} créditos)`,
+      });
 
     res.json({
       success: true,
@@ -68,20 +66,16 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: { statusCode: 400, message: 'Dados inválidos', code: 'VALIDATION_ERROR' },
-        });
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Dados inválidos', code: 'VALIDATION_ERROR' },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -95,26 +89,22 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
       .where(eq(schema.users.id, req.user!.userId))
       .limit(1);
     if (!user) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
     if (user.creditsBalance < data.amount) {
-      res
-        .status(402)
-        .json({
-          success: false,
-          error: {
-            statusCode: 402,
-            message: 'Créditos insuficientes',
-            code: 'INSUFFICIENT_CREDITS',
-          },
-        });
+      res.status(402).json({
+        success: false,
+        error: {
+          statusCode: 402,
+          message: 'Créditos insuficientes',
+          code: 'INSUFFICIENT_CREDITS',
+        },
+      });
       return;
     }
 
@@ -177,20 +167,16 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
     res.json({ success: true, data: { balanceAfter: newBalance, spent: data.amount } });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: { statusCode: 400, message: 'Dados inválidos', code: 'VALIDATION_ERROR' },
-        });
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Dados inválidos', code: 'VALIDATION_ERROR' },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 

@@ -21,12 +21,10 @@ authRouter.post('/register', async (req, res) => {
       .where(eq(schema.users.email, data.email))
       .limit(1);
     if (existing.length > 0) {
-      res
-        .status(409)
-        .json({
-          success: false,
-          error: { statusCode: 409, message: 'Email já cadastrado', code: 'EMAIL_EXISTS' },
-        });
+      res.status(409).json({
+        success: false,
+        error: { statusCode: 409, message: 'Email já cadastrado', code: 'EMAIL_EXISTS' },
+      });
       return;
     }
 
@@ -48,11 +46,13 @@ authRouter.post('/register', async (req, res) => {
     );
     const refreshToken = jwt.sign({ userId: user!.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    await getDb().insert(schema.userSessions).values({
-      userId: user!.id,
-      refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    await getDb()
+      .insert(schema.userSessions)
+      .values({
+        userId: user!.id,
+        refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
 
     res.status(201).json({
       success: true,
@@ -71,24 +71,20 @@ authRouter.post('/register', async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -102,16 +98,14 @@ authRouter.post('/login', async (req, res) => {
       .where(eq(schema.users.email, data.email))
       .limit(1);
     if (!user || !(await bcrypt.compare(data.password, user.passwordHash))) {
-      res
-        .status(401)
-        .json({
-          success: false,
-          error: {
-            statusCode: 401,
-            message: 'Email ou senha inválidos',
-            code: 'INVALID_CREDENTIALS',
-          },
-        });
+      res.status(401).json({
+        success: false,
+        error: {
+          statusCode: 401,
+          message: 'Email ou senha inválidos',
+          code: 'INVALID_CREDENTIALS',
+        },
+      });
       return;
     }
 
@@ -122,11 +116,13 @@ authRouter.post('/login', async (req, res) => {
     );
     const refreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    await getDb().insert(schema.userSessions).values({
-      userId: user.id,
-      refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    await getDb()
+      .insert(schema.userSessions)
+      .values({
+        userId: user.id,
+        refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
 
     res.json({
       success: true,
@@ -150,24 +146,20 @@ authRouter.post('/login', async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -176,16 +168,14 @@ authRouter.post('/refresh', async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: 'Refresh token não fornecido',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: 'Refresh token não fornecido',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
 
@@ -196,16 +186,14 @@ authRouter.post('/refresh', async (req, res) => {
       .where(eq(schema.userSessions.refreshToken, refreshToken))
       .limit(1);
     if (!session || new Date() > session.expiresAt) {
-      res
-        .status(401)
-        .json({
-          success: false,
-          error: {
-            statusCode: 401,
-            message: 'Refresh token inválido ou expirado',
-            code: 'UNAUTHORIZED',
-          },
-        });
+      res.status(401).json({
+        success: false,
+        error: {
+          statusCode: 401,
+          message: 'Refresh token inválido ou expirado',
+          code: 'UNAUTHORIZED',
+        },
+      });
       return;
     }
 
@@ -215,23 +203,23 @@ authRouter.post('/refresh', async (req, res) => {
       .where(eq(schema.users.id, payload.userId))
       .limit(1);
     if (!user) {
-      res
-        .status(401)
-        .json({
-          success: false,
-          error: { statusCode: 401, message: 'Usuário não encontrado', code: 'UNAUTHORIZED' },
-        });
+      res.status(401).json({
+        success: false,
+        error: { statusCode: 401, message: 'Usuário não encontrado', code: 'UNAUTHORIZED' },
+      });
       return;
     }
 
     // Rotate refresh token
     await getDb().delete(schema.userSessions).where(eq(schema.userSessions.id, session.id));
     const newRefreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
-    await getDb().insert(schema.userSessions).values({
-      userId: user.id,
-      refreshToken: newRefreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    await getDb()
+      .insert(schema.userSessions)
+      .values({
+        userId: user.id,
+        refreshToken: newRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
 
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
@@ -260,12 +248,10 @@ authRouter.post('/refresh', async (req, res) => {
       },
     });
   } catch {
-    res
-      .status(401)
-      .json({
-        success: false,
-        error: { statusCode: 401, message: 'Refresh token inválido', code: 'UNAUTHORIZED' },
-      });
+    res.status(401).json({
+      success: false,
+      error: { statusCode: 401, message: 'Refresh token inválido', code: 'UNAUTHORIZED' },
+    });
   }
 });
 
@@ -277,12 +263,10 @@ authRouter.get('/me', authenticate, async (req, res) => {
     .where(eq(schema.users.id, req.user!.userId))
     .limit(1);
   if (!user) {
-    res
-      .status(404)
-      .json({
-        success: false,
-        error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
-      });
+    res.status(404).json({
+      success: false,
+      error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
+    });
     return;
   }
   res.json({ success: true, data: user });
