@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "npx tsx .github/scripts/validate-harness-sync.ts --tool-refs",
+        "timeout": 10
+      }
+    ]
+  }
+}

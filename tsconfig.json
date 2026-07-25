@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "@zan-vn/shared": ["./packages/shared/src/index.ts"],
+      "@zan-vn/shared/*": ["./packages/shared/src/*"],
+      "@zan-vn/ui": ["./packages/ui/src/index.ts"],
+      "@zan-vn/ui/*": ["./packages/ui/src/*"],
+      "@zan-vn/lib": ["./packages/lib/src/index.ts"],
+      "@zan-vn/lib/*": ["./packages/lib/src/*"],
+      "@zan-vn/vn-engine": ["./packages/vn-engine/src/index.ts"],
+      "@zan-vn/vn-engine/*": ["./packages/vn-engine/src/*"]
+    }
+  },
+  "include": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/lib" },
+    { "path": "./packages/vn-engine" },
+    { "path": "./apps/client" },
+    { "path": "./apps/dashboard" },
+    { "path": "./backend/api" }
+  ]
+}

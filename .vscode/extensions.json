@@ -1,0 +1,14 @@
+{
+	"recommendations": [
+		"svelte.svelte-vscode",
+		"github.vscode-pull-request-github",
+		"ms-azuretools.vscode-docker",
+		"ms-azuretools.vscode-containers",
+		"dbaeumer.vscode-eslint",
+		"ltmoerdani.opencode-copilot-chat",
+		"esbenp.prettier-vscode",
+		"redhat.vscode-yaml",
+		"christian-kohler.npm-intellisense",
+		"vscode-icons-team.vscode-icons"
+	]
+}

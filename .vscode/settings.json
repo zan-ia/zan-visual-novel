@@ -1,0 +1,12 @@
+{
+    "opencodego.freeOnly": true,
+    "opencodego.agentsWindow": true,
+    "opencodego.showAgentModelsInManagePanel": false,
+    "opencodego.temperature": 0.2,
+    "github.copilot.enable": {
+        "markdown": true
+    },
+    "search.exclude": {
+        ".github/workflows/*.lock.yml": true
+    }
+}
