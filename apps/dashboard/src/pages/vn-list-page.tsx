@@ -12,7 +12,10 @@ export function VNListPage() {
 
   useEffect(() => {
     api.listVNs({ creator: 'me' }).then((res) => {
-      if (res.success && res.data) setVNs(res.data.data as VisualNovel[]);
+      if (res.success && res.data) {
+        const response = res.data as any;
+        setVNs(response.data ?? []);
+      }
     });
   }, []);
 

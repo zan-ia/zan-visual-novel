@@ -16,7 +16,7 @@ export function LibraryPage() {
   useEffect(() => {
     api.listVNs().then((res) => {
       if (res.success && res.data) {
-        setVNs(res.data.data as VisualNovel[]);
+        setVNs((res.data as any).data ?? []);
       }
       setLoading(false);
     });

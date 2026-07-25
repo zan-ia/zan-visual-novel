@@ -205,7 +205,7 @@ export class ApiClient {
       };
     }
 
-    return { success: true, data: json };
+    return json as ApiResponse<T>;
   }
 
   private async tryRefresh(): Promise<boolean> {
