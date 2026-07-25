@@ -44,7 +44,9 @@ export const createVNSchema = z.object({
   tags: z.array(z.string().max(50)).max(10).default([]),
 });
 
-export const updateVNSchema = createVNSchema.partial();
+export const updateVNSchema = createVNSchema.partial().extend({
+  status: vnStatusSchema.optional(),
+});
 
 export type CreateVNInput = z.infer<typeof createVNSchema>;
 export type UpdateVNInput = z.infer<typeof updateVNSchema>;

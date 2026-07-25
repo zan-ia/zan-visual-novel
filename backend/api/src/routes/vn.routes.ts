@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared';
 import { db, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, inArray, sql } from 'drizzle-orm';
 
 export const vnRouter = Router();
 
@@ -38,7 +38,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
       const tagRows = await db
         .select()
         .from(schema.vnTags)
-        .where(sql`${schema.vnTags.vnId} = ANY(${vnIds})`);
+        .where(inArray(schema.vnTags.vnId, vnIds));
       for (const row of tagRows) {
         tags[row.vnId] ??= [];
         tags[row.vnId]!.push(row.tag);
@@ -116,13 +116,13 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
       scenes = await db
         .select()
         .from(schema.scenes)
-        .where(sql`${schema.scenes.chapterId} = ANY(${chapterIds})`);
+        .where(inArray(schema.scenes.chapterId, chapterIds));
       const sceneIds = scenes.map((s) => s.id);
       if (sceneIds.length > 0) {
         choices = await db
           .select()
           .from(schema.choices)
-          .where(sql`${schema.choices.sceneId} = ANY(${sceneIds})`);
+          .where(inArray(schema.choices.sceneId, sceneIds));
       }
     }
 
