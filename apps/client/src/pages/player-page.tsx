@@ -221,10 +221,3 @@ export function PlayerPage() {
     </Box>
   );
 }
-            {isLoading ? <CircularProgress size={24} /> : 'Continuar'}
-          </Button>
-        )}
-      </Box>
-    </Box>
-  );
-}
