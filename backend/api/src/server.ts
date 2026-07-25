@@ -1,9 +1,19 @@
 import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
 
+// Find .env by walking up from current file
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+let dir = __dirname;
+while (dir !== path.parse(dir).root) {
+  const envPath = path.join(dir, '.env');
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+  dir = path.dirname(dir);
+}
 
 import express from 'express';
 import cors from 'cors';

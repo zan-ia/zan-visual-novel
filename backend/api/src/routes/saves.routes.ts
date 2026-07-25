@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createSaveSchema } from '@zan-vn/shared';
-import { db, schema } from '../db/index.js';
+import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { eq, and } from 'drizzle-orm';
 
@@ -10,7 +10,7 @@ export const savesRouter = Router();
 savesRouter.get('/', authenticate, async (req, res) => {
   try {
     const vnId = req.query.vnId as string;
-    const saves = await db
+    const saves = await getDb()
       .select()
       .from(schema.saves)
       .where(
@@ -35,7 +35,7 @@ savesRouter.get('/', authenticate, async (req, res) => {
 savesRouter.post('/', authenticate, async (req, res) => {
   try {
     const data = createSaveSchema.parse(req.body);
-    const [existing] = await db
+    const [existing] = await getDb()
       .select()
       .from(schema.saves)
       .where(
@@ -49,7 +49,7 @@ savesRouter.post('/', authenticate, async (req, res) => {
 
     let save;
     if (existing) {
-      [save] = await db
+      [save] = await getDb()
         .update(schema.saves)
         .set({
           label: data.label,
@@ -61,7 +61,7 @@ savesRouter.post('/', authenticate, async (req, res) => {
         .where(eq(schema.saves.id, existing.id))
         .returning();
     } else {
-      [save] = await db
+      [save] = await getDb()
         .insert(schema.saves)
         .values({
           userId: req.user!.userId,
@@ -102,7 +102,7 @@ savesRouter.post('/', authenticate, async (req, res) => {
 // PUT /api/v1/saves/:id — Update save
 savesRouter.put('/:id', authenticate, async (req, res) => {
   try {
-    const [existing] = await db
+    const [existing] = await getDb()
       .select()
       .from(schema.saves)
       .where(and(eq(schema.saves.id, req.params.id), eq(schema.saves.userId, req.user!.userId)))
@@ -116,7 +116,7 @@ savesRouter.put('/:id', authenticate, async (req, res) => {
         });
       return;
     }
-    const [save] = await db
+    const [save] = await getDb()
       .update(schema.saves)
       .set({ ...req.body, updatedAt: new Date() })
       .where(eq(schema.saves.id, req.params.id))

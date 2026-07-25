@@ -5,7 +5,7 @@ import {
   CREDIT_PACKAGES,
   CREATOR_REVENUE_SHARE,
 } from '@zan-vn/shared';
-import { db, schema } from '../db/index.js';
+import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { eq, sql } from 'drizzle-orm';
 
@@ -33,7 +33,7 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
 
     // In production, this would create a Stripe Checkout Session
     // For now, simulate direct credit addition (MVP mode)
-    const [user] = await db
+    const [user] = await getDb()
       .select({ balance: schema.users.creditsBalance })
       .from(schema.users)
       .where(eq(schema.users.id, req.user!.userId))
@@ -49,11 +49,11 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
     }
 
     const newBalance = user.balance + pkg.credits;
-    await db
+    await getDb()
       .update(schema.users)
       .set({ creditsBalance: newBalance })
       .where(eq(schema.users.id, req.user!.userId));
-    await db.insert(schema.creditTransactions).values({
+    await getDb().insert(schema.creditTransactions).values({
       userId: req.user!.userId,
       type: 'purchase',
       amount: pkg.credits,
@@ -89,7 +89,7 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
 creditsRouter.post('/spend', authenticate, async (req, res) => {
   try {
     const data = spendCreditsSchema.parse(req.body);
-    const [user] = await db
+    const [user] = await getDb()
       .select()
       .from(schema.users)
       .where(eq(schema.users.id, req.user!.userId))
@@ -119,7 +119,7 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
     }
 
     // Get VN creator for revenue share
-    const [vn] = await db
+    const [vn] = await getDb()
       .select({ creatorId: schema.visualNovels.creatorId })
       .from(schema.visualNovels)
       .where(eq(schema.visualNovels.id, data.vnId))
@@ -128,7 +128,7 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
     const newBalance = user.creditsBalance - data.amount;
 
     // Transaction
-    await db.transaction(async (tx) => {
+    await getDb().transaction(async (tx) => {
       await tx
         .update(schema.users)
         .set({ creditsBalance: newBalance })
@@ -196,7 +196,7 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
 
 // GET /api/v1/credits/transactions — Get user's transaction history
 creditsRouter.get('/transactions', authenticate, async (req, res) => {
-  const transactions = await db
+  const transactions = await getDb()
     .select()
     .from(schema.creditTransactions)
     .where(eq(schema.creditTransactions.userId, req.user!.userId))

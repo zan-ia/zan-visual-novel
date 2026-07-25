@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { registerSchema, loginSchema } from '@zan-vn/shared';
-import { db, schema } from '../db/index.js';
+import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { eq } from 'drizzle-orm';
 
@@ -15,7 +15,7 @@ export const authRouter = Router();
 authRouter.post('/register', async (req, res) => {
   try {
     const data = registerSchema.parse(req.body);
-    const existing = await db
+    const existing = await getDb()
       .select()
       .from(schema.users)
       .where(eq(schema.users.email, data.email))
@@ -31,7 +31,7 @@ authRouter.post('/register', async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
-    const [user] = await db
+    const [user] = await getDb()
       .insert(schema.users)
       .values({
         email: data.email,
@@ -48,7 +48,7 @@ authRouter.post('/register', async (req, res) => {
     );
     const refreshToken = jwt.sign({ userId: user!.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    await db.insert(schema.userSessions).values({
+    await getDb().insert(schema.userSessions).values({
       userId: user!.id,
       refreshToken,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -96,7 +96,7 @@ authRouter.post('/register', async (req, res) => {
 authRouter.post('/login', async (req, res) => {
   try {
     const data = loginSchema.parse(req.body);
-    const [user] = await db
+    const [user] = await getDb()
       .select()
       .from(schema.users)
       .where(eq(schema.users.email, data.email))
@@ -122,7 +122,7 @@ authRouter.post('/login', async (req, res) => {
     );
     const refreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    await db.insert(schema.userSessions).values({
+    await getDb().insert(schema.userSessions).values({
       userId: user.id,
       refreshToken,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -190,7 +190,7 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { userId: string };
-    const [session] = await db
+    const [session] = await getDb()
       .select()
       .from(schema.userSessions)
       .where(eq(schema.userSessions.refreshToken, refreshToken))
@@ -209,7 +209,7 @@ authRouter.post('/refresh', async (req, res) => {
       return;
     }
 
-    const [user] = await db
+    const [user] = await getDb()
       .select()
       .from(schema.users)
       .where(eq(schema.users.id, payload.userId))
@@ -225,9 +225,9 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     // Rotate refresh token
-    await db.delete(schema.userSessions).where(eq(schema.userSessions.id, session.id));
+    await getDb().delete(schema.userSessions).where(eq(schema.userSessions.id, session.id));
     const newRefreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
-    await db.insert(schema.userSessions).values({
+    await getDb().insert(schema.userSessions).values({
       userId: user.id,
       refreshToken: newRefreshToken,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -271,7 +271,7 @@ authRouter.post('/refresh', async (req, res) => {
 
 // GET /api/v1/auth/me
 authRouter.get('/me', authenticate, async (req, res) => {
-  const [user] = await db
+  const [user] = await getDb()
     .select()
     .from(schema.users)
     .where(eq(schema.users.id, req.user!.userId))

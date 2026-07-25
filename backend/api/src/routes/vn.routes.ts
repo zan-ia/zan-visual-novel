@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared';
-import { db, schema } from '../db/index.js';
+import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
 import { eq, and, desc, inArray, sql } from 'drizzle-orm';
 
@@ -19,11 +19,11 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
       where = eq(schema.visualNovels.status, 'published');
     }
 
-    const [total] = await db
+    const [total] = await getDb()
       .select({ count: sql<number>`count(*)::int` })
       .from(schema.visualNovels)
       .where(where);
-    const vns = await db
+    const vns = await getDb()
       .select()
       .from(schema.visualNovels)
       .where(where)
@@ -35,7 +35,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
     const vnIds = vns.map((v) => v.id);
     let tags: Record<string, string[]> = {};
     if (vnIds.length > 0) {
-      const tagRows = await db
+      const tagRows = await getDb()
         .select()
         .from(schema.vnTags)
         .where(inArray(schema.vnTags.vnId, vnIds));
@@ -47,7 +47,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
 
     const data = await Promise.all(
       vns.map(async (vn) => {
-        const [creator] = await db
+        const [creator] = await getDb()
           .select({ displayName: schema.users.displayName, avatarUrl: schema.users.avatarUrl })
           .from(schema.users)
           .where(eq(schema.users.id, vn.creatorId))
@@ -88,7 +88,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
 // GET /api/v1/vns/:id — Get VN with full data (chapters, scenes, choices)
 vnRouter.get('/:id', optionalAuth, async (req, res) => {
   try {
-    const [vn] = await db
+    const [vn] = await getDb()
       .select()
       .from(schema.visualNovels)
       .where(eq(schema.visualNovels.id, req.params.id))
@@ -103,7 +103,7 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
       return;
     }
 
-    const chapters = await db
+    const chapters = await getDb()
       .select()
       .from(schema.chapters)
       .where(eq(schema.chapters.vnId, vn.id))
@@ -113,13 +113,13 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
     let scenes: any[] = [];
     let choices: any[] = [];
     if (chapterIds.length > 0) {
-      scenes = await db
+      scenes = await getDb()
         .select()
         .from(schema.scenes)
         .where(inArray(schema.scenes.chapterId, chapterIds));
       const sceneIds = scenes.map((s) => s.id);
       if (sceneIds.length > 0) {
-        choices = await db
+        choices = await getDb()
           .select()
           .from(schema.choices)
           .where(inArray(schema.choices.sceneId, sceneIds));
@@ -151,7 +151,7 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
 vnRouter.post('/', authenticate, async (req, res) => {
   try {
     const data = createVNSchema.parse(req.body);
-    const [vn] = await db
+    const [vn] = await getDb()
       .insert(schema.visualNovels)
       .values({
         creatorId: req.user!.userId,
@@ -168,7 +168,7 @@ vnRouter.post('/', authenticate, async (req, res) => {
 
     // Insert tags
     if (data.tags.length > 0) {
-      await db.insert(schema.vnTags).values(data.tags.map((tag) => ({ vnId: vn!.id, tag })));
+      await getDb().insert(schema.vnTags).values(data.tags.map((tag) => ({ vnId: vn!.id, tag })));
     }
 
     res.status(201).json({ success: true, data: vn });
@@ -199,7 +199,7 @@ vnRouter.post('/', authenticate, async (req, res) => {
 vnRouter.patch('/:id', authenticate, async (req, res) => {
   try {
     const data = updateVNSchema.parse(req.body);
-    const [vn] = await db
+    const [vn] = await getDb()
       .select()
       .from(schema.visualNovels)
       .where(eq(schema.visualNovels.id, req.params.id))
@@ -223,7 +223,7 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
       return;
     }
 
-    await db
+    await getDb()
       .update(schema.visualNovels)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(schema.visualNovels.id, req.params.id));
