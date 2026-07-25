@@ -12,4 +12,3 @@ build/
 coverage/
 public/models/
 *.onnx
-.vscode/mcp.json
