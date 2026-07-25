@@ -2,9 +2,9 @@
 
 Index of all architecture decisions recorded for this project.
 
-| ADR | Title | Status | Date |
-|-----|-------|--------|------|
-| — | No ADRs registered yet | — | — |
+| ADR | Title                  | Status | Date |
+| --- | ---------------------- | ------ | ---- |
+| —   | No ADRs registered yet | —      | —    |
 
 ## How to create a new ADR
 

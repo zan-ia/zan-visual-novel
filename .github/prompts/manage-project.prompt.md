@@ -1,7 +1,7 @@
 ---
-description: "Initiates software project management operations — creating issues, milestones, roadmap, metrics, and backlog organization. The software-engineer agent leads using the project-management skill and GitHub MCP."
+description: 'Initiates software project management operations — creating issues, milestones, roadmap, metrics, and backlog organization. The software-engineer agent leads using the project-management skill and GitHub MCP.'
 argument-hint: "Describe the management action (e.g., 'Create MVP v1.0 milestone' or 'Generate Q3 2026 roadmap')"
-agent: "software-engineer"
+agent: 'software-engineer'
 ---
 
 # Manage Project
@@ -94,6 +94,7 @@ See `product-engineering` skill for prioritization frameworks.
 ### 5. Handoff
 
 Offer next steps:
+
 - Start development of a prioritized issue (`/start-feature`)
 - Create related documentation (`/create-documentation`)
 - Review roadmap (`/manage-project`)

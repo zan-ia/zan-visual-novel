@@ -1,6 +1,6 @@
 ---
 name: model-providers
-description: "Catalog of available models from OpenCode Go and OpenCode Zen providers, with cost analysis and capability mapping for each pipeline role (planner, implementer, reviewer, specialist). Use when: choosing which model to assign to an agent, optimizing cost, or auditing whether model assignments are consistent with task types."
+description: 'Catalog of available models from OpenCode Go and OpenCode Zen providers, with cost analysis and capability mapping for each pipeline role (planner, implementer, reviewer, specialist). Use when: choosing which model to assign to an agent, optimizing cost, or auditing whether model assignments are consistent with task types.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -31,13 +31,13 @@ Operational catalog of available models for project agents, with **cost × capab
 
 Cinco modelos **100% free** disponíveis no Zen. Úteis para experimentação e para agentes de baixo risco (ex: geração de títulos de sessão, previews).
 
-| Model                      | Provider           | Limitations                                             | Recommended Use                                  |
-| -------------------------- | ------------------ | ------------------------------------------------------- | ------------------------------------------------ |
-| **Big Pickle**             | Stealth (em teste) | Data may be used to train the model            | Experimentation, do not use with sensitive data   |
-| **DeepSeek V4 Flash Free** | DeepSeek           | Data may be used to train the model            | Tarefas rápidas, experimentação                  |
-| **MiMo-V2.5 Free**         | Xiaomi             | Data may be used to train the model            | Tarefas rápidas, experimentação                  |
+| Model                      | Provider           | Limitations                                            | Recommended Use                                  |
+| -------------------------- | ------------------ | ------------------------------------------------------ | ------------------------------------------------ |
+| **Big Pickle**             | Stealth (em teste) | Data may be used to train the model                    | Experimentation, do not use with sensitive data  |
+| **DeepSeek V4 Flash Free** | DeepSeek           | Data may be used to train the model                    | Tarefas rápidas, experimentação                  |
+| **MiMo-V2.5 Free**         | Xiaomi             | Data may be used to train the model                    | Tarefas rápidas, experimentação                  |
 | **North Mini Code Free**   | Cohere             | **Do not submit personal/confidential data** (ver ToS) | ❌ Não usar para código de produção com clientes |
-| **Nemotron 3 Ultra Free**  | NVIDIA             | Trial use only — do not submit sensitive data       | ❌ Não usar para código de produção com clientes |
+| **Nemotron 3 Ultra Free**  | NVIDIA             | Trial use only — do not submit sensitive data          | ❌ Não usar para código de produção com clientes |
 
 > **LGPD/Privacy Notice:** Apenas **Big Pickle** e **DeepSeek V4 Flash Free** têm política de privacidade compatível com dados de clientes (com ressalva). **North Mini Code** e **Nemotron 3 Ultra Free** explicitamente proíbem dados pessoais.
 
@@ -53,7 +53,7 @@ Para tarefas que exigem mais capacidade que os modelos do Go. Preços por 1M tok
 | **Claude Sonnet 5**       | $2.00     | $10.00     | $0.20     | Tarefas balanceadas, código + explicação               | Bom custo-benefício, 200K contexto    |
 | **Claude Haiku 4.5**      | $1.00     | $5.00      | $0.10     | Classificação rápida, resumos, títulos                 | Rápido e barato, 200K contexto        |
 | **GPT 5.4**               | $2.50     | $15.00     | $0.25     | Coding agent forte, raciocínio estruturado             | 272K contexto                         |
-| **GPT 5.4 Mini**          | $0.75     | $4.50      | $0.075    | Cheaper alternative for moderadas  | 272K contexto                         |
+| **GPT 5.4 Mini**          | $0.75     | $4.50      | $0.075    | Cheaper alternative for moderadas                      | 272K contexto                         |
 | **GPT 5.4 Nano**          | $0.20     | $1.25      | $0.02     | Tarefas triviais, agentes de baixo risco               | Custo mínimo                          |
 | **Gemini 3.1 Pro**        | $2.00     | $12.00     | $0.20     | Visão multimodal forte, contexto longo                 | 1M+ contexto, vision nativo           |
 | **Gemini 3 Flash**        | $0.50     | $3.00      | $0.05     | Alternativa barata ao Pro para tarefas simples         | Vision nativo                         |
@@ -62,9 +62,9 @@ Para tarefas que exigem mais capacidade que os modelos do Go. Preços por 1M tok
 | **Kimi K2.7 Code**        | $0.95     | $4.00      | $0.19     | Coding agent, contexto longo                           | Otimizado para código                 |
 | **Qwen3.7 Max**           | $2.50     | $7.50      | $0.50     | Coding + visão                                         | 1M contexto, multimodal               |
 | **Qwen3.5 Plus**          | $0.20     | $1.20      | $0.02     | Coding barato                                          | Bom para tarefas simples              |
-| **GLM 5.2**               | $1.40     | $4.40      | $0.26     | Coding agent geral                                     | Sonnet alternative                 |
+| **GLM 5.2**               | $1.40     | $4.40      | $0.26     | Coding agent geral                                     | Sonnet alternative                    |
 | **MiniMax M3**            | $0.30     | $1.20      | $0.06     | Tarefas gerais, coding balanceado                      | Bom custo-benefício                   |
-| **MiniMax M2.7**          | $0.30     | $1.20      | $0.06     | Tarefas gerais, coding balanceado                      | Same price as M3                  |
+| **MiniMax M2.7**          | $0.30     | $1.20      | $0.06     | Tarefas gerais, coding balanceado                      | Same price as M3                      |
 | **Big Pickle (Zen pago)** | –         | –          | –         | (Ver seção Free)                                       | –                                     |
 
 > **Example calculation:** A typical session do orchestrator (Planner + Implementer + Reviewer) com ~500K tokens totais de input + 100K output:
@@ -83,12 +83,12 @@ This is the default assignment for project agents. Each role is mapped to the mo
 | Agente (papel)                                                  | Modelo recomendado | Justificativa                                                               | Alternativa mais barata                         |
 | --------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------- | ----------------------------------------------- |
 | **orchestrator** (Coordena, decisões de HITL, síntese)          | `claude-sonnet-5`  | Raciocínio forte, bom em síntese e julgamento; vale pagar pelo orchestrator | `minimax-m3` (3x mais barato)                   |
-| **planner** (Análise de issue, geração de plano)             | `claude-sonnet-5`  | Planos exigem raciocínio estruturado; longo contexto para ler codebase      | `deepseek-v4-pro` (1/3 do custo)                |
-| **implementer** (Edição de código, build)                     | `deepseek-v4-pro`  | Coding forte, custo acessível; usa muito token                              | `minimax-m3` (6x mais barato) ou `qwen3.5-plus` |
-| **reviewer** (Análise de diff, classificação)                    | `claude-haiku-4-5` | Read-only, tarefa de classificação — Haiku é ideal em custo                 | `deepseek-v4-flash` (5x mais barato)            |
-| **harness-engineer** (Auditoria, refatoração de harness)   | `claude-sonnet-5`  | Raciocínio estruturado sobre meta-problemas                                 | `minimax-m3`                                    |
-| **content-creator** (Geração de copy)                          | `gpt-5.4-mini`     | Geração criativa barata                                                     | `gemini-3-flash`                                |
-| **layout-designer** (Análise visual, auditoria UX)           | `gemini-3.1-pro`   | Vision nativo, pode analisar screenshots                                    | `gemini-3-flash`                                |
+| **planner** (Análise de issue, geração de plano)                | `claude-sonnet-5`  | Planos exigem raciocínio estruturado; longo contexto para ler codebase      | `deepseek-v4-pro` (1/3 do custo)                |
+| **implementer** (Edição de código, build)                       | `deepseek-v4-pro`  | Coding forte, custo acessível; usa muito token                              | `minimax-m3` (6x mais barato) ou `qwen3.5-plus` |
+| **reviewer** (Análise de diff, classificação)                   | `claude-haiku-4-5` | Read-only, tarefa de classificação — Haiku é ideal em custo                 | `deepseek-v4-flash` (5x mais barato)            |
+| **harness-engineer** (Auditoria, refatoração de harness)        | `claude-sonnet-5`  | Raciocínio estruturado sobre meta-problemas                                 | `minimax-m3`                                    |
+| **content-creator** (Geração de copy)                           | `gpt-5.4-mini`     | Geração criativa barata                                                     | `gemini-3-flash`                                |
+| **layout-designer** (Análise visual, auditoria UX)              | `gemini-3.1-pro`   | Vision nativo, pode analisar screenshots                                    | `gemini-3-flash`                                |
 | **performance-auditor** (Análise de métricas, code review perf) | `deepseek-v4-pro`  | Forte em code analysis                                                      | `minimax-m3`                                    |
 | **refactor-css** (Refatoração de CSS)                           | `qwen3.5-plus`     | Coding barato, foco em estilos                                              | `gemini-3-flash`                                |
 | **Agente de títulos de sessão** (auto, não-customizável)        | `gpt-5-nano`       | OpenCode usa por padrão                                                     | N/A                                             |
@@ -126,9 +126,9 @@ Adicione `model:` no frontmatter do agente:
 
 ```yaml
 ---
-name: "implementer"
-model: "opencode/deepseek-v4-pro"
-description: "..."
+name: 'implementer'
+model: 'opencode/deepseek-v4-pro'
+description: '...'
 ---
 ```
 
@@ -158,7 +158,7 @@ Execute esta skill mensalmente para:
 | Decisão                | Escolha                                               | Implicação                                                                          |
 | ---------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | Orçamento mensal       | **Apenas OpenCode Go** (sem custo extra)              | Custo variável = $0/mês                                                             |
-| Modelo do orchestrator | **`opencode-go/default`**                             | Keeps strong reasoning without paying Zen                                               |
+| Modelo do orchestrator | **`opencode-go/default`**                             | Keeps strong reasoning without paying Zen                                           |
 | Modelo do reviewer     | **`opencode-go/small`**                               | Mantém classificação rápida sem pagar Zen                                           |
 | Forma de atribuição    | **Ambos: `opencode.json` + `model:` nos `.agent.md`** | Duplicação controlada — `opencode.json` é o global, `.agent.md` explicita a escolha |
 
@@ -166,17 +166,17 @@ Execute esta skill mensalmente para:
 >
 > **Formato do model**: display name `OpenCode Go / [Nome] (opencodego)` (sem aspas)
 
-| Agente                  | Model                                          |
-| ----------------------- | ---------------------------------------------- |
-| `orchestrator`          | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
-| `planner`            | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
+| Agente                | Model                                          |
+| --------------------- | ---------------------------------------------- |
+| `orchestrator`        | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
+| `planner`             | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
 | `implementer`         | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
-| `reviewer`               | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
-| `harness-engineer` | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
-| `content-creator`      | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
-| `layout-designer`    | `OpenCode Go / Minimax M3 (opencodego)`        |
-| `performance-auditor`   | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
-| `refactor-css`          | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
+| `reviewer`            | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
+| `harness-engineer`    | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
+| `content-creator`     | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
+| `layout-designer`     | `OpenCode Go / Minimax M3 (opencodego)`        |
+| `performance-auditor` | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
+| `refactor-css`        | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
 
 > **Regra de atribuição (definida pelo usuário):**
 >

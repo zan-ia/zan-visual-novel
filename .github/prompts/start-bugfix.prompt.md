@@ -1,7 +1,7 @@
 ﻿---
-description: "Initiates the bugfix pipeline. The engineer agent analyzes the bug and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR."
+description: 'Initiates the bugfix pipeline. The engineer agent analyzes the bug and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR.'
 argument-hint: "Describe the bug found (e.g., 'The header shows wrong colors on mobile...')"
-agent: "engineer"
+agent: 'engineer'
 ---
 
 # Start Bugfix Pipeline
@@ -61,8 +61,6 @@ Create a GitHub issue in the project with:
 ### 3. Hand Off to Orchestrator
 
 🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
-
-
 
 After approval, execute the complete pipeline:
 

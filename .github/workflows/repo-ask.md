@@ -9,7 +9,7 @@ description: |
 on:
   slash_command:
     name: repo-ask
-  reaction: "eyes"
+  reaction: 'eyes'
 
 permissions: read-all
 

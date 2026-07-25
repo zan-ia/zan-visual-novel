@@ -1,15 +1,15 @@
 - generic [ref=f1e19]:
-  - banner [ref=f1e20]:
-    - generic [ref=f1e21]:
-      - heading "Creator Studio" [level=6] [ref=f1e22] [cursor=pointer]
-      - paragraph [ref=f1e23]: Criador Teste
-      - button "Sair" [ref=f1e24] [cursor=pointer]
-  - list [ref=f1e28]:
-    - button "Minhas VNs" [ref=f1e29] [cursor=pointer]
-    - button "Analytics" [ref=f1e36] [cursor=pointer]
-  - main [ref=f1e42]:
-    - generic [ref=f1e44]:
-      - generic [ref=f1e45]:
-        - heading "Minhas Visual Novels" [level=3] [ref=f1e46]
-        - button [ref=f1e47] [cursor=pointer]
-      - paragraph [ref=f1e53]: Você ainda não criou nenhuma visual novel. Clique em "Nova VN" para começar!
+    - banner [ref=f1e20]:
+        - generic [ref=f1e21]:
+            - heading "Creator Studio" [level=6] [ref=f1e22] [cursor=pointer]
+            - paragraph [ref=f1e23]: Criador Teste
+            - button "Sair" [ref=f1e24] [cursor=pointer]
+    - list [ref=f1e28]:
+        - button "Minhas VNs" [ref=f1e29] [cursor=pointer]
+        - button "Analytics" [ref=f1e36] [cursor=pointer]
+    - main [ref=f1e42]:
+        - generic [ref=f1e44]:
+            - generic [ref=f1e45]:
+                - heading "Minhas Visual Novels" [level=3] [ref=f1e46]
+                - button [ref=f1e47] [cursor=pointer]
+            - paragraph [ref=f1e53]: Você ainda não criou nenhuma visual novel. Clique em "Nova VN" para começar!

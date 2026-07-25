@@ -1,7 +1,7 @@
 ﻿---
-description: "Initiates the improvement/refactoring pipeline. The engineer agent analyzes the improvement and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR. Creates issue, improve/ branch, plans, implements, reviews, and opens PR."
+description: 'Initiates the improvement/refactoring pipeline. The engineer agent analyzes the improvement and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR. Creates issue, improve/ branch, plans, implements, reviews, and opens PR.'
 argument-hint: "Describe the desired improvement (e.g., 'Optimize Google Fonts loading...')"
-agent: "engineer"
+agent: 'engineer'
 ---
 
 # Start Improvement Pipeline
@@ -35,18 +35,23 @@ Create a GitHub issue in the project with:
 **Title:** `improve: [short improvement description]`
 
 **Body:**
+
 ```markdown
 ### Current Situation
+
 [How it is today — what can be improved]
 
 ### Proposed Improvement
+
 [What will be done to improve]
 
 ### Expected Benefits
+
 - [benefit 1]
 - [benefit 2]
 
 ### Impact
+
 - **Affected components:** [list]
 - **Risk:** [low | medium | high]
 - **Build/Deploy:** [yes | no] affects the build process
@@ -55,8 +60,6 @@ Create a GitHub issue in the project with:
 ### 3. Hand Off to Orchestrator
 
 🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
-
-
 
 After approval, execute the complete pipeline:
 
@@ -74,6 +77,7 @@ After approval, execute the complete pipeline:
 ## Common Improvement Types
 
 ### Performance
+
 - Image optimization (use `otimizar-imagens` skill)
 - Fonts: check `display=swap` and `preconnect`
 - CSS: check `will-change` and `contain`
@@ -81,12 +85,14 @@ After approval, execute the complete pipeline:
 - Recommended agent: `performance-auditor`
 
 ### CSS / Design
+
 - Extract duplicated patterns to `app.css`
 - Fix hardcoded colors → design tokens
 - Adjust glass-panel, shadows, animations
 - Recommended agent: `refactor-css`
 
 ### Code / Architecture
+
 - Migrate `export let` → `$props()` (Svelte 5 Runes)
 - Reorganize components
 - Improve names and documentation
@@ -95,6 +101,7 @@ After approval, execute the complete pipeline:
 ---
 
 ## Commit Template (Improvement)
+
 ```
 improve(Testimonials): optimize carousel performance
 ```

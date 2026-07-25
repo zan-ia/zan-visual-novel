@@ -1,7 +1,7 @@
 ﻿---
-description: "Runs a code review following the 10 quality dimensions. Analyzes diff, specific files, or staged/unstaged changes."
+description: 'Runs a code review following the 10 quality dimensions. Analyzes diff, specific files, or staged/unstaged changes.'
 argument-hint: "[optional] Scope: 'diff', 'staged', 'unstaged', or file path"
-agent: "reviewer"
+agent: 'reviewer'
 ---
 
 # Review Code

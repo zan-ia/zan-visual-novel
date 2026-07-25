@@ -59,16 +59,16 @@ export function LibraryPage() {
       ) : (
         <Grid container spacing={3}>
           {filtered.map((vn) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={vn.id}>
+            <Box key={vn.id} sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}>
               <VNCard vn={vn} onClick={() => navigate(`/play/${vn.id}`)} />
-            </Grid>
+            </Box>
           ))}
           {filtered.length === 0 && (
-            <Grid size={12}>
+            <Box sx={{ gridColumn: 'span 12' }}>
               <Typography color="text.secondary" textAlign="center">
                 Nenhuma visual novel encontrada.
               </Typography>
-            </Grid>
+            </Box>
           )}
         </Grid>
       )}

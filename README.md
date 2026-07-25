@@ -13,23 +13,25 @@
 ## ✨ Funcionalidades
 
 ### 🎮 Client (Jogador)
-| Funcionalidade | Descrição |
-|---|---|
-| 📚 **Biblioteca de VNs** | Navegar, buscar e filtrar visual novels disponíveis |
-| 🎭 **Player de VN** | Engine de renderização de cenas: texto, imagens, áudio, vídeo, escolhas |
-| 🔀 **Sistema de Escolhas** | Árvore de decisão ramificada com consequências narrativas |
-| 🧠 **IA Narrativa Local** | LLM LFM local (ONNX) gerando continuidade além das escolhas pré-definidas |
-| 💾 **Progresso e Saves** | Múltiplos slots, auto-save, sincronização cloud |
-| 💰 **Sistema de Créditos** | Compra e gasto de créditos para acessar histórias |
+
+| Funcionalidade             | Descrição                                                                 |
+| -------------------------- | ------------------------------------------------------------------------- |
+| 📚 **Biblioteca de VNs**   | Navegar, buscar e filtrar visual novels disponíveis                       |
+| 🎭 **Player de VN**        | Engine de renderização de cenas: texto, imagens, áudio, vídeo, escolhas   |
+| 🔀 **Sistema de Escolhas** | Árvore de decisão ramificada com consequências narrativas                 |
+| 🧠 **IA Narrativa Local**  | LLM LFM local (ONNX) gerando continuidade além das escolhas pré-definidas |
+| 💾 **Progresso e Saves**   | Múltiplos slots, auto-save, sincronização cloud                           |
+| 💰 **Sistema de Créditos** | Compra e gasto de créditos para acessar histórias                         |
 
 ### 🛠️ Dashboard (Criador)
-| Funcionalidade | Descrição |
-|---|---|
-| 📝 **Editor de VNs** | CRUD completo de histórias, capítulos e cenas |
-| 🖼️ **Asset Manager** | Upload e gerenciamento de imagens, áudios e vídeos por cena |
+
+| Funcionalidade                     | Descrição                                                        |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| 📝 **Editor de VNs**               | CRUD completo de histórias, capítulos e cenas                    |
+| 🖼️ **Asset Manager**               | Upload e gerenciamento de imagens, áudios e vídeos por cena      |
 | 🌳 **Editor de Árvore de Decisão** | Interface visual para criar ramificações com condições e efeitos |
-| 🤖 **Configuração de IA** | Definir persona, tom e restrições do LLM por história |
-| 📊 **Analytics** | Métricas de consumo, créditos recebidos, feedback dos jogadores |
+| 🤖 **Configuração de IA**          | Definir persona, tom e restrições do LLM por história            |
+| 📊 **Analytics**                   | Métricas de consumo, créditos recebidos, feedback dos jogadores  |
 
 ---
 
@@ -65,14 +67,14 @@
 
 ## 🧠 Modelos LFM (Inferência)
 
-| Modelo | Uso | Execução | Tamanho Q4 |
-|--------|-----|----------|------------|
-| LFM2.5-230M-ONNX | Diálogos simples, respostas rápidas | Navegador | ~200 MB |
-| LFM2.5-350M-ONNX | Narrativa balanceada | Navegador | ~350 MB |
-| LFM2.5-1.2B-Thinking | Raciocínio complexo, plot twists | Cloud API | ~1.2 GB |
-| LFM2.5-Audio-1.5B | Narração por voz | Cloud API | ~3 GB |
-| LFM2.5-VL-450M | Análise de cenas | Navegador | ~900 MB |
-| LFM2.5-VL-1.6B | Geração de assets visuais | Cloud API | ~3.2 GB |
+| Modelo               | Uso                                 | Execução  | Tamanho Q4 |
+| -------------------- | ----------------------------------- | --------- | ---------- |
+| LFM2.5-230M-ONNX     | Diálogos simples, respostas rápidas | Navegador | ~200 MB    |
+| LFM2.5-350M-ONNX     | Narrativa balanceada                | Navegador | ~350 MB    |
+| LFM2.5-1.2B-Thinking | Raciocínio complexo, plot twists    | Cloud API | ~1.2 GB    |
+| LFM2.5-Audio-1.5B    | Narração por voz                    | Cloud API | ~3 GB      |
+| LFM2.5-VL-450M       | Análise de cenas                    | Navegador | ~900 MB    |
+| LFM2.5-VL-1.6B       | Geração de assets visuais           | Cloud API | ~3.2 GB    |
 
 ---
 
@@ -148,15 +150,15 @@ zan-visual-novel/
 
 ## 📚 Documentação
 
-| Documento | Descrição |
-|-----------|-----------|
-| [Visão do Produto](.github/artifacts/requirements/product-vision.md) | Estratégia, personas, escopo, métricas |
-| [Especificação de Requisitos (SRS)](.github/artifacts/requirements/srs.md) | RFs, RNFs, RNs, matriz de rastreabilidade |
-| [ADRs de Arquitetura](.github/artifacts/docs/adr-architecture.md) | Decisões: monorepo, inferência híbrida, engine, backend |
-| [Diagrama de Arquitetura (C4)](.github/artifacts/diagrams/architecture-c4.md) | Contexto, Container, Componentes |
-| [Modelo de Dados (ERD)](.github/artifacts/diagrams/erd.md) | Entidades, relacionamentos, índices |
-| [Diagramas de Sequência](.github/artifacts/diagrams/sequence-flows.md) | Fluxos: jogo, criação, créditos, auth |
-| [Roadmap](.github/artifacts/roadmap.md) | Milestones e cronograma |
+| Documento                                                                     | Descrição                                               |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Visão do Produto](.github/artifacts/requirements/product-vision.md)          | Estratégia, personas, escopo, métricas                  |
+| [Especificação de Requisitos (SRS)](.github/artifacts/requirements/srs.md)    | RFs, RNFs, RNs, matriz de rastreabilidade               |
+| [ADRs de Arquitetura](.github/artifacts/docs/adr-architecture.md)             | Decisões: monorepo, inferência híbrida, engine, backend |
+| [Diagrama de Arquitetura (C4)](.github/artifacts/diagrams/architecture-c4.md) | Contexto, Container, Componentes                        |
+| [Modelo de Dados (ERD)](.github/artifacts/diagrams/erd.md)                    | Entidades, relacionamentos, índices                     |
+| [Diagramas de Sequência](.github/artifacts/diagrams/sequence-flows.md)        | Fluxos: jogo, criação, créditos, auth                   |
+| [Roadmap](.github/artifacts/roadmap.md)                                       | Milestones e cronograma                                 |
 
 ---
 

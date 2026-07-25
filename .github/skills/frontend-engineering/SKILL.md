@@ -1,6 +1,6 @@
 ---
 name: frontend-engineering
-description: "Reference knowledge for frontend engineering — UI architecture, state management, accessibility, performance, and modern web best practices. Use when: designing UI components, managing application state, optimizing frontend performance, ensuring accessibility, or reviewing frontend code. Activates for: ui, ux, frontend, component, state management, accessibility, a11y, performance, spa, ssr, web."
+description: 'Reference knowledge for frontend engineering — UI architecture, state management, accessibility, performance, and modern web best practices. Use when: designing UI components, managing application state, optimizing frontend performance, ensuring accessibility, or reviewing frontend code. Activates for: ui, ux, frontend, component, state management, accessibility, a11y, performance, spa, ssr, web.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -144,7 +144,7 @@ Store as CSS custom properties for theming:
   --font-body: system-ui, sans-serif;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-primary: #66aaff;
 }
 ```

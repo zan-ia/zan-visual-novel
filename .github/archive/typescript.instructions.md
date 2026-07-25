@@ -1,7 +1,7 @@
 ---
-name: "TypeScript"
-description: "TypeScript conventions for the SvelteKit landing page project. Use when: writing or editing .ts files, adding type definitions, or working with SvelteKit TypeScript configuration."
-applyTo: "src/**/*.ts"
+name: 'TypeScript'
+description: 'TypeScript conventions for the SvelteKit landing page project. Use when: writing or editing .ts files, adding type definitions, or working with SvelteKit TypeScript configuration.'
+applyTo: 'src/**/*.ts'
 ---
 
 # TypeScript — SvelteKit Conventions

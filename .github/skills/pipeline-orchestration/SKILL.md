@@ -1,7 +1,7 @@
 ﻿---
 name: pipeline-orchestration
-description: "Orchestrates the complete development pipeline: Engineer→Plan→Implement→Review with HITL. Use when: initiating any development task (bugfix, feature, improvement) that needs to go through the complete quality cycle — the engineer agent creates a workflow artifact, then the orchestrator coordinates planning, implementation, review, and PR."
-argument-hint: "[bugfix | feature | improvement] — describe the task..."
+description: 'Orchestrates the complete development pipeline: Engineer→Plan→Implement→Review with HITL. Use when: initiating any development task (bugfix, feature, improvement) that needs to go through the complete quality cycle — the engineer agent creates a workflow artifact, then the orchestrator coordinates planning, implementation, review, and PR.'
+argument-hint: '[bugfix | feature | improvement] — describe the task...'
 user-invocable: true
 disable-model-invocation: false
 ---

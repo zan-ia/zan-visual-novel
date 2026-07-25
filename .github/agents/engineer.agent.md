@@ -1,24 +1,24 @@
 ---
-name: "engineer"
-description: "First-line analyzer that decomposes a user request into a structured workflow before the pipeline starts. Receives the raw task, identifies scope, constraints, and required domain expertise, then hands off a workflow document to the orchestrator. Use when: receiving a new development task that needs the full pipeline — produces a workflow artifact that the orchestrator follows."
-model: "OpenCode Go / Deepseek V4 Pro (opencodego)"
+name: 'engineer'
+description: 'First-line analyzer that decomposes a user request into a structured workflow before the pipeline starts. Receives the raw task, identifies scope, constraints, and required domain expertise, then hands off a workflow document to the orchestrator. Use when: receiving a new development task that needs the full pipeline — produces a workflow artifact that the orchestrator follows.'
+model: 'OpenCode Go / Deepseek V4 Pro (opencodego)'
 tools:
-  - "read"
-  - "search"
-  - "web"
-  - "todo"
-  - "vscode/askQuestions"
-  - "agent"
-  - "memory/*"
+  - 'read'
+  - 'search'
+  - 'web'
+  - 'todo'
+  - 'vscode/askQuestions'
+  - 'agent'
+  - 'memory/*'
 agents:
-  - "orchestrator"
-  - "planner"
+  - 'orchestrator'
+  - 'planner'
 user-invocable: false
 disable-model-invocation: false
 handoffs:
-  - label: "🚀 Start Pipeline"
+  - label: '🚀 Start Pipeline'
     agent: orchestrator
-    prompt: "Read the workflow at .github/artifacts/workflow-{N}.md and start the Plan→Implement→Review cycle following the steps defined in the document."
+    prompt: 'Read the workflow at .github/artifacts/workflow-{N}.md and start the Plan→Implement→Review cycle following the steps defined in the document.'
     send: true
 ---
 

@@ -21,13 +21,6 @@ export function useAuth() {
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
-function getTokens() {
-  return {
-    access: localStorage.getItem('access_token'),
-    refresh: localStorage.getItem('refresh_token'),
-  };
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 

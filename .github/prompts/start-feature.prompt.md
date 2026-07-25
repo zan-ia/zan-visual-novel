@@ -1,7 +1,7 @@
 ﻿---
-description: "Initiates the new feature pipeline. The engineer agent analyzes the feature and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR."
+description: 'Initiates the new feature pipeline. The engineer agent analyzes the feature and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR.'
 argument-hint: "Describe the new feature (e.g., 'Add a pricing section with 3 plans...')"
-agent: "engineer"
+agent: 'engineer'
 ---
 
 # Start Feature Pipeline
@@ -62,8 +62,6 @@ Create a GitHub issue in the project with:
 ### 3. Hand Off to Orchestrator
 
 🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
-
-
 
 After approval, execute the complete pipeline:
 

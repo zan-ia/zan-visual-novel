@@ -1,6 +1,6 @@
 ---
-description: "Use when: creating or editing Svelte components, writing markup in .svelte files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating src/app.html meta tags. Covers accessibility, headings hierarchy, images, and links."
-applyTo: "src/**/*.svelte, src/app.html"
+description: 'Use when: creating or editing Svelte components, writing markup in .svelte files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating src/app.html meta tags. Covers accessibility, headings hierarchy, images, and links.'
+applyTo: 'src/**/*.svelte, src/app.html'
 ---
 
 # HTML Rules and Patterns — SvelteKit
@@ -30,14 +30,14 @@ Use semantic HTML5 elements in Svelte components. Avoid `<div>` when a semantic 
 
 ### Element Hierarchy
 
-| Element | When to Use | Component |
-|----------|-------------|------------|
-| `<header>` | Top of page | `Header.svelte` |
-| `<nav>` | Main navigation | `Header.svelte` |
-| `<main>` | Unique content (1 per page) | `+layout.svelte` |
-| `<section>` | Groups thematic content | Each component |
-| `<article>` | Independent content | Testimonial cards |
-| `<footer>` | Footer | `Footer.svelte` |
+| Element     | When to Use                 | Component         |
+| ----------- | --------------------------- | ----------------- |
+| `<header>`  | Top of page                 | `Header.svelte`   |
+| `<nav>`     | Main navigation             | `Header.svelte`   |
+| `<main>`    | Unique content (1 per page) | `+layout.svelte`  |
+| `<section>` | Groups thematic content     | Each component    |
+| `<article>` | Independent content         | Testimonial cards |
+| `<footer>`  | Footer                      | `Footer.svelte`   |
 
 ## 2. Headings
 
@@ -110,29 +110,29 @@ Use semantic HTML5 elements in Svelte components. Avoid `<div>` when a semantic 
 Mandatory order in `<head>`:
 
 ```html
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>[COMPANY NAME] | [Slogan]</title>
-<meta name="description" content="[Company description]">
+<meta name="description" content="[Company description]" />
 
 <!-- Open Graph -->
-<meta property="og:title" content="[COMPANY NAME]">
-<meta property="og:description" content="[Description]">
-<meta property="og:image" content="/assets/images/og-image.jpg">
-<meta property="og:url" content="[SITE URL]">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="[COMPANY NAME]" />
+<meta property="og:description" content="[Description]" />
+<meta property="og:image" content="/assets/images/og-image.jpg" />
+<meta property="og:url" content="[SITE URL]" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="pt_BR" />
 
 <!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary_large_image" />
 
 <!-- Icons -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
 <!-- Preconnects for CDNs -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 <!-- SvelteKit head placeholder -->
 %sveltekit.head%
@@ -163,6 +163,7 @@ Mandatory order in `<head>`:
 ```
 
 ### Rules
+
 - `width` + `height` always explicit (prevents CLS)
 - `loading="lazy"` for below-the-fold images
 - `fetchpriority="high"` only on hero (1 per page)
@@ -184,6 +185,7 @@ Mandatory order in `<head>`:
   decoding="async"
 >
 ```
+
 - Modern formats: WebP (default), AVIF (when available, with `<picture>` and fallback)
 
 ## 6. Links and Navigation
@@ -204,6 +206,7 @@ Mandatory order in `<head>`:
 ```
 
 ### Regras
+
 - Links externos `target="_blank"` **devem** ter `rel="noopener noreferrer"`
 - CTA principal deve ser `<a>` com `href`, não `<button>` ou `<div>`
 - Nav links usam `href` para seções (`/#id`), não `javascript:void(0)`
@@ -211,6 +214,7 @@ Mandatory order in `<head>`:
 ## 7. Svelte Templates Específicos
 
 ### Componente com slot (layout)
+
 ```svelte
 <!-- +layout.svelte -->
 <script>
@@ -226,6 +230,7 @@ Mandatory order in `<head>`:
 ```
 
 ### Página que monta componentes
+
 ```svelte
 <!-- +page.svelte -->
 <script>
@@ -238,6 +243,7 @@ Mandatory order in `<head>`:
 ```
 
 ### bind:this para refs
+
 ```svelte
 <script lang="ts">
   let carouselEl = $state<HTMLElement>();
@@ -249,6 +255,7 @@ Mandatory order in `<head>`:
 ```
 
 ### Each com itens
+
 ```svelte
 {#each testimonials as t, i}
   <div class="testimonial__card glass-panel"
@@ -271,14 +278,17 @@ Mandatory order in `<head>`:
   ...
 </section>
 ```
-    placeholder="seu@email.com"
-  >
 
-  <button type="submit">Enviar</button>
+    placeholder="seu@email.com"
+
+>
+
+<button type="submit">Enviar</button>
 </form>
 ```
 
 ### Regras
+
 - Todo `<input>` precisa de `<label>` associado (via `for`/`id`)
 - Use `autocomplete` para campos comuns (name, email, tel)
 - `required` para campos obrigatórios
@@ -294,8 +304,11 @@ Mandatory order in `<head>`:
 </style>
 
 <!-- ✅ Fontes e CDNs no <head> -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
 
 <!-- ✅ JS: scripts no final do <body> -->
 <script>
@@ -304,6 +317,7 @@ Mandatory order in `<head>`:
 ```
 
 ### Regras
+
 - `<style>` no `<head>` (performance)
 - `<script>` no final do `<body>` (não bloqueia renderização)
 - `preconnect` para origins de terceiros (Google Fonts, CDNs)
@@ -315,28 +329,32 @@ Mandatory order in `<head>`:
 ```html
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>...</title>
-  <meta name="description" content="...">
-  <!-- Open Graph -->
-  <!-- Twitter Card -->
-  <!-- Preconnects -->
-  <!-- Google Fonts / CDN CSS -->
-  <link rel="stylesheet" href="...">
-  <!-- Estilos inline -->
-  <style>/* ... */</style>
-</head>
-<body>
-  <header><!-- Nav --></header>
-  <main>
-    <section id="hero"><!-- ... --></section>
-    <section id="solutions"><!-- ... --></section>
-    <section id="testimonials"><!-- ... --></section>
-  </main>
-  <footer><!-- ... --></footer>
-  <script>/* JS */</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>...</title>
+    <meta name="description" content="..." />
+    <!-- Open Graph -->
+    <!-- Twitter Card -->
+    <!-- Preconnects -->
+    <!-- Google Fonts / CDN CSS -->
+    <link rel="stylesheet" href="..." />
+    <!-- Estilos inline -->
+    <style>
+      /* ... */
+    </style>
+  </head>
+  <body>
+    <header><!-- Nav --></header>
+    <main>
+      <section id="hero"><!-- ... --></section>
+      <section id="solutions"><!-- ... --></section>
+      <section id="testimonials"><!-- ... --></section>
+    </main>
+    <footer><!-- ... --></footer>
+    <script>
+      /* JS */
+    </script>
+  </body>
 </html>
 ```

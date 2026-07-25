@@ -1,13 +1,13 @@
 ---
-name: "refactor-css"
+name: 'refactor-css'
 model: OpenCode Go / Deepseek V4 Flash (opencodego)
-description: "Refactors and optimizes CSS. Audits styles, extracts shared patterns, and maintains design token consistency. Use when: refactoring CSS, auditing styles, extracting patterns, or ensuring visual consistency across components."
+description: 'Refactors and optimizes CSS. Audits styles, extracts shared patterns, and maintains design token consistency. Use when: refactoring CSS, auditing styles, extracting patterns, or ensuring visual consistency across components.'
 tools:
-  - "read"
-  - "search"
-  - "edit"
-  - "todo"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'todo'
+  - 'vscode/askQuestions'
 user-invocable: false
 disable-model-invocation: false
 ---

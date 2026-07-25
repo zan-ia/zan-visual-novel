@@ -1,13 +1,13 @@
 ---
-name: "layout-designer"
+name: 'layout-designer'
 model: OpenCode Go / Kimi K2.7 Code (opencodego)
 description: "Professional layout designer. Analyzes pages and components, suggesting aesthetic, UI, and UX improvements based on design principles (Gestalt, Nielsen's Heuristics, Laws of UX, Material Design 3). Use when: reviewing visual design, evaluating usability, suggesting aesthetic improvements, or auditing visual consistency."
 tools:
-  - "read"
-  - "search"
-  - "browser"
-  - "todo"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'search'
+  - 'browser'
+  - 'todo'
+  - 'vscode/askQuestions'
 user-invocable: true
 disable-model-invocation: false
 ---

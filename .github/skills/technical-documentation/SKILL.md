@@ -1,6 +1,6 @@
 ---
 name: technical-documentation
-description: "Professional technical documentation creation — ADRs (Architecture Decision Records), API documentation, README, contribution guides, architecture manuals, and technical specifications. Use when: creating or updating technical documentation, writing ADRs, documenting APIs, creating architecture diagrams, writing guides. Activates for: documentation, docs, ADR, architecture decision, README, API docs, guide, manual, technical specification."
+description: 'Professional technical documentation creation — ADRs (Architecture Decision Records), API documentation, README, contribution guides, architecture manuals, and technical specifications. Use when: creating or updating technical documentation, writing ADRs, documenting APIs, creating architecture diagrams, writing guides. Activates for: documentation, docs, ADR, architecture decision, README, API docs, guide, manual, technical specification.'
 user-invocable: true
 disable-model-invocation: false
 context: fork
@@ -58,28 +58,36 @@ mindmap
 **Stakeholders:** [lista de pessoas/times envolvidos]
 
 ## Contexto
+
 [Qual é o problema? Quais forças estão em jogo? O que motivou esta decisão?]
 
 ## Decisão
+
 [O que decidimos fazer? Seja específico e concreto.]
 
 ## Alternativas Consideradas
+
 | Alternativa | Prós | Contras | Por que rejeitada |
-|-------------|------|---------|-------------------|
-| Opção A | ... | ... | ... |
-| Opção B | ... | ... | ... |
+| ----------- | ---- | ------- | ----------------- |
+| Opção A     | ...  | ...     | ...               |
+| Opção B     | ...  | ...     | ...               |
 
 ## Consequências
+
 ### Positivas
+
 - [O que ficou melhor? Mais simples? Mais rápido?]
 
 ### Negativas
+
 - [O que ficou pior? O que perdemos? Qual o custo?]
 
 ### Riscos
+
 - [Quais riscos esta decisão introduz?]
 
 ## Referências
+
 - [Links para docs, issues, discussões relevantes]
 ```
 
@@ -92,6 +100,7 @@ mindmap
 - Decisão de "não fazer" algo que seria esperado
 
 ### Nomeação e Localização:
+
 - Arquivos: `.github/artifacts/docs/adr/adr-{NNN}-{slug}.md`
 - Numeração sequencial: 001, 002, 003...
 - Index: `.github/artifacts/docs/adr/README.md` com tabela de todos ADRs
@@ -102,12 +111,12 @@ mindmap
 
 Usar a skill `diagramming` para gerar os diagramas. Estrutura C4:
 
-| Nível | Nome | Descrição | Público |
-|-------|------|-----------|---------|
-| 1 | **Contexto** | Sistema no ambiente, usuários, sistemas externos | Todos |
-| 2 | **Container** | Aplicações, bancos, serviços que compõem o sistema | Técnico amplo |
-| 3 | **Componente** | Módulos dentro de cada container | Desenvolvedores |
-| 4 | **Código** | Classes, funções (geralmente gerado por IDE) | Desenvolvedores |
+| Nível | Nome           | Descrição                                          | Público         |
+| ----- | -------------- | -------------------------------------------------- | --------------- |
+| 1     | **Contexto**   | Sistema no ambiente, usuários, sistemas externos   | Todos           |
+| 2     | **Container**  | Aplicações, bancos, serviços que compõem o sistema | Técnico amplo   |
+| 3     | **Componente** | Módulos dentro de cada container                   | Desenvolvedores |
+| 4     | **Código**     | Classes, funções (geralmente gerado por IDE)       | Desenvolvedores |
 
 ### Exemplo — Contexto (Nível 1):
 
@@ -128,11 +137,11 @@ graph TD
 Estrutura mínima:
 
 ```yaml
-openapi: "3.0.0"
+openapi: '3.0.0'
 info:
-  title: "[Nome da API]"
-  version: "1.0.0"
-  description: "[Descrição da API]"
+  title: '[Nome da API]'
+  version: '1.0.0'
+  description: '[Descrição da API]'
 servers:
   - url: https://api.exemplo.com/v1
     description: Produção
@@ -167,6 +176,7 @@ components:
 ```
 
 ### Boas Práticas:
+
 - Documentar TODOS os códigos de resposta (200, 400, 401, 403, 404, 500)
 - Incluir exemplos de request/response
 - Documentar headers de autenticação
@@ -252,23 +262,29 @@ Seguir [Keep a Changelog](https://keepachangelog.com/) + [Semantic Versioning](h
 ## [1.1.0] - 2026-07-25
 
 ### Added
+
 - Nova funcionalidade X
 
 ### Changed
+
 - Melhoria na performance do módulo Y
 
 ### Deprecated
+
 - Método antigo `doSomething()` será removido na v2.0
 
 ### Fixed
+
 - Bug na validação de email (#123)
 
 ### Security
+
 - Atualizada dependência com vulnerabilidade CVE-XXXX-XXXXX
 
 ## [1.0.0] - 2026-06-01
 
 ### Added
+
 - Lançamento inicial
 ```
 
@@ -287,6 +303,7 @@ Seguir [Keep a Changelog](https://keepachangelog.com/) + [Semantic Versioning](h
 7. **Salvar** — Artefato em local apropriado do projeto
 
 ### Regras:
+
 - SEMPRE use `vscode_askQuestions` para interagir com o usuário
 - SEMPRE use `manage_todo_list` para estruturar as etapas
 - SEMPRE salve artefatos em `.github/artifacts/docs/`

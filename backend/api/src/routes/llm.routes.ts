@@ -24,23 +24,19 @@ llmRouter.post('/generate', authenticate, async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });

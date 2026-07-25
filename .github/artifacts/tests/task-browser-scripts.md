@@ -2,13 +2,14 @@
 
 **Formato:** Instruções executáveis para o agente `task-browser`  
 **Pré-requisito:** `npm run dev` rodando (client :5173, dashboard :5174, api :3001, db seedado)  
-**Ambiente:** VS Code Built-in Browser  
+**Ambiente:** VS Code Built-in Browser
 
 ---
 
 ## ⚠️ Instruções para o task-browser
 
 Para cada fluxo abaixo:
+
 1. Abra a URL indicada
 2. Siga os passos na ordem
 3. Capture screenshot após cada ação crítica
@@ -496,14 +497,14 @@ CAPTURAR SCREENSHOT
 
 ## Resumo de Execução
 
-| Fluxo | Descrição | Casos | Status |
-|-------|-----------|-------|--------|
-| F1 | Jogador Completo | TC-AUTH-001..004, TC-CL-001..013 | ⬜ |
-| F2 | Criador Completo | TC-DS-001..013 | ⬜ |
-| F3 | Créditos | TC-API-004 | ⬜ |
-| F4 | API Health | TC-API-001 | ⬜ |
-| F5 | Layout e Visual | TC-LAY-001..010 | ⬜ |
-| F6 | Erros e Borda | TC-AUTH-003, TC-CL-011, TC-DS-001 | ⬜ |
+| Fluxo | Descrição        | Casos                             | Status |
+| ----- | ---------------- | --------------------------------- | ------ |
+| F1    | Jogador Completo | TC-AUTH-001..004, TC-CL-001..013  | ⬜     |
+| F2    | Criador Completo | TC-DS-001..013                    | ⬜     |
+| F3    | Créditos         | TC-API-004                        | ⬜     |
+| F4    | API Health       | TC-API-001                        | ⬜     |
+| F5    | Layout e Visual  | TC-LAY-001..010                   | ⬜     |
+| F6    | Erros e Borda    | TC-AUTH-003, TC-CL-011, TC-DS-001 | ⬜     |
 
 ---
 

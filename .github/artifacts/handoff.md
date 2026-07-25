@@ -12,16 +12,16 @@ O **Zan Visual Novel** é uma plataforma de criação e consumo de visual novels
 
 ## Artefatos Produzidos
 
-| Artefato | Localização | Status |
-|----------|-------------|--------|
-| Documento de Visão | `.github/artifacts/requirements/product-vision.md` | ✅ Draft |
-| SRS (IEEE 830) | `.github/artifacts/requirements/srs.md` | ✅ Draft |
-| ADRs de Arquitetura | `.github/artifacts/docs/adr-architecture.md` | ✅ Proposta |
-| C4 — Arquitetura | `.github/artifacts/diagrams/architecture-c4.md` | ✅ |
-| ERD — Banco de Dados | `.github/artifacts/diagrams/erd.md` | ✅ |
-| Diagramas de Sequência | `.github/artifacts/diagrams/sequence-flows.md` | ✅ |
-| Roadmap + Milestones | `.github/artifacts/roadmap.md` | ✅ |
-| README do Projeto | `README.md` | ✅ |
+| Artefato               | Localização                                        | Status      |
+| ---------------------- | -------------------------------------------------- | ----------- |
+| Documento de Visão     | `.github/artifacts/requirements/product-vision.md` | ✅ Draft    |
+| SRS (IEEE 830)         | `.github/artifacts/requirements/srs.md`            | ✅ Draft    |
+| ADRs de Arquitetura    | `.github/artifacts/docs/adr-architecture.md`       | ✅ Proposta |
+| C4 — Arquitetura       | `.github/artifacts/diagrams/architecture-c4.md`    | ✅          |
+| ERD — Banco de Dados   | `.github/artifacts/diagrams/erd.md`                | ✅          |
+| Diagramas de Sequência | `.github/artifacts/diagrams/sequence-flows.md`     | ✅          |
+| Roadmap + Milestones   | `.github/artifacts/roadmap.md`                     | ✅          |
+| README do Projeto      | `README.md`                                        | ✅          |
 
 ## Decisões Críticas de Arquitetura
 
@@ -34,12 +34,14 @@ O **Zan Visual Novel** é uma plataforma de criação e consumo de visual novels
 ## Ordem de Implementação Recomendada
 
 ### Fase 1: Fundação (M1)
+
 - Setup monorepo Turborepo com todos os pacotes e apps vazios
 - Backend API com auth (JWT + OAuth2) e schema DB
 - CI/CD pipeline
 - **Artefato de entrada:** `roadmap.md` → Milestone M1
 
-### Fase 2: Player MVP (M2)  
+### Fase 2: Player MVP (M2)
+
 - VN Engine core (máquina de estados, parser de cenas)
 - Client: biblioteca + player de cena + escolhas + saves
 - Dashboard: editor de VN + cenas + preview + publicação
@@ -47,6 +49,7 @@ O **Zan Visual Novel** é uma plataforma de criação e consumo de visual novels
 - **Artefato de entrada:** `srs.md` seções RF-CL-001 a RF-CL-013 e RF-DS-001 a RF-DS-018
 
 ### Fase 3: IA Integration (M3)
+
 - Integração Transformers.js + modelos LFM ONNX
 - Provider LLM local (Web Worker) + cloud fallback
 - Integração IA na VN Engine
@@ -55,6 +58,7 @@ O **Zan Visual Novel** é uma plataforma de criação e consumo de visual novels
 - **Artefato de entrada:** `srs.md` seções RF-CL-008 a RF-CL-010 e RF-DS-009
 
 ### Fase 4: Economy & Polish (M4)
+
 - Sistema de créditos + Stripe
 - Admin dashboard + analytics
 - PWA + testes
@@ -63,14 +67,14 @@ O **Zan Visual Novel** é uma plataforma de criação e consumo de visual novels
 
 ## Issues Prioritárias para Criação Imediata
 
-| # | Título | Épico | Milestone | Prioridade |
-|---|--------|-------|-----------|------------|
-| 1 | Setup do monorepo com Turborepo | Infra | M1 | Must |
-| 2 | Configurar ESLint, Prettier, tsconfig | Infra | M1 | Must |
-| 3 | Criar pacote `shared` (tipos, schemas) | Infra | M1 | Must |
-| 4 | Schema DB PostgreSQL + Drizzle | Backend | M1 | Must |
-| 5 | API de autenticação (JWT + OAuth2) | Backend | M1 | Must |
-| 6 | CI/CD — GitHub Actions | Infra | M1 | Must |
+| #   | Título                                 | Épico   | Milestone | Prioridade |
+| --- | -------------------------------------- | ------- | --------- | ---------- |
+| 1   | Setup do monorepo com Turborepo        | Infra   | M1        | Must       |
+| 2   | Configurar ESLint, Prettier, tsconfig  | Infra   | M1        | Must       |
+| 3   | Criar pacote `shared` (tipos, schemas) | Infra   | M1        | Must       |
+| 4   | Schema DB PostgreSQL + Drizzle         | Backend | M1        | Must       |
+| 5   | API de autenticação (JWT + OAuth2)     | Backend | M1        | Must       |
+| 6   | CI/CD — GitHub Actions                 | Infra   | M1        | Must       |
 
 ## Como Iniciar
 

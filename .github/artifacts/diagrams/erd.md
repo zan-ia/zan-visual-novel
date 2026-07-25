@@ -247,20 +247,20 @@ erDiagram
 
 ## Resumo de Cardinalidades
 
-| Entidade A | Relação | Entidade B | Cardinalidade |
-|-----------|---------|-----------|---------------|
-| USERS | cria | VISUAL_NOVELS | 1:N |
-| VISUAL_NOVELS | contém | CHAPTERS | 1:N |
-| CHAPTERS | contém | SCENES | 1:N |
-| SCENES | oferece | CHOICES | 1:N |
-| SCENES | possui | SCENE_ASSETS | 1:N |
-| ASSETS | usado em | SCENE_ASSETS | 1:N |
-| CHOICES | condicionada por | CHOICE_CONDITIONS | 1:N |
-| CHOICES | produz | CHOICE_EFFECTS | 1:N |
-| USERS | possui | SAVES | 1:N |
-| USERS | acessa | USER_VN_ACCESS | 1:N (M:N implícito) |
-| USERS | realiza | CREDIT_TRANSACTIONS | 1:N |
-| CREDIT_PACKAGES | origem de | CREDIT_TRANSACTIONS | 1:N |
+| Entidade A      | Relação          | Entidade B          | Cardinalidade       |
+| --------------- | ---------------- | ------------------- | ------------------- |
+| USERS           | cria             | VISUAL_NOVELS       | 1:N                 |
+| VISUAL_NOVELS   | contém           | CHAPTERS            | 1:N                 |
+| CHAPTERS        | contém           | SCENES              | 1:N                 |
+| SCENES          | oferece          | CHOICES             | 1:N                 |
+| SCENES          | possui           | SCENE_ASSETS        | 1:N                 |
+| ASSETS          | usado em         | SCENE_ASSETS        | 1:N                 |
+| CHOICES         | condicionada por | CHOICE_CONDITIONS   | 1:N                 |
+| CHOICES         | produz           | CHOICE_EFFECTS      | 1:N                 |
+| USERS           | possui           | SAVES               | 1:N                 |
+| USERS           | acessa           | USER_VN_ACCESS      | 1:N (M:N implícito) |
+| USERS           | realiza          | CREDIT_TRANSACTIONS | 1:N                 |
+| CREDIT_PACKAGES | origem de        | CREDIT_TRANSACTIONS | 1:N                 |
 
 ## Índices Recomendados
 

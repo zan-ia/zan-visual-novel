@@ -1,6 +1,6 @@
 ﻿---
-description: "Use when: performing any development task — editing code, running commands, searching files, asking questions, or invoking subagents. Covers strict rules for each Copilot tool including when to use vscode_askQuestions, browser, terminal, edit, search, memory/*, vscode/memory, and subagents."
-applyTo: "src/**, .github/**"
+description: 'Use when: performing any development task — editing code, running commands, searching files, asking questions, or invoking subagents. Covers strict rules for each Copilot tool including when to use vscode_askQuestions, browser, terminal, edit, search, memory/*, vscode/memory, and subagents.'
+applyTo: 'src/**, .github/**'
 ---
 
 # Tool Usage Rules — Copilot
@@ -76,24 +76,24 @@ Prompts (/start-bugfix, /start-feature, etc.) → Parameterized tasks
 
 ```yaml
 # ✅ Correct example — interactive carousel
-- header: "Feature Scope"
-  question: "What are the boundaries of this functionality?"
+- header: 'Feature Scope'
+  question: 'What are the boundaries of this functionality?'
   options:
-    - label: "Frontend only"
-      description: "Only visual components"
+    - label: 'Frontend only'
+      description: 'Only visual components'
       recommended: true
-    - label: "Frontend + backend"
-      description: "Includes endpoints and server logic"
+    - label: 'Frontend + backend'
+      description: 'Includes endpoints and server logic'
   allowFreeformInput: true
 
 # ✅ Example — multiple choice
-- header: "Responsive Breakpoint"
-  question: "Which breakpoints should I use?"
+- header: 'Responsive Breakpoint'
+  question: 'Which breakpoints should I use?'
   multiSelect: true
   options:
-    - label: "Mobile (< 768px)"
-    - label: "Tablet (768px - 1024px)"
-    - label: "Desktop (> 1024px)"
+    - label: 'Mobile (< 768px)'
+    - label: 'Tablet (768px - 1024px)'
+    - label: 'Desktop (> 1024px)'
 ```
 
 **NEVER use `vscode/askQuestions` for:**
@@ -323,12 +323,12 @@ The subagent appears in chat as a collapsible tool call — you can expand to se
 
 Each agent's `.agent.md` file controls how it can be invoked:
 
-| Setting                                   | Effect                                                               |
-| ----------------------------------------- | -------------------------------------------------------------------- |
-| `user-invocable: false`                   | Agent does NOT appear in agent selector, but can still be a subagent |
-| `disable-model-invocation: true`          | Agent CANNOT be invoked as a subagent by other agents                |
+| Setting                              | Effect                                                               |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| `user-invocable: false`              | Agent does NOT appear in agent selector, but can still be a subagent |
+| `disable-model-invocation: true`     | Agent CANNOT be invoked as a subagent by other agents                |
 | `agents: ["planner", "implementer"]` | Explicit list of allowed subagents (empty `[]` = none, `*` = all)    |
-| `tools: ["read", "search"]`               | Restricts the tools available to the agent                           |
+| `tools: ["read", "search"]`          | Restricts the tools available to the agent                           |
 
 **Important:** Explicitly listing an agent in the `agents` array overrides `disable-model-invocation: true`. This allows creating "protected" agents that only a specific coordinator can invoke.
 
@@ -336,8 +336,8 @@ Each agent's `.agent.md` file controls how it can be invoked:
 
 ```yaml
 # orchestrator.agent.md
-tools: ["read", "search", "edit", "execute", "web"]
-agents: ["planner", "implementer", "reviewer", "Explore"]
+tools: ['read', 'search', 'edit', 'execute', 'web']
+agents: ['planner', 'implementer', 'reviewer', 'Explore']
 ```
 
 ---
@@ -403,7 +403,7 @@ By default, subagents CANNOT create other subagents. To enable:
 # Example recursive agent
 ---
 name: RecursiveProcessor
-tools: ["read", "search", "edit"]
+tools: ['read', 'search', 'edit']
 agents: [RecursiveProcessor]
 ---
 If the list has > 4 items, split in half and delegate each half to a subagent.
@@ -420,15 +420,15 @@ Handoffs enable creating sequential workflows with guided transitions between ag
 # Example in an agent's frontmatter
 ---
 handoffs:
-  - label: "Start Implementation"
+  - label: 'Start Implementation'
     agent: implementer
-    prompt: "Implement the plan described above."
+    prompt: 'Implement the plan described above.'
     send: false
-  - label: "Review Code"
+  - label: 'Review Code'
     agent: reviewer
-    prompt: "Review the code implemented in the previous step."
+    prompt: 'Review the code implemented in the previous step.'
     send: false
-    model: "Claude Sonnet 4.6 (copilot)"
+    model: 'Claude Sonnet 4.6 (copilot)'
 ---
 ```
 
@@ -454,7 +454,7 @@ It is possible to specify which model each subagent uses:
    ```
 2. **Configured in the agent:** the `.agent.md` can define `model` in the frontmatter:
    ```yaml
-   model: ["Claude Haiku 4.6 (copilot)", "Gemini 3 Flash (Preview) (copilot)"]
+   model: ['Claude Haiku 4.6 (copilot)', 'Gemini 3 Flash (Preview) (copilot)']
    ```
 3. **Inheritance:** if not specified, the subagent uses the same model as the parent agent.
 
@@ -464,18 +464,18 @@ It is possible to specify which model each subagent uses:
 
 ### 7.9 Subagents Available in the Project
 
-| Agent                   | user-invocable | agents                                      | Tools                                                                                     | Role                                       |
-| ----------------------- | -------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `orchestrator`          | `true`         | planner, implementer, reviewer, Explore | read, search, edit, execute, web, todo, vscode/askQuestions, agent, github/\*             | Coordinates complete pipeline              |
-| `planner`            | `true`         | Explore                                     | read, search, web, todo, vscode/askQuestions, agent, github/\*                            | Generates implementation plans (read-only) |
-| `implementer`         | `true`         | —                                           | read, search, edit, execute, todo, vscode/askQuestions                                    | Executes plans, modifies code              |
-| `reviewer`               | `true`         | —                                           | read, search, todo, vscode/askQuestions                                                   | Analyzes diffs, quality (read-only)        |
-| `harness-engineer` | `true`         | orchestrator                                | read, search, edit, todo, vscode/askQuestions, memory/\*, vscode/memory, agent, github/\* | Harness audit and improvement              |
-| `refactor-css`          | `false`        | —                                           | read, search, edit, todo, vscode/askQuestions                                             | Refactors CSS (subagent only)              |
-| `content-creator`      | `true`         | —                                           | read, search, todo, vscode/askQuestions                                                   | Generates institutional content            |
-| `layout-designer`    | `true`         | —                                           | read, search, browser, todo, vscode/askQuestions                                          | UI/UX design audit                         |
-| `performance-auditor`   | `true`         | —                                           | read, search, web, browser, todo, vscode/askQuestions, github/\*                          | Audits performance                         |
-| `Explore` (built-in)    | `true`         | —                                           | read, search                                                                              | Quick codebase exploration                 |
+| Agent                 | user-invocable | agents                                  | Tools                                                                                     | Role                                       |
+| --------------------- | -------------- | --------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `orchestrator`        | `true`         | planner, implementer, reviewer, Explore | read, search, edit, execute, web, todo, vscode/askQuestions, agent, github/\*             | Coordinates complete pipeline              |
+| `planner`             | `true`         | Explore                                 | read, search, web, todo, vscode/askQuestions, agent, github/\*                            | Generates implementation plans (read-only) |
+| `implementer`         | `true`         | —                                       | read, search, edit, execute, todo, vscode/askQuestions                                    | Executes plans, modifies code              |
+| `reviewer`            | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Analyzes diffs, quality (read-only)        |
+| `harness-engineer`    | `true`         | orchestrator                            | read, search, edit, todo, vscode/askQuestions, memory/\*, vscode/memory, agent, github/\* | Harness audit and improvement              |
+| `refactor-css`        | `false`        | —                                       | read, search, edit, todo, vscode/askQuestions                                             | Refactors CSS (subagent only)              |
+| `content-creator`     | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Generates institutional content            |
+| `layout-designer`     | `true`         | —                                       | read, search, browser, todo, vscode/askQuestions                                          | UI/UX design audit                         |
+| `performance-auditor` | `true`         | —                                       | read, search, web, browser, todo, vscode/askQuestions, github/\*                          | Audits performance                         |
+| `Explore` (built-in)  | `true`         | —                                       | read, search                                                                              | Quick codebase exploration                 |
 
 ---
 
@@ -504,14 +504,14 @@ MCP tools are referenced in agent frontmatter as `github/*` (wildcard for all to
 
 ### Agent Tool Permissions
 
-| Agent                   | GitHub MCP Access      | Why                                                      |
-| ----------------------- | ---------------------- | -------------------------------------------------------- |
-| `orchestrator`          | `github/*` (all tools) | Creates issues, branches, PRs, merges                    |
-| `planner`            | `github/*` (all tools) | Fetches issue details for planning                       |
+| Agent              | GitHub MCP Access      | Why                                                      |
+| ------------------ | ---------------------- | -------------------------------------------------------- |
+| `orchestrator`     | `github/*` (all tools) | Creates issues, branches, PRs, merges                    |
+| `planner`          | `github/*` (all tools) | Fetches issue details for planning                       |
 | `harness-engineer` | `github/*` (all tools) | Creates harness improvement issues/PRs                   |
-| `implementer`         | ❌ None                | Only implements code — no GitHub operations              |
-| `reviewer`               | ❌ None                | Read-only review — delegates PR creation to orchestrator |
-| Other agents            | ❌ None                | No GitHub operations needed                              |
+| `implementer`      | ❌ None                | Only implements code — no GitHub operations              |
+| `reviewer`         | ❌ None                | Read-only review — delegates PR creation to orchestrator |
+| Other agents       | ❌ None                | No GitHub operations needed                              |
 
 > **Principle of least privilege:** When the exact tool names are verified, replace `github/*` with specific tools (e.g., `github/get_issue`, `github/list_issues` for planner).
 
@@ -581,7 +581,7 @@ By default, when a skill is loaded, its instructions are added to the parent age
 ```yaml
 ---
 name: my-skill
-description: "Skill description and when to use."
+description: 'Skill description and when to use.'
 context: fork # ← Enables fork mode
 ---
 ```
@@ -745,9 +745,9 @@ The `todo` tool must be present in the `tools` lists of ALL pipeline agents:
 
 ```yaml
 tools:
-  - "read"
-  - "search"
-  - "edit"
-  - "todo" # ← Mandatory for sequential execution
-  - "vscode/askQuestions" # ← Mandatory for user communication
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'todo' # ← Mandatory for sequential execution
+  - 'vscode/askQuestions' # ← Mandatory for user communication
 ```

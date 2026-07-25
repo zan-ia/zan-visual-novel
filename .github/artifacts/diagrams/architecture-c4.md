@@ -5,21 +5,21 @@
 ```mermaid
 C4Context
     title Zan Visual Novel — Diagrama de Contexto
-    
+
     Person(jogador, "Jogador/Leitor", "Consome VNs com IA narrativa")
     Person(criador, "Criador/Autor", "Cria e publica VNs")
     Person(admin, "Administrador", "Modera e gerencia")
-    
+
     System_Boundary(zvn, "Zan Visual Novel") {
         System(client, "Client App", "Player de VN com IA local")
         System(dashboard, "Dashboard App", "Editor de VN e Analytics")
         System(api, "Backend API", "Auth, dados, créditos")
     }
-    
+
     System_Ext(stripe, "Stripe", "Pagamentos")
     System_Ext(s3, "Cloud Storage", "Assets (S3/R2)")
     System_Ext(llm, "LLM Cloud API", "Fallback inferência")
-    
+
     Rel(jogador, client, "Joga VNs", "HTTPS/PWA")
     Rel(criador, dashboard, "Cria VNs", "HTTPS")
     Rel(admin, dashboard, "Administra", "HTTPS")
@@ -35,10 +35,10 @@ C4Context
 ```mermaid
 C4Container
     title Zan Visual Novel — Diagrama de Container
-    
+
     Person(jogador, "Jogador")
     Person(criador, "Criador")
-    
+
     System_Boundary(zvn, "Plataforma") {
         Container(spa_client, "Client SPA", "React 19 + Vite 6", "Player de VN com IA local ONNX")
         Container(spa_dash, "Dashboard SPA", "React 19 + Vite 6", "Editor de VN e Analytics")
@@ -47,10 +47,10 @@ C4Container
         ContainerDb(cache, "Cache", "Redis", "Sessões, Rate Limit")
         ContainerDb(assets, "Asset Store", "S3/R2", "Imagens, Áudio, Vídeo")
     }
-    
+
     System_Ext(stripe, "Stripe")
     System_Ext(llm, "LLM Cloud")
-    
+
     Rel(jogador, spa_client, "Usa", "HTTPS")
     Rel(criador, spa_dash, "Usa", "HTTPS")
     Rel(spa_client, api, "API calls", "REST/JSON")
@@ -67,7 +67,7 @@ C4Container
 ```mermaid
 C4Component
     title Client App — Componentes Principais
-    
+
     Container_Boundary(client, "Client SPA") {
         Component(router, "Router", "React Router", "Roteamento /library, /play/:id")
         Component(library, "Library Page", "React", "Busca e descoberta de VNs")
@@ -79,7 +79,7 @@ C4Component
         Component(auth_store, "Auth Store", "Zustand", "Estado de autenticação")
         Component(credit_store, "Credit Store", "Zustand", "Saldo de créditos")
     }
-    
+
     Rel(router, library, "Roteia")
     Rel(router, player, "Roteia")
     Rel(player, vn_engine, "Controla")
@@ -99,18 +99,18 @@ graph TD
         client["apps/client<br/>Vite + React 19<br/>Player de VN"]
         dashboard["apps/dashboard<br/>Vite + React 19<br/>Creator Studio"]
     end
-    
+
     subgraph "packages/"
         shared["packages/shared<br/>Tipos, Schemas (Zod)"]
         ui["packages/ui<br/>Componentes MUI"]
         lib["packages/lib<br/>Hooks, Utilitários"]
         engine["packages/vn-engine<br/>Engine Core (TS puro)"]
     end
-    
+
     subgraph "backend/"
         api["backend/api<br/>Express + PostgreSQL"]
     end
-    
+
     client --> shared
     client --> ui
     client --> lib

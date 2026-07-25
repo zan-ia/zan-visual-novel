@@ -27,23 +27,23 @@ sequenceDiagram
         UI->>J: Renderiza cena (texto + assets + escolhas)
         J->>UI: Escolhe opção
         UI->>VNE: choose(choiceId)
-        
+
         alt Escolha leva a cena pré-definida
             VNE-->>UI: Próxima cena
         else Escolha sai da árvore (fim do ramo)
             VNE->>LLM: generate(prompt, context)
             Note over VNE,LLM: Modelo local 230M/350M
-            
+
             alt Modelo local disponível
                 LLM-->>VNE: Texto narrativo gerado
             else Fallback para cloud
                 VNE->>API: POST /api/llm/generate
                 API-->>VNE: Texto narrativo gerado
             end
-            
+
             VNE-->>UI: Cena gerada por IA (marcada)
         end
-        
+
         UI->>API: POST /api/progress (auto-save)
         API->>DB: UPSERT save
     end
@@ -91,14 +91,14 @@ sequenceDiagram
 
         loop Para cada cena
             C->>D: Edita cena (texto, assets, escolhas)
-            
+
             alt Upload de asset
                 D->>API: Upload de imagem/áudio
                 API->>S3: Store asset
                 S3-->>API: storage_url
                 API->>DB: INSERT assets
             end
-            
+
             C->>D: Define escolhas e targets
             D->>API: PUT /api/scenes/:id (com choices)
             API->>DB: UPSERT scene + choices + conditions
@@ -150,7 +150,7 @@ sequenceDiagram
     UI->>J: Confirma: "Este capítulo custa 5 créditos"
     J->>UI: Confirma
     UI->>API: POST /api/credits/spend (vn_id, chapter_id, 5)
-    
+
     API->>DB: BEGIN TRANSACTION
     API->>DB: CHECK balance >= 5
     API->>DB: UPDATE users SET credits_balance -= 5
@@ -158,7 +158,7 @@ sequenceDiagram
     API->>DB: INSERT creator_earnings (creator_id, +3.5, pending)
     API->>DB: INSERT user_vn_access (ou chapter_progress)
     API->>DB: COMMIT
-    
+
     API-->>UI: Acesso concedido!
 
     %% Criador consulta ganhos

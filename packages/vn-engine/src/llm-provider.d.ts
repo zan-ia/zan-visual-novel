@@ -6,12 +6,12 @@ import type { LLMGenerateRequest, LLMGenerateResponse } from '@zan-vn/shared';
  * to any provider that implements this interface (local ONNX, cloud API, mock).
  */
 export interface ILLMProvider {
-    /** Generate text continuation */
-    generate(request: LLMGenerateRequest): Promise<LLMGenerateResponse>;
-    /** Check if this provider is currently available */
-    isAvailable(): boolean;
-    /** Get the model type this provider uses */
-    getModelType(): string;
+  /** Generate text continuation */
+  generate(request: LLMGenerateRequest): Promise<LLMGenerateResponse>;
+  /** Check if this provider is currently available */
+  isAvailable(): boolean;
+  /** Get the model type this provider uses */
+  getModelType(): string;
 }
 /**
  * Creates a default no-op LLM provider (for when no model is available).

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ApiClient } from '../api-client.js';
 import type { ApiClientConfig } from '../api-client.js';
 

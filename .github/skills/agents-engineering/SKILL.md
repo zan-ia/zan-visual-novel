@@ -1,6 +1,6 @@
 ---
 name: agents-engineering
-description: "Reference knowledge for designing and operating AI agent systems — agent architectures, prompt engineering, tool design, multi-agent coordination, evaluation, and Continual Harness principles. Use when: designing new agents, improving existing agents, debugging agent behavior, evaluating agent quality, or planning agent pipelines. Activates for: agent design, agent architecture, prompt engineering, tool design, multi-agent, agent evaluation, harness, agent loop, ReAct."
+description: 'Reference knowledge for designing and operating AI agent systems — agent architectures, prompt engineering, tool design, multi-agent coordination, evaluation, and Continual Harness principles. Use when: designing new agents, improving existing agents, debugging agent behavior, evaluating agent quality, or planning agent pipelines. Activates for: agent design, agent architecture, prompt engineering, tool design, multi-agent, agent evaluation, harness, agent loop, ReAct.'
 user-invocable: true
 disable-model-invocation: false
 ---

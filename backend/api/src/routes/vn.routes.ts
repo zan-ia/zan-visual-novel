@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
-import { eq, and, desc, inArray, sql } from 'drizzle-orm';
+import { eq, desc, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const vnRouter = Router();
@@ -200,11 +200,12 @@ vnRouter.post('/', authenticate, async (req, res) => {
 // PATCH /api/v1/vns/:id — Update VN
 vnRouter.patch('/:id', authenticate, async (req, res) => {
   try {
+    const id = uuidSchema.parse(req.params.id);
     const data = updateVNSchema.parse(req.body);
     const [vn] = await getDb()
       .select()
       .from(schema.visualNovels)
-      .where(eq(schema.visualNovels.id, req.params.id))
+      .where(eq(schema.visualNovels.id, id))
       .limit(1);
     if (!vn) {
       res.status(404).json({
@@ -224,7 +225,7 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
     await getDb()
       .update(schema.visualNovels)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(schema.visualNovels.id, req.params.id));
+      .where(eq(schema.visualNovels.id, id));
     res.json({ success: true, data: { ...vn, ...data } });
   } catch (err: any) {
     if (err.name === 'ZodError') {

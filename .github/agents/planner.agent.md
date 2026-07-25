@@ -1,24 +1,24 @@
 ﻿---
-name: "planner"
+name: 'planner'
 model: OpenCode Go / Deepseek V4 Pro (opencodego)
-description: "Analyzes GitHub issues and the project codebase to create detailed implementation plans. Use when: needing to plan the resolution of an issue before implementing — identifies files to modify, patterns to follow, risks, and implementation order. Can be invoked as a subagent by the orchestrator."
+description: 'Analyzes GitHub issues and the project codebase to create detailed implementation plans. Use when: needing to plan the resolution of an issue before implementing — identifies files to modify, patterns to follow, risks, and implementation order. Can be invoked as a subagent by the orchestrator.'
 tools:
-  - "read"
-  - "web"
-  - "todo"
-  - "agent"
-  - "search"
-  - "github/*"
-  - "vscode/askQuestions"
+  - 'read'
+  - 'web'
+  - 'todo'
+  - 'agent'
+  - 'search'
+  - 'github/*'
+  - 'vscode/askQuestions'
 agents:
   - Plan
   - task-researcher
 user-invocable: true
 disable-model-invocation: false
 handoffs:
-  - label: "🔨 Start Implementation"
+  - label: '🔨 Start Implementation'
     agent: implementer
-    prompt: "Read the plan at .github/plans/ and implement all changes following project conventions defined in .github/instructions/. Run the project build/lint commands at the end."
+    prompt: 'Read the plan at .github/plans/ and implement all changes following project conventions defined in .github/instructions/. Run the project build/lint commands at the end.'
     send: false
 ---
 

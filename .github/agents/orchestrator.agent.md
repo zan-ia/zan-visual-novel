@@ -1,37 +1,37 @@
 ﻿---
-name: "orchestrator"
+name: 'orchestrator'
 model: OpenCode Go / Deepseek V4 Pro (opencodego)
-description: "Main orchestrator of the development pipeline. Receives a workflow artifact from the engineer agent and coordinates the complete Plan→Implement→Review cycle with HITL. Use when: continuing a workflow already produced by the engineer — not as the first entry point. The first entry point is the engineer (via /start-bugfix|feature|improvement)."
+description: 'Main orchestrator of the development pipeline. Receives a workflow artifact from the engineer agent and coordinates the complete Plan→Implement→Review cycle with HITL. Use when: continuing a workflow already produced by the engineer — not as the first entry point. The first entry point is the engineer (via /start-bugfix|feature|improvement).'
 tools:
-  - "read"
-  - "search"
-  - "edit"
-  - "execute"
-  - "web"
-  - "todo"
-  - "vscode/askQuestions"
-  - "agent"
-  - "github/*"
+  - 'read'
+  - 'search'
+  - 'edit'
+  - 'execute'
+  - 'web'
+  - 'todo'
+  - 'vscode/askQuestions'
+  - 'agent'
+  - 'github/*'
 agents:
-  - "planner"
-  - "implementer"
-  - "reviewer"
-  - "engineer"
-  - "Explore"
+  - 'planner'
+  - 'implementer'
+  - 'reviewer'
+  - 'engineer'
+  - 'Explore'
 user-invocable: true
 disable-model-invocation: false
 handoffs:
-  - label: "📋 Plan Implementation"
+  - label: '📋 Plan Implementation'
     agent: planner
-    prompt: "Read the workflow at .github/artifacts/workflow-{N}.md and create a detailed implementation plan. Identify files to modify, patterns to follow, risks, and implementation order. Use GitHub MCP to manage issues, PRs, comments."
+    prompt: 'Read the workflow at .github/artifacts/workflow-{N}.md and create a detailed implementation plan. Identify files to modify, patterns to follow, risks, and implementation order. Use GitHub MCP to manage issues, PRs, comments.'
     send: true
-  - label: "🔨 Implement Directly"
+  - label: '🔨 Implement Directly'
     agent: implementer
-    prompt: "Read the plan at .github/plans/ and implement all changes following project conventions defined in .github/instructions/. Run the project build/lint commands at the end. Commit and push with Conventional Commits. Create PR with Closes #N. Use GitHub MCP to manage issues, PRs, comments."
+    prompt: 'Read the plan at .github/plans/ and implement all changes following project conventions defined in .github/instructions/. Run the project build/lint commands at the end. Commit and push with Conventional Commits. Create PR with Closes #N. Use GitHub MCP to manage issues, PRs, comments.'
     send: false
-  - label: "🔍 Review Implementation"
+  - label: '🔍 Review Implementation'
     agent: reviewer
-    prompt: "Read the plan and implementation. Analyze the diff and verify quality against the 10 quality dimensions. Classify issues as critical, major, or minor. Recommend merge, re-plan, or adjustments. Use GitHub MCP to manage issues, PRs, comments."
+    prompt: 'Read the plan and implementation. Analyze the diff and verify quality against the 10 quality dimensions. Classify issues as critical, major, or minor. Recommend merge, re-plan, or adjustments. Use GitHub MCP to manage issues, PRs, comments.'
 ---
 
 # Pipeline Orchestrator

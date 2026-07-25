@@ -1,22 +1,22 @@
 - generic [ref=e4]:
-  - heading "Creator Studio" [level=4] [ref=e5]
-  - paragraph [ref=e6]: Acesse seu painel de criação
-  - generic [ref=e7]:
-    - generic [ref=e8]:
-      - generic [ref=e15]:
-        - text: Email
-        - generic [ref=e16]: "*"
-      - generic [ref=e9]:
-        - textbox "Email" [ref=e10]: criador@teste.com
-        - group:
-          - generic: Email *
-    - generic [ref=e11]:
-      - generic [ref=e17]:
-        - text: Senha
-        - generic [ref=e18]: "*"
-      - generic [ref=e12]:
-        - textbox "Senha" [ref=e13]: Teste123!
-        - group:
-          - generic: Senha *
-    - paragraph [ref=e19]: Email ou senha inválidos
-    - button "Entrar" [active] [ref=e14] [cursor=pointer]
+    - heading "Creator Studio" [level=4] [ref=e5]
+    - paragraph [ref=e6]: Acesse seu painel de criação
+    - generic [ref=e7]:
+        - generic [ref=e8]:
+            - generic [ref=e15]:
+                - text: Email
+                - generic [ref=e16]: '*'
+            - generic [ref=e9]:
+                - textbox "Email" [ref=e10]: criador@teste.com
+                - group:
+                    - generic: Email *
+        - generic [ref=e11]:
+            - generic [ref=e17]:
+                - text: Senha
+                - generic [ref=e18]: '*'
+            - generic [ref=e12]:
+                - textbox "Senha" [ref=e13]: Teste123!
+                - group:
+                    - generic: Senha *
+        - paragraph [ref=e19]: Email ou senha inválidos
+        - button "Entrar" [active] [ref=e14] [cursor=pointer]
