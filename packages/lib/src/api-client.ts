@@ -70,7 +70,11 @@ export class ApiClient {
     return this.post(`/vns/${vnId}/chapters`, data);
   }
 
-  async updateChapter(vnId: string, chapterId: string, data: unknown): Promise<ApiResponse<unknown>> {
+  async updateChapter(
+    vnId: string,
+    chapterId: string,
+    data: unknown,
+  ): Promise<ApiResponse<unknown>> {
     return this.put(`/vns/${vnId}/chapters/${chapterId}`, data);
   }
 
@@ -84,22 +88,54 @@ export class ApiClient {
     return this.post(`/vns/${vnId}/chapters/${chapterId}/scenes`, data);
   }
 
-  async updateScene(vnId: string, chapterId: string, sceneId: string, data: unknown): Promise<ApiResponse<unknown>> {
+  async updateScene(
+    vnId: string,
+    chapterId: string,
+    sceneId: string,
+    data: unknown,
+  ): Promise<ApiResponse<unknown>> {
     return this.put(`/vns/${vnId}/chapters/${chapterId}/scenes/${sceneId}`, data);
   }
 
-  async deleteScene(vnId: string, chapterId: string, sceneId: string): Promise<ApiResponse<unknown>> {
+  async deleteScene(
+    vnId: string,
+    chapterId: string,
+    sceneId: string,
+  ): Promise<ApiResponse<unknown>> {
     return this.del(`/vns/${vnId}/chapters/${chapterId}/scenes/${sceneId}`);
   }
 
   // ── Choices ─────────────────────────────────────────────
 
-  async createChoice(vnId: string, chapterId: string, sceneId: string, data: unknown): Promise<ApiResponse<unknown>> {
+  async createChoice(
+    vnId: string,
+    chapterId: string,
+    sceneId: string,
+    data: unknown,
+  ): Promise<ApiResponse<unknown>> {
     return this.post(`/vns/${vnId}/chapters/${chapterId}/scenes/${sceneId}/choices`, data);
   }
 
-  async deleteChoice(vnId: string, chapterId: string, sceneId: string, choiceId: string): Promise<ApiResponse<unknown>> {
+  async deleteChoice(
+    vnId: string,
+    chapterId: string,
+    sceneId: string,
+    choiceId: string,
+  ): Promise<ApiResponse<unknown>> {
     return this.del(`/vns/${vnId}/chapters/${chapterId}/scenes/${sceneId}/choices/${choiceId}`);
+  }
+
+  async updateChoice(
+    vnId: string,
+    chapterId: string,
+    sceneId: string,
+    choiceId: string,
+    data: unknown,
+  ): Promise<ApiResponse<unknown>> {
+    return this.put(
+      `/vns/${vnId}/chapters/${chapterId}/scenes/${sceneId}/choices/${choiceId}`,
+      data,
+    );
   }
 
   // ── Saves ──────────────────────────────────────────────

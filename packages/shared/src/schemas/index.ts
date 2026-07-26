@@ -101,6 +101,15 @@ export type CreateChoiceInput = z.infer<typeof createChoiceSchema>;
 export type UpdateChapterInput = z.infer<typeof updateChapterSchema>;
 export type UpdateSceneInput = z.infer<typeof updateSceneSchema>;
 
+export const updateChoiceSchema = z.object({
+  text: z.string().min(1).max(500).optional(),
+  targetSceneId: z.string().uuid('Cena alvo inválida').optional(),
+  orderIndex: z.number().int().min(0).optional(),
+  isDefault: z.boolean().optional(),
+});
+
+export type UpdateChoiceInput = z.infer<typeof updateChoiceSchema>;
+
 // ── Save Schema ─────────────────────────────────────────
 
 export const createSaveSchema = z.object({
