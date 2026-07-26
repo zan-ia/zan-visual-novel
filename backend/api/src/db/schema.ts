@@ -154,7 +154,7 @@ export const choices = pgTable('choices', {
     .notNull()
     .references(() => scenes.id, { onDelete: 'cascade' }),
   text: varchar('text', { length: 500 }).notNull(),
-  targetSceneId: uuid('target_scene_id').notNull(),
+  targetSceneId: uuid('target_scene_id'),
   orderIndex: integer('order_index').notNull().default(0),
   isDefault: boolean('is_default').notNull().default(false),
 });

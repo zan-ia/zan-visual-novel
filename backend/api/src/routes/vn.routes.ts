@@ -14,6 +14,13 @@ import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
 import { eq, and, desc, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
+import {
+  cascadeAfterUpdate,
+  cascadeAfterChapterDelete,
+  cascadeAfterSceneDelete,
+  setPublishedAtIfPublished,
+  validateSceneReference,
+} from '../db/cascade-references.js';
 
 export const vnRouter = Router();
 
@@ -274,7 +281,16 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
       .update(schema.visualNovels)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(schema.visualNovels.id, id));
-    res.json({ success: true, data: { ...vn, ...data } });
+
+    // Cascade: se status mudou para published, define published_at
+    if (data.status === 'published') {
+      await setPublishedAtIfPublished('vn', id, data.status);
+    }
+
+    // Cascade: recalcula totalChapters (caso tenha mudado via endpoint) e valida refs
+    await cascadeAfterUpdate(id);
+
+    res.json({ success: true, data: { ...vn, ...data, ...(data.status === 'published' ? { publishedAt: new Date().toISOString() } : {}) } });
   } catch (err: any) {
     if (err.name === 'ZodError') {
       res.status(400).json({
@@ -415,10 +431,26 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       return;
     }
 
+    // Validar startSceneId se foi fornecido
+    if (data.startSceneId) {
+      const isValid = await validateSceneReference(vnId, chapterId, data.startSceneId);
+      if (!isValid) {
+        data.startSceneId = null;
+      }
+    }
+
     await getDb()
       .update(schema.chapters)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(schema.chapters.id, chapterId));
+
+    // Cascade: se status mudou para published, marca
+    if (data.status === 'published') {
+      await setPublishedAtIfPublished('chapter', chapterId, data.status);
+    }
+
+    // Cascade: recalcula stats do VN e valida todas as referências
+    await cascadeAfterUpdate(vnId);
 
     res.json({
       success: true,
@@ -494,6 +526,9 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
     }
 
     await getDb().delete(schema.chapters).where(eq(schema.chapters.id, chapterId));
+
+    // Cascade: recalcula totalChapters e valida refs (FK CASCADE já removeu scenes/choices)
+    await cascadeAfterChapterDelete(vnId);
 
     res.json({ success: true, data: { deleted: true } });
   } catch {
@@ -639,11 +674,22 @@ vnRouter.put('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (
 
     const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
 
+    // Validar nextSceneId se foi fornecido
+    if (data.nextSceneId) {
+      const isValid = await validateSceneReference(vnId, sceneId, data.nextSceneId);
+      if (!isValid) {
+        updateData.nextSceneId = null;
+      }
+    }
+
     const [updated] = await getDb()
       .update(schema.scenes)
       .set(updateData as any)
       .where(eq(schema.scenes.id, sceneId))
       .returning();
+
+    // Cascade: valida refs da VN (caso esta cena tenha se tornado inválida)
+    await cascadeAfterUpdate(vnId);
 
     res.json({ success: true, data: updated });
   } catch (err: any) {
@@ -716,7 +762,13 @@ vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, asyn
       return;
     }
 
+    // Cascade ANTES do delete: anula todas as refs que apontam para esta cena
+    await cascadeAfterSceneDelete(sceneId);
+
     await getDb().delete(schema.scenes).where(eq(schema.scenes.id, sceneId));
+
+    // Cascade: recalcula stats do VN
+    await cascadeAfterUpdate(vnId);
 
     res.json({ success: true, data: { deleted: true } });
   } catch {
@@ -883,11 +935,23 @@ vnRouter.put(
       }
 
       const data = updateChoiceSchema.parse(req.body);
+
+      // Validar targetSceneId se foi fornecido
+      if (data.targetSceneId) {
+        const isValid = await validateSceneReference(vnId, sceneId, data.targetSceneId);
+        if (!isValid) {
+          data.targetSceneId = null;
+        }
+      }
+
       const [updated] = await getDb()
         .update(schema.choices)
         .set({ ...data })
         .where(eq(schema.choices.id, choiceId))
         .returning();
+
+      // Cascade: valida refs da VN
+      await cascadeAfterUpdate(vnId);
 
       res.json({ success: true, data: updated });
     } catch (err: any) {

@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
+    "db:seed": "npm run db:seed -w @zan-vn/api",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
