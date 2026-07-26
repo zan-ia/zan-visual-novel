@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "echo 'lint ok'",
+    "lint": "eslint src/",
     "clean": "rm -rf dist"
   },
   "dependencies": {

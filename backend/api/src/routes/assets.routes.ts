@@ -82,26 +82,27 @@ assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => 
       .returning();
 
     res.status(201).json({ success: true, data: asset });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as { code?: string; message?: string };
     // Multer errors (file too large, wrong field name, etc.)
-    if (err.code === 'LIMIT_FILE_SIZE') {
+    if (error.code === 'LIMIT_FILE_SIZE') {
       res.status(400).json({
         success: false,
         error: { statusCode: 400, message: 'Arquivo muito grande. Limite: 50MB.', code: 'FILE_TOO_LARGE' },
       });
       return;
     }
-    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+    if (error.code === 'LIMIT_UNEXPECTED_FILE') {
       res.status(400).json({
         success: false,
         error: { statusCode: 400, message: 'Campo de arquivo inesperado.', code: 'VALIDATION_ERROR' },
       });
       return;
     }
-    if (err.message?.startsWith('Tipo de arquivo')) {
+    if (error.message?.startsWith('Tipo de arquivo')) {
       res.status(400).json({
         success: false,
-        error: { statusCode: 400, message: err.message, code: 'VALIDATION_ERROR' },
+        error: { statusCode: 400, message: error.message ?? 'Validation error', code: 'VALIDATION_ERROR' },
       });
       return;
     }
