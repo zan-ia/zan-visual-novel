@@ -6,3 +6,6 @@ export type { ChoicePanelProps } from './choice-panel.js';
 
 export { VNCard } from './vn-card.js';
 export type { VNCardProps } from './vn-card.js';
+
+export { SceneGraphView } from './scene-graph-view.js';
+export type { SceneGraphViewProps } from './scene-graph-view.js';
