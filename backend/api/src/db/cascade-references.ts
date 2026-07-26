@@ -26,7 +26,8 @@ export function initCascadeRefs(pool: any) {
 }
 
 function getDb() {
-  if (!_pool) throw new Error('cascade-references not initialized. Call initCascadeRefs(pool) first.');
+  if (!_pool)
+    throw new Error('cascade-references not initialized. Call initCascadeRefs(pool) first.');
   return drizzle(_pool, { schema });
 }
 

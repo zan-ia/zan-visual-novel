@@ -290,7 +290,14 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
     // Cascade: recalcula totalChapters (caso tenha mudado via endpoint) e valida refs
     await cascadeAfterUpdate(id);
 
-    res.json({ success: true, data: { ...vn, ...data, ...(data.status === 'published' ? { publishedAt: new Date().toISOString() } : {}) } });
+    res.json({
+      success: true,
+      data: {
+        ...vn,
+        ...data,
+        ...(data.status === 'published' ? { publishedAt: new Date().toISOString() } : {}),
+      },
+    });
   } catch (err: any) {
     if (err.name === 'ZodError') {
       res.status(400).json({
@@ -331,21 +338,17 @@ vnRouter.post('/:vnId/chapters', authenticate, async (req, res) => {
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -363,24 +366,20 @@ vnRouter.post('/:vnId/chapters', authenticate, async (req, res) => {
     res.status(201).json({ success: true, data: chapter });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -398,21 +397,17 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -422,12 +417,10 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
       .limit(1);
     if (!existing) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -458,24 +451,20 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -492,21 +481,17 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -516,12 +501,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
       .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
       .limit(1);
     if (!existing) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -532,12 +515,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
 
     res.json({ success: true, data: { deleted: true } });
   } catch {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -554,21 +535,17 @@ vnRouter.post('/:vnId/chapters/:chapterId/scenes', authenticate, async (req, res
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -578,12 +555,10 @@ vnRouter.post('/:vnId/chapters/:chapterId/scenes', authenticate, async (req, res
       .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
       .limit(1);
     if (!chapter) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -603,24 +578,20 @@ vnRouter.post('/:vnId/chapters/:chapterId/scenes', authenticate, async (req, res
     res.status(201).json({ success: true, data: scene });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -639,21 +610,17 @@ vnRouter.put('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -663,12 +630,10 @@ vnRouter.put('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (
       .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
       .limit(1);
     if (!existing) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -694,24 +659,20 @@ vnRouter.put('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (
     res.json({ success: true, data: updated });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          error: {
-            statusCode: 400,
-            message: err.errors[0]?.message ?? 'Dados inválidos',
-            code: 'VALIDATION_ERROR',
-          },
-        });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -729,21 +690,17 @@ vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, asyn
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res
-        .status(403)
-        .json({
-          success: false,
-          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-        });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -753,12 +710,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, asyn
       .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
       .limit(1);
     if (!existing) {
-      res
-        .status(404)
-        .json({
-          success: false,
-          error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
-        });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -772,12 +727,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, asyn
 
     res.json({ success: true, data: { deleted: true } });
   } catch {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-      });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 
@@ -798,21 +751,17 @@ vnRouter.post(
         .where(eq(schema.visualNovels.id, vnId))
         .limit(1);
       if (!vn) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
       if (vn.creatorId !== req.user!.userId) {
-        res
-          .status(403)
-          .json({
-            success: false,
-            error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-          });
+        res.status(403).json({
+          success: false,
+          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+        });
         return;
       }
 
@@ -822,12 +771,10 @@ vnRouter.post(
         .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
         .limit(1);
       if (!scene) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
 
@@ -846,24 +793,20 @@ vnRouter.post(
       res.status(201).json({ success: true, data: choice });
     } catch (err: any) {
       if (err.name === 'ZodError') {
-        res
-          .status(400)
-          .json({
-            success: false,
-            error: {
-              statusCode: 400,
-              message: err.errors[0]?.message ?? 'Dados inválidos',
-              code: 'VALIDATION_ERROR',
-            },
-          });
+        res.status(400).json({
+          success: false,
+          error: {
+            statusCode: 400,
+            message: err.errors[0]?.message ?? 'Dados inválidos',
+            code: 'VALIDATION_ERROR',
+          },
+        });
         return;
       }
-      res
-        .status(500)
-        .json({
-          success: false,
-          error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-        });
+      res.status(500).json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
     }
   },
 );
@@ -886,21 +829,17 @@ vnRouter.put(
         .where(eq(schema.visualNovels.id, vnId))
         .limit(1);
       if (!vn) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
       if (vn.creatorId !== req.user!.userId) {
-        res
-          .status(403)
-          .json({
-            success: false,
-            error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-          });
+        res.status(403).json({
+          success: false,
+          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+        });
         return;
       }
 
@@ -910,12 +849,10 @@ vnRouter.put(
         .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
         .limit(1);
       if (!scene) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
 
@@ -925,12 +862,10 @@ vnRouter.put(
         .where(eq(schema.choices.id, choiceId))
         .limit(1);
       if (!existing) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'Escolha não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'Escolha não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
 
@@ -956,24 +891,20 @@ vnRouter.put(
       res.json({ success: true, data: updated });
     } catch (err: any) {
       if (err.name === 'ZodError') {
-        res
-          .status(400)
-          .json({
-            success: false,
-            error: {
-              statusCode: 400,
-              message: err.errors[0]?.message ?? 'Dados inválidos',
-              code: 'VALIDATION_ERROR',
-            },
-          });
+        res.status(400).json({
+          success: false,
+          error: {
+            statusCode: 400,
+            message: err.errors[0]?.message ?? 'Dados inválidos',
+            code: 'VALIDATION_ERROR',
+          },
+        });
         return;
       }
-      res
-        .status(500)
-        .json({
-          success: false,
-          error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-        });
+      res.status(500).json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
     }
   },
 );
@@ -996,21 +927,17 @@ vnRouter.delete(
         .where(eq(schema.visualNovels.id, vnId))
         .limit(1);
       if (!vn) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
       if (vn.creatorId !== req.user!.userId) {
-        res
-          .status(403)
-          .json({
-            success: false,
-            error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
-          });
+        res.status(403).json({
+          success: false,
+          error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+        });
         return;
       }
 
@@ -1021,12 +948,10 @@ vnRouter.delete(
         .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
         .limit(1);
       if (!scene) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
 
@@ -1036,12 +961,10 @@ vnRouter.delete(
         .where(and(eq(schema.choices.id, choiceId), eq(schema.choices.sceneId, sceneId)))
         .limit(1);
       if (!existing) {
-        res
-          .status(404)
-          .json({
-            success: false,
-            error: { statusCode: 404, message: 'Escolha não encontrada', code: 'NOT_FOUND' },
-          });
+        res.status(404).json({
+          success: false,
+          error: { statusCode: 404, message: 'Escolha não encontrada', code: 'NOT_FOUND' },
+        });
         return;
       }
 
@@ -1049,12 +972,10 @@ vnRouter.delete(
 
       res.json({ success: true, data: { deleted: true } });
     } catch {
-      res
-        .status(500)
-        .json({
-          success: false,
-          error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
-        });
+      res.status(500).json({
+        success: false,
+        error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      });
     }
   },
 );
