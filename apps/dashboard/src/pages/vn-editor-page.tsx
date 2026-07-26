@@ -149,52 +149,89 @@ export function VNEditorPage() {
 
   const handleAddChapter = async () => {
     if (!chapterTitle.trim() || !vnId) return;
-    // Chapter creation via API would go here
-    // For MVP, we manage locally
-    const newChapter: Chapter = {
-      id: `ch-${Date.now()}`,
-      vnId,
-      title: chapterTitle,
-      orderIndex: chapters.length,
-      status: 'draft',
-      priceCredits: 0,
-      startSceneId: null,
-      scenes: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setChapters([...chapters, newChapter]);
-    setSelectedChapterId(newChapter.id);
-    setChapterDialogOpen(false);
-    setChapterTitle('');
-    setToast('Capítulo adicionado!');
+    setLoading(true);
+    try {
+      const res = await api.createChapter(vnId, { title: chapterTitle, priceCredits: 0 });
+      if (res.success && res.data) {
+        const newChapter = res.data as Chapter;
+        setChapters([...chapters, newChapter]);
+        setSelectedChapterId(newChapter.id);
+        setChapterDialogOpen(false);
+        setChapterTitle('');
+        setToast('Capítulo criado!');
+      }
+    } catch {
+      setToast('Erro ao criar capítulo');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteChapter = (id: string) => {
-    setChapters(chapters.filter((c) => c.id !== id));
-    if (selectedChapterId === id) setSelectedChapterId(null);
+  const handleDeleteChapter = async (id: string) => {
+    if (!vnId) return;
+    setLoading(true);
+    try {
+      const res = await api.deleteChapter(vnId, id);
+      if (res.success) {
+        setChapters(chapters.filter((c) => c.id !== id));
+        if (selectedChapterId === id) {
+          setSelectedChapterId(null);
+          setScenes([]);
+        }
+        setToast('Capítulo removido');
+      }
+    } catch {
+      setToast('Erro ao remover capítulo');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── Scenes ─────────────────────────────────────────────
 
-  const handleAddScene = () => {
-    if (!selectedChapterId) return;
-    const newScene: Scene = {
-      id: `sc-${Date.now()}`,
-      chapterId: selectedChapterId,
-      title: `Cena ${scenes.length + 1}`,
-      type: 'narration',
-      content: [],
-      nextSceneId: null,
-      metadata: null,
-      choices: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const updated = [...scenes, newScene];
-    setScenes(updated);
-    setSelectedSceneId(newScene.id);
-    setToast('Cena adicionada!');
+  const handleAddScene = async () => {
+    if (!selectedChapterId || !vnId) return;
+    setLoading(true);
+    try {
+      const res = await api.createScene(vnId, selectedChapterId, {
+        title: `Cena ${scenes.length + 1}`,
+        type: 'narration',
+        content: [{ type: 'narration', text: 'Nova cena...', style: 'normal' }],
+      });
+      if (res.success && res.data) {
+        const updated = [...scenes, res.data as Scene];
+        setScenes(updated);
+        setSelectedSceneId((res.data as Scene).id);
+        setToast('Cena criada!');
+      }
+    } catch {
+      setToast('Erro ao criar cena');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveScene = async (contentOverride?: TextBlock[]) => {
+    if (!selectedSceneId || !selectedChapterId || !vnId) return;
+    const content = contentOverride ?? sceneContent;
+    setLoading(true);
+    try {
+      const res = await api.updateScene(vnId, selectedChapterId, selectedSceneId, {
+        title: sceneTitle,
+        type: sceneType,
+        content,
+      });
+      if (res.success && res.data) {
+        setScenes((prev) =>
+          prev.map((s) => (s.id === selectedSceneId ? (res.data as Scene) : s)),
+        );
+      }
+      setToast('Cena salva!');
+    } catch {
+      setToast('Erro ao salvar cena');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── Text Blocks ────────────────────────────────────────
@@ -207,30 +244,57 @@ export function VNEditorPage() {
       text: currentTextBlock,
       style: 'normal',
     };
-    setSceneContent([...sceneContent, block]);
+    const updated = [...sceneContent, block];
+    setSceneContent(updated);
     setCurrentTextBlock('');
     setCurrentSpeaker('');
+    handleSaveScene(updated);
   };
 
   const handleRemoveTextBlock = (index: number) => {
-    setSceneContent(sceneContent.filter((_, i) => i !== index));
+    const updated = sceneContent.filter((_, i) => i !== index);
+    setSceneContent(updated);
+    handleSaveScene(updated);
   };
 
   // ── Choices ────────────────────────────────────────────
 
-  const handleAddChoice = () => {
-    if (!newChoiceText.trim() || !selectedSceneId) return;
-    const choice: Choice = {
-      id: `chc-${Date.now()}`,
-      sceneId: selectedSceneId,
-      text: newChoiceText,
-      targetSceneId: newChoiceTarget || selectedSceneId,
-      orderIndex: choices.length,
-      isDefault: false,
-    };
-    setChoices([...choices, choice]);
-    setNewChoiceText('');
-    setNewChoiceTarget('');
+  const handleAddChoice = async () => {
+    if (!newChoiceText.trim() || !selectedSceneId || !selectedChapterId || !vnId) return;
+    setLoading(true);
+    try {
+      const res = await api.createChoice(vnId, selectedChapterId, selectedSceneId, {
+        text: newChoiceText,
+        targetSceneId: newChoiceTarget || selectedSceneId,
+        orderIndex: choices.length,
+      });
+      if (res.success && res.data) {
+        setChoices([...choices, res.data as Choice]);
+        setNewChoiceText('');
+        setNewChoiceTarget('');
+        setToast('Escolha adicionada!');
+      }
+    } catch {
+      setToast('Erro ao adicionar escolha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteChoice = async (choiceId: string) => {
+    if (!selectedSceneId || !selectedChapterId || !vnId) return;
+    setLoading(true);
+    try {
+      const res = await api.deleteChoice(vnId, selectedChapterId, selectedSceneId, choiceId);
+      if (res.success) {
+        setChoices(choices.filter((c) => c.id !== choiceId));
+        setToast('Escolha removida');
+      }
+    } catch {
+      setToast('Erro ao remover escolha');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── Render ─────────────────────────────────────────────
@@ -412,6 +476,11 @@ export function VNEditorPage() {
                     <MenuItem value="ending">Final</MenuItem>
                   </Select>
                 </FormControl>
+                <Box mt={2} display="flex" gap={1}>
+                  <Button variant="contained" onClick={() => handleSaveScene()} disabled={loading}>
+                    {loading ? 'Salvando...' : 'Salvar Cena'}
+                  </Button>
+                </Box>
               </Paper>
 
               {/* Text blocks */}
@@ -493,7 +562,8 @@ export function VNEditorPage() {
                     </Typography>
                     <IconButton
                       size="small"
-                      onClick={() => setChoices(choices.filter((c) => c.id !== ch.id))}
+                      onClick={() => handleDeleteChoice(ch.id)}
+                      disabled={loading}
                     >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
@@ -527,9 +597,19 @@ export function VNEditorPage() {
       {/* ── Preview Tab ──────────────────────────────────── */}
       {tab === 'preview' && selectedScene && (
         <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
-          <Typography variant="h6" mb={3}>
-            Preview — {selectedScene.title}
-          </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Typography variant="h6">
+              Preview — {selectedScene.title}
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => window.open(`/play/${vnId}`, '_blank')}
+              size="small"
+            >
+              Abrir no Player
+            </Button>
+          </Box>
           <Box sx={{ bgcolor: 'rgba(0,0,0,0.3)', p: 3, borderRadius: 2, mb: 3 }}>
             {selectedScene.content?.map((block, i) => {
               if (block.type === 'dialogue') {

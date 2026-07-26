@@ -83,9 +83,23 @@ export const createChoiceSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 
+// ── Update Schemas (PUT) ──────────────────────────────
+
+export const updateChapterSchema = createChapterSchema.partial().extend({
+  status: chapterStatusSchema.optional(),
+  startSceneId: z.string().uuid().nullable().optional(),
+  orderIndex: z.number().int().min(0).optional(),
+});
+
+export const updateSceneSchema = createSceneSchema.partial().extend({
+  metadata: z.record(z.unknown()).nullable().optional(),
+});
+
 export type CreateChapterInput = z.infer<typeof createChapterSchema>;
 export type CreateSceneInput = z.infer<typeof createSceneSchema>;
 export type CreateChoiceInput = z.infer<typeof createChoiceSchema>;
+export type UpdateChapterInput = z.infer<typeof updateChapterSchema>;
+export type UpdateSceneInput = z.infer<typeof updateSceneSchema>;
 
 // ── Save Schema ─────────────────────────────────────────
 
