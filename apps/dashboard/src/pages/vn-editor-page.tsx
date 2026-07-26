@@ -34,8 +34,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Chapter, Scene, TextBlock, Choice } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
+import { SceneGraphView } from '@zan-vn/ui';
 
-type TabValue = 'details' | 'chapters' | 'scenes' | 'preview';
+type TabValue = 'details' | 'chapters' | 'scenes' | 'graph' | 'preview';
 
 export function VNEditorPage() {
   const { vnId } = useParams<{ vnId: string }>();
@@ -450,7 +451,10 @@ export function VNEditorPage() {
     if (newIndex < 0 || newIndex >= scenes.length) return;
 
     const updated = [...scenes];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+    const a = updated[index]!;
+    const b = updated[newIndex]!;
+    updated[index] = b;
+    updated[newIndex] = a;
     setScenes(updated);
 
     // Persist new order via metadata.orderIndex
@@ -458,7 +462,7 @@ export function VNEditorPage() {
     const chapterId = selectedChapterId;
     if (!chapterId) return;
     for (let i = 0; i < updated.length; i++) {
-      const scene = updated[i];
+      const scene = updated[i]!;
       const currentOrder = (scene.metadata as any)?.orderIndex ?? i;
       if (currentOrder !== i) {
         await api.updateScene(vnId, chapterId, scene.id, {
@@ -473,9 +477,95 @@ export function VNEditorPage() {
     if (newIndex < 0 || newIndex >= sceneContent.length) return;
 
     const updated = [...sceneContent];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+    const a = updated[index]!;
+    const b = updated[newIndex]!;
+    updated[index] = b;
+    updated[newIndex] = a;
     setSceneContent(updated);
     handleSaveScene(updated);
+  };
+
+  // ── Graph View ─────────────────────────────────────────
+
+  const [choiceDialogOpen, setChoiceDialogOpen] = useState(false);
+  const [pendingConnection, setPendingConnection] = useState<{ source: string; target: string } | null>(null);
+  const [graphNewChoiceText, setGraphNewChoiceText] = useState('');
+
+  const handleGraphChoiceCreate = (sourceSceneId: string, targetSceneId: string, text?: string) => {
+    if (!selectedChapterId || !vnId) return;
+    if (text) {
+      // Text provided — create directly
+      api.createChoice(vnId, selectedChapterId, sourceSceneId, {
+        text,
+        targetSceneId,
+        orderIndex: 0,
+      }).then((res) => {
+        if (res.success) {
+          // Refresh scenes
+          api.getVN(vnId).then((vnRes) => {
+            if (vnRes.success && vnRes.data) {
+              const chs = (vnRes.data as any).chapters ?? [];
+              setChapters(chs);
+              const chapter = chs.find((c: Chapter) => c.id === selectedChapterId);
+              if (chapter) setScenes(sortScenes((chapter as any)?.scenes ?? []));
+            }
+          });
+          setToast('Escolha criada!');
+        }
+      });
+    } else {
+      // No text — show dialog
+      setPendingConnection({ source: sourceSceneId, target: targetSceneId });
+      setChoiceDialogOpen(true);
+    }
+  };
+
+  const handleConfirmGraphChoice = async () => {
+    if (!pendingConnection || !vnId || !selectedChapterId) return;
+    const { source, target } = pendingConnection;
+    await api.createChoice(vnId, selectedChapterId, source, {
+      text: graphNewChoiceText || 'Continuar',
+      targetSceneId: target,
+      orderIndex: 0,
+    });
+    // Refresh
+    const vnRes = await api.getVN(vnId);
+    if (vnRes.success && vnRes.data) {
+      const chs = (vnRes.data as any).chapters ?? [];
+      setChapters(chs);
+      const chapter = chs.find((c: Chapter) => c.id === selectedChapterId);
+      if (chapter) setScenes(sortScenes((chapter as any)?.scenes ?? []));
+    }
+    setChoiceDialogOpen(false);
+    setPendingConnection(null);
+    setGraphNewChoiceText('');
+    setToast('Escolha criada!');
+  };
+
+  const handleGraphChoiceDelete = async (choiceId: string) => {
+    if (!selectedChapterId || !vnId) return;
+    const sceneId = choices.find((c) => c.id === choiceId)?.sceneId;
+    if (!sceneId) return;
+    await api.deleteChoice(vnId, selectedChapterId, sceneId, choiceId);
+    // Refresh
+    const vnRes = await api.getVN(vnId);
+    if (vnRes.success && vnRes.data) {
+      const chs = (vnRes.data as any).chapters ?? [];
+      setChapters(chs);
+      const chapter = chs.find((c: Chapter) => c.id === selectedChapterId);
+      if (chapter) setScenes(sortScenes((chapter as any)?.scenes ?? []));
+    }
+    setToast('Escolha removida');
+  };
+
+  const handleGraphPositionChange = async (sceneId: string, position: { x: number; y: number }) => {
+    if (!selectedChapterId || !vnId) return;
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (!scene) return;
+    const currentMeta = (scene.metadata ?? {}) as Record<string, unknown>;
+    await api.updateScene(vnId, selectedChapterId, sceneId, {
+      metadata: { ...currentMeta, position },
+    } as any);
   };
 
   // ── Render ─────────────────────────────────────────────
@@ -511,6 +601,7 @@ export function VNEditorPage() {
         <Tab label="Detalhes" value="details" />
         <Tab label="Capítulos" value="chapters" />
         <Tab label="Cenas" value="scenes" disabled={!selectedChapterId} />
+        <Tab label="Grafo" value="graph" disabled={!selectedChapterId} />
         <Tab label="Preview" value="preview" disabled={!selectedSceneId} />
       </Tabs>
 
@@ -1007,6 +1098,41 @@ export function VNEditorPage() {
         </Box>
       )}
 
+      {/* ── Graph Tab ────────────────────────────────────── */}
+      {tab === 'graph' && (
+        <Box>
+          {!selectedChapterId ? (
+            <Typography color="text.secondary" textAlign="center" py={4}>
+              Selecione um capítulo para visualizar o grafo de cenas.
+            </Typography>
+          ) : (
+            <>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6">
+                  Grafo de Cenas — {chapters.find((c) => c.id === selectedChapterId)?.title}
+                </Typography>
+              </Box>
+              <SceneGraphView
+                scenes={scenes}
+                choices={
+                  scenes.flatMap((s) => (s as any)?.choices ?? [])
+                }
+                selectedSceneId={selectedSceneId}
+                onSceneSelect={(id) => {
+                  setSelectedSceneId(id);
+                  setTab('scenes');
+                }}
+                onSceneCreate={handleAddScene}
+                onSceneDelete={(id) => handleDeleteScene(id)}
+                onChoiceCreate={handleGraphChoiceCreate}
+                onChoiceDelete={handleGraphChoiceDelete}
+                onPositionChange={handleGraphPositionChange}
+              />
+            </>
+          )}
+        </Box>
+      )}
+
       {/* ── Preview Tab ──────────────────────────────────── */}
       {tab === 'preview' && selectedScene && (
         <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
@@ -1088,6 +1214,33 @@ export function VNEditorPage() {
           <Button onClick={() => setChapterDialogOpen(false)}>Cancelar</Button>
           <Button variant="contained" onClick={handleAddChapter}>
             Criar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Graph Choice Dialog ──────────────────────────── */}
+      <Dialog open={choiceDialogOpen} onClose={() => setChoiceDialogOpen(false)}>
+        <DialogTitle>Nova Escolha</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            Conectando cenas no grafo. Defina o texto da escolha.
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Texto da escolha"
+            value={graphNewChoiceText}
+            onChange={(e) => setGraphNewChoiceText(e.target.value)}
+            margin="dense"
+            placeholder="Ex: Ir para a direita..."
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setChoiceDialogOpen(false); setPendingConnection(null); }}>
+            Cancelar
+          </Button>
+          <Button variant="contained" onClick={handleConfirmGraphChoice}>
+            Criar Escolha
           </Button>
         </DialogActions>
       </Dialog>
