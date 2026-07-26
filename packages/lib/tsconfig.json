@@ -3,10 +3,24 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "composite": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
-  "references": [{ "path": "../shared" }, { "path": "../vn-engine" }]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "references": [
+    {
+      "path": "../shared"
+    },
+    {
+      "path": "../vn-engine"
+    }
+  ]
 }

@@ -225,7 +225,7 @@ export function PlayerPage() {
         <SceneRenderer scene={currentScene} isLLMGenerated={isLLMScene} />
       </Box>
 
-      {/* Choices or Continue */}
+      {/* Choices or Continue or Ending */}
       <Box sx={{ mt: 3, mb: 6 }}>
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -233,6 +233,19 @@ export function PlayerPage() {
           </Box>
         ) : availableChoices.length > 0 ? (
           <ChoicePanel choices={availableChoices} onSelect={makeChoice} />
+        ) : currentScene?.type === 'ending' ? (
+          <Box sx={{ textAlign: 'center', py: 3 }}>
+            <Typography variant="h5" color="primary" fontWeight={700} mb={2}>
+              Fim da História
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/library')}
+              sx={{ borderRadius: 3 }}
+            >
+              Voltar à Biblioteca
+            </Button>
+          </Box>
         ) : (
           <Button
             variant="contained"
