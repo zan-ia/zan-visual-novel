@@ -55,3 +55,114 @@ a:hover {
   background: var(--color-primary);
   border-radius: 3px;
 }
+
+/* ── Visual Novel Scene ────────────────────────────────── */
+
+.vn-scene {
+  position: relative;
+  width: 100%;
+  min-height: 60dvh;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+
+.vn-scene__visuals {
+  position: absolute;
+  inset: 0;
+}
+
+.vn-scene__background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.vn-scene__background-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
+}
+
+.vn-scene__sprite {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 60%;
+  object-fit: contain;
+}
+
+.vn-scene__text-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 32px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.4) 80%,
+    transparent 100%
+  );
+}
+
+.vn-scene__content {
+  position: relative;
+  z-index: 1;
+}
+
+.vn-scene__llm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-bottom: 12px;
+}
+
+/* ── Text Blocks ───────────────────────────────────────── */
+
+.vn-text {
+  margin-bottom: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.vn-text__speaker {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+
+.vn-text__body {
+  font-size: 1rem;
+}
+
+.vn-text--dialogue .vn-text__body {
+  font-style: italic;
+}
+
+.vn-text--thought .vn-text__body {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.vn-text--bold .vn-text__body {
+  font-weight: 700;
+}
+
+.vn-text--italic .vn-text__body {
+  font-style: italic;
+}

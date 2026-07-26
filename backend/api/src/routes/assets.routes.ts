@@ -1,0 +1,113 @@
+import { Router } from 'express';
+import multer from 'multer';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
+import { authenticate } from '../middleware/auth.js';
+import { getDb, schema } from '../db/index.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = crypto.randomBytes(12).toString('hex');
+    const ext = path.extname(file.originalname);
+    cb(null, `${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50 MB
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedMimes = [
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'image/gif',
+      'audio/mpeg',
+      'audio/wav',
+      'audio/ogg',
+      'audio/webm',
+      'video/mp4',
+      'video/webm',
+    ];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Tipo de arquivo não permitido: ${file.mimetype}`));
+    }
+  },
+});
+
+export const assetsRouter = Router();
+
+function getAssetType(mimeType: string): 'image' | 'audio' | 'video' {
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('audio/')) return 'audio';
+  return 'video';
+}
+
+// POST /api/v1/assets — Upload a new asset
+assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Nenhum arquivo enviado', code: 'VALIDATION_ERROR' },
+      });
+      return;
+    }
+
+    const assetType = getAssetType(req.file.mimetype);
+    const storageUrl = `/uploads/${req.file.filename}`;
+
+    const [asset] = await getDb()
+      .insert(schema.assets)
+      .values({
+        ownerId: req.user!.userId,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        type: assetType,
+        mimeType: req.file.mimetype,
+        sizeBytes: req.file.size,
+        storageUrl,
+      })
+      .returning();
+
+    res.status(201).json({ success: true, data: asset });
+  } catch (err: any) {
+    // Multer errors (file too large, wrong field name, etc.)
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Arquivo muito grande. Limite: 50MB.', code: 'FILE_TOO_LARGE' },
+      });
+      return;
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: 'Campo de arquivo inesperado.', code: 'VALIDATION_ERROR' },
+      });
+      return;
+    }
+    if (err.message?.startsWith('Tipo de arquivo')) {
+      res.status(400).json({
+        success: false,
+        error: { statusCode: 400, message: err.message, code: 'VALIDATION_ERROR' },
+      });
+      return;
+    }
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
+  }
+});
