@@ -1,6 +1,6 @@
-import { Box, Typography, Grid, TextField, InputAdornment } from '@mui/material';
+import { Box, Typography, Grid, TextField, InputAdornment, Snackbar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { VNCard } from '@zan-vn/ui';
 import type { VisualNovel } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
@@ -12,6 +12,7 @@ export function LibraryPage() {
   const [vns, setVNs] = useState<VisualNovel[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
 
   useEffect(() => {
     api.listVNs().then((res) => {
@@ -21,6 +22,17 @@ export function LibraryPage() {
       setLoading(false);
     });
   }, []);
+
+  const handleCardClick = useCallback(
+    (vn: VisualNovel) => {
+      if (vn.totalChapters === 0) {
+        setEmptyMessage('Esta visual novel ainda não tem capítulos publicados.');
+        return;
+      }
+      navigate(`/play/${vn.id}`);
+    },
+    [navigate],
+  );
 
   const filtered = vns.filter(
     (vn) =>
@@ -59,8 +71,15 @@ export function LibraryPage() {
       ) : (
         <Grid container spacing={3}>
           {filtered.map((vn) => (
-            <Box key={vn.id} sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}>
-              <VNCard vn={vn} onClick={() => navigate(`/play/${vn.id}`)} />
+            <Box
+              key={vn.id}
+              sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
+            >
+              <VNCard
+                vn={vn}
+                empty={vn.totalChapters === 0}
+                onClick={handleCardClick}
+              />
             </Box>
           ))}
           {filtered.length === 0 && (
@@ -72,6 +91,14 @@ export function LibraryPage() {
           )}
         </Grid>
       )}
+
+      <Snackbar
+        open={!!emptyMessage}
+        autoHideDuration={4000}
+        onClose={() => setEmptyMessage(null)}
+        message={emptyMessage ?? ''}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Box>
   );
 }

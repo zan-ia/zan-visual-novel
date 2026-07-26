@@ -61,6 +61,11 @@ export function PlayerPage() {
 
         if (vnRes.success && vnRes.data) {
           const vn = vnRes.data as any;
+          if (!vn.chapters || vn.chapters.length === 0) {
+            setError('Esta visual novel ainda não tem capítulos publicados.');
+            clearTimeout(timeoutId);
+            return;
+          }
           setStoryTitle(vn.title ?? 'Visual Novel');
           startGame(vn);
           loadSaves();
