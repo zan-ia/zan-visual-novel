@@ -58,7 +58,6 @@ export function PlayerPage() {
   const [lastSaveTime, setLastSaveTime] = useState<number | null>(null);
   const [lastSaveLabel, setLastSaveLabel] = useState('');
   const [relativeTime, setRelativeTime] = useState('');
-  const isTransitioningRef = useRef(false);
 
   // Load VN data and existing saves
   useEffect(() => {
@@ -76,14 +75,14 @@ export function PlayerPage() {
         clearTimeout(timeoutId);
 
         if (vnRes.success && vnRes.data) {
-          const vn = vnRes.data as any;
+          const vn = vnRes.data as StoryData;
           if (!vn.chapters || vn.chapters.length === 0) {
             setError('Esta visual novel ainda não tem capítulos publicados.');
             clearTimeout(timeoutId);
             return;
           }
           setStoryTitle(vn.title ?? 'Visual Novel');
-          setStoryData(vn as StoryData);
+          setStoryData(vn);
           startGame(vn);
           loadSaves();
         } else {
@@ -106,12 +105,12 @@ export function PlayerPage() {
   // Auto-save every 60 seconds (skips during transitions)
   useEffect(() => {
     autoSaveTimer.current = setInterval(() => {
-      if (currentScene && !isLoading && !isTransitioningRef.current) {
+      if (currentScene && !isLoading) {
         handleQuickSave();
       }
     }, 60_000);
     return () => clearInterval(autoSaveTimer.current);
-  }, [currentScene, isLoading]);
+  }, [isLoading]);
 
   // Progress bar calculation
   useEffect(() => {
@@ -139,10 +138,6 @@ export function PlayerPage() {
     return () => clearInterval(interval);
   }, [lastSaveTime, lastSaveLabel]);
 
-  // Reset transition flag when scene updates
-  useEffect(() => {
-    isTransitioningRef.current = false;
-  }, [currentScene]);
 
   // ── Saves ──────────────────────────────────────────────
 
@@ -192,19 +187,6 @@ export function PlayerPage() {
     [startGame, vnId, storyData],
   );
 
-  // Transition wrappers for robust auto-save gating
-  const handleContinue = useCallback(() => {
-    isTransitioningRef.current = true;
-    continueGame();
-  }, [continueGame]);
-
-  const handleMakeChoice = useCallback(
-    (choiceId: string) => {
-      isTransitioningRef.current = true;
-      makeChoice(choiceId);
-    },
-    [makeChoice],
-  );
 
   // ── Render ─────────────────────────────────────────────
 
@@ -300,7 +282,7 @@ export function PlayerPage() {
             <CircularProgress size={28} />
           </Box>
         ) : availableChoices.length > 0 ? (
-          <ChoicePanel choices={availableChoices} onSelect={handleMakeChoice} />
+          <ChoicePanel choices={availableChoices} onSelect={makeChoice} />
         ) : currentScene?.type === 'ending' ? (
           <Box sx={{ textAlign: 'center', py: 3 }}>
             <Typography variant="h5" color="primary" fontWeight={700} mb={2}>
@@ -317,7 +299,7 @@ export function PlayerPage() {
         ) : (
           <Button
             variant="contained"
-            onClick={handleContinue}
+            onClick={continueGame}
             fullWidth
             sx={{ py: 1.5, fontSize: '1.1rem', borderRadius: 3 }}
           >
@@ -404,10 +386,17 @@ export function PlayerPage() {
             color="error"
             onClick={async () => {
               if (saveToDelete) {
-                await api.deleteSave(saveToDelete);
-                setDeleteConfirmOpen(false);
-                setSaveToDelete(null);
-                loadSaves();
+                const res = await api.deleteSave(saveToDelete);
+                if (res.success) {
+                  setDeleteConfirmOpen(false);
+                  setSaveToDelete(null);
+                  setToast('Save deletado.');
+                  loadSaves();
+                } else {
+                  setError(res.error?.message ?? 'Erro ao deletar save.');
+                  setDeleteConfirmOpen(false);
+                  setSaveToDelete(null);
+                }
               }
             }}
           >
