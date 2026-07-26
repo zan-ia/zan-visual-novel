@@ -9,11 +9,9 @@ export interface AuthPayload {
   role: 'player' | 'creator' | 'admin';
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthPayload;
-    }
+declare module 'express' {
+  interface Request {
+    user?: AuthPayload;
   }
 }
 

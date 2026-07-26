@@ -36,7 +36,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
 
     // Get tags for each VN
     const vnIds = vns.map((v) => v.id);
-    let tags: Record<string, string[]> = {};
+    const tags: Record<string, string[]> = {};
     if (vnIds.length > 0) {
       const tagRows = await getDb()
         .select()
