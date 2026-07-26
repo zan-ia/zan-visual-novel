@@ -22,6 +22,7 @@ import { vnRouter } from './routes/vn.routes.js';
 import { savesRouter } from './routes/saves.routes.js';
 import { creditsRouter } from './routes/credits.routes.js';
 import { llmRouter } from './routes/llm.routes.js';
+import { assetsRouter } from './routes/assets.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
 
@@ -41,6 +42,7 @@ app.use(
 );
 app.use(express.json());
 app.use(rateLimiter);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ── Routes ──────────────────────────────────────────────
 
@@ -53,6 +55,7 @@ app.use('/api/v1/vns', vnRouter);
 app.use('/api/v1/saves', savesRouter);
 app.use('/api/v1/credits', creditsRouter);
 app.use('/api/v1/llm', llmRouter);
+app.use('/api/v1/assets', assetsRouter);
 
 // ── Error Handling ──────────────────────────────────────
 

@@ -118,6 +118,8 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
 
     let scenes: any[] = [];
     let choices: any[] = [];
+    let sceneAssets: any[] = [];
+    let assets: any[] = [];
     if (chapterIds.length > 0) {
       scenes = await getDb()
         .select()
@@ -129,6 +131,17 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
           .select()
           .from(schema.choices)
           .where(inArray(schema.choices.sceneId, sceneIds));
+        sceneAssets = await getDb()
+          .select()
+          .from(schema.sceneAssets)
+          .where(inArray(schema.sceneAssets.sceneId, sceneIds));
+        const assetIds = sceneAssets.map((sa) => sa.assetId);
+        if (assetIds.length > 0) {
+          assets = await getDb()
+            .select()
+            .from(schema.assets)
+            .where(inArray(schema.assets.id, assetIds));
+        }
       }
     }
 
@@ -139,6 +152,12 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
         .map((s) => ({
           ...s,
           choices: choices.filter((c) => c.sceneId === s.id),
+          assets: sceneAssets
+            .filter((sa) => sa.sceneId === s.id)
+            .map((sa) => ({
+              ...sa,
+              asset: assets.find((a) => a.id === sa.assetId) ?? null,
+            })),
         })),
     }));
 
