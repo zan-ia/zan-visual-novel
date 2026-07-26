@@ -11,6 +11,24 @@ import type { ILLMProvider } from './llm-provider.js';
 import type { EngineConfig, EngineEvent, EngineEventType } from './types.js';
 
 /**
+ * Thrown when the engine cannot start a story because it has no chapters
+ * or a chapter has no scenes. Callers can use `instanceof EmptyStoryError`
+ * and the `code` field to render a specific UX message instead of a
+ * generic failure.
+ */
+export class EmptyStoryError extends Error {
+  readonly code = 'EMPTY_STORY' as const;
+  constructor(
+    public readonly storyId: string,
+    public readonly reason: 'no_chapters' | 'no_scenes',
+    public readonly chapterId?: string,
+  ) {
+    super(reason === 'no_chapters' ? 'Story has no chapters' : 'Chapter has no scenes');
+    this.name = 'EmptyStoryError';
+  }
+}
+
+/**
  * Visual Novel Engine — Core state machine for VN gameplay.
  *
  * Pure TypeScript, framework-agnostic. Manages scene navigation,
@@ -47,11 +65,11 @@ export class VNEngine {
     } else {
       this.state = this.createInitialState();
       const firstChapter = story.chapters[0];
-      if (!firstChapter) throw new Error('Story has no chapters');
+      if (!firstChapter) throw new EmptyStoryError(story.id, 'no_chapters');
       const firstScene =
         firstChapter.scenes?.find((s) => s.id === firstChapter.startSceneId) ??
         firstChapter.scenes?.[0];
-      if (!firstScene) throw new Error('Chapter has no scenes');
+      if (!firstScene) throw new EmptyStoryError(story.id, 'no_scenes', firstChapter.id);
       this.state.currentSceneId = firstScene.id;
     }
     this.emit('scene:enter', { sceneId: this.state.currentSceneId });

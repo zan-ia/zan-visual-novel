@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { VNEngine } from '../engine.js';
+import { VNEngine, EmptyStoryError } from '../engine.js';
 import type { StoryData } from '@zan-vn/shared';
 
 describe('VNEngine', () => {
@@ -13,7 +13,7 @@ describe('VNEngine', () => {
     expect(engine).toBeDefined();
   });
 
-  it('should throw when starting with no chapters', () => {
+  it('should throw EmptyStoryError when starting with no chapters', () => {
     const engine = new VNEngine();
     const emptyStory: StoryData = {
       id: 'test-vn',
@@ -35,7 +35,61 @@ describe('VNEngine', () => {
       updatedAt: new Date().toISOString(),
       chapters: [],
     };
-    expect(() => engine.start(emptyStory)).toThrow('Story has no chapters');
+    expect(() => engine.start(emptyStory)).toThrow(EmptyStoryError);
+    try {
+      engine.start(emptyStory);
+    } catch (err) {
+      expect(err).toBeInstanceOf(EmptyStoryError);
+      expect((err as EmptyStoryError).code).toBe('EMPTY_STORY');
+      expect((err as EmptyStoryError).reason).toBe('no_chapters');
+      expect((err as EmptyStoryError).storyId).toBe('test-vn');
+    }
+  });
+
+  it('should throw EmptyStoryError when the first chapter has no scenes', () => {
+    const engine = new VNEngine();
+    const storyNoScenes: StoryData = {
+      id: 'test-vn-empty',
+      creatorId: 'user-1',
+      title: 'Test',
+      synopsis: 'A test VN',
+      coverUrl: null,
+      status: 'draft',
+      ageRating: 'general',
+      totalChapters: 1,
+      priceCredits: 0,
+      iaEnabled: false,
+      iaSystemPrompt: null,
+      iaPersona: null,
+      iaMaxTokens: 1024,
+      metadata: null,
+      publishedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      chapters: [
+        {
+          id: 'ch-1',
+          vnId: 'test-vn-empty',
+          title: 'Chapter 1',
+          orderIndex: 0,
+          status: 'published',
+          priceCredits: 0,
+          startSceneId: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          scenes: [],
+        },
+      ],
+    };
+    expect(() => engine.start(storyNoScenes)).toThrow(EmptyStoryError);
+    try {
+      engine.start(storyNoScenes);
+    } catch (err) {
+      expect(err).toBeInstanceOf(EmptyStoryError);
+      expect((err as EmptyStoryError).code).toBe('EMPTY_STORY');
+      expect((err as EmptyStoryError).reason).toBe('no_scenes');
+      expect((err as EmptyStoryError).storyId).toBe('test-vn-empty');
+    }
   });
 
   it('should start with a valid story and return the first scene', () => {

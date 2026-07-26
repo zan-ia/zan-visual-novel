@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
-import { eq, desc, inArray, sql } from 'drizzle-orm';
+import { eq, and, desc, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const vnRouter = Router();
@@ -220,6 +220,25 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
         error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
       });
       return;
+    }
+
+    // Guard: não permitir publicar VN sem capítulos publicados
+    if (data.status === 'published') {
+      const [publishedCount] = await getDb()
+        .select({ count: sql<number>`count(*)::int` })
+        .from(schema.chapters)
+        .where(and(eq(schema.chapters.vnId, id), eq(schema.chapters.status, 'published')));
+      if (!publishedCount || publishedCount.count === 0) {
+        res.status(400).json({
+          success: false,
+          error: {
+            statusCode: 400,
+            message: 'VN precisa de ao menos 1 capítulo publicado para ser publicado.',
+            code: 'NO_PUBLISHED_CHAPTERS',
+          },
+        });
+        return;
+      }
     }
 
     await getDb()
