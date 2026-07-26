@@ -83,6 +83,19 @@ export class VNEngine {
     return scene;
   }
 
+  /** Get the 0-based index of the current chapter in the story */
+  getCurrentChapterIndex(): number {
+    const scene = this.getCurrentScene();
+    if (!this.story) return 0;
+    const chapter = this.story.chapters.find((c) => c.id === scene.chapterId);
+    return chapter?.orderIndex ?? 0;
+  }
+
+  /** Get total chapter count */
+  getTotalChapters(): number {
+    return this.story?.chapters.length ?? 0;
+  }
+
   /** Get all available choices for the current scene (evaluates conditions) */
   getAvailableChoices(): Choice[] {
     const scene = this.getCurrentScene();
