@@ -78,6 +78,10 @@ export class ApiClient {
     return this.put(`/saves/${id}`, data);
   }
 
+  async deleteSave(id: string): Promise<ApiResponse<{ deleted: boolean }>> {
+    return this.del(`/saves/${id}`);
+  }
+
   // ── Credits ────────────────────────────────────────────
 
   async getCreditPackages(): Promise<ApiResponse<unknown[]>> {
@@ -156,6 +160,17 @@ export class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       },
+      opts,
+    );
+  }
+
+  private async del<T>(
+    path: string,
+    opts?: { auth?: boolean },
+  ): Promise<ApiResponse<T>> {
+    return this.request<T>(
+      `${this.config.baseUrl}/api/v1${path}`,
+      { method: 'DELETE' },
       opts,
     );
   }

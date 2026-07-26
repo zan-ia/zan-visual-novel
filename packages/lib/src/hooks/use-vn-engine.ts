@@ -14,6 +14,7 @@ export interface UseVNEngineReturn {
   makeChoice: (choiceId: string) => void;
   createSave: (slot: number, label?: string) => SaveData;
   setLLMProvider: (provider: ILLMProvider) => void;
+  getChapterProgress: () => { current: number; total: number };
 }
 
 /**
@@ -79,6 +80,13 @@ export function useVNEngine(): UseVNEngineReturn {
     engineRef.current.setLLMProvider(provider);
   }, []);
 
+  const getChapterProgress = useCallback(() => {
+    return {
+      current: engineRef.current.getCurrentChapterIndex(),
+      total: engineRef.current.getTotalChapters(),
+    };
+  }, []);
+
   // Subscribe to engine events
   useEffect(() => {
     const engine = engineRef.current;
@@ -101,5 +109,6 @@ export function useVNEngine(): UseVNEngineReturn {
     makeChoice,
     createSave,
     setLLMProvider,
+    getChapterProgress,
   };
 }

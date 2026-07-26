@@ -11,15 +11,21 @@ import {
   Chip,
   Alert,
   Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useVNEngine } from '@zan-vn/lib';
 import { SceneRenderer, ChoicePanel } from '@zan-vn/ui';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { SaveData } from '@zan-vn/shared';
+import type { SaveData, StoryData } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
 
 export function PlayerPage() {
@@ -44,6 +50,16 @@ export function PlayerPage() {
   const [error, setError] = useState<string | null>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
 
+  // New state for polish
+  const [storyData, setStoryData] = useState<StoryData | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [saveToDelete, setSaveToDelete] = useState<string | null>(null);
+  const [lastSaveTime, setLastSaveTime] = useState<number | null>(null);
+  const [lastSaveLabel, setLastSaveLabel] = useState('');
+  const [relativeTime, setRelativeTime] = useState('');
+  const isTransitioningRef = useRef(false);
+
   // Load VN data and existing saves
   useEffect(() => {
     if (!vnId) return;
@@ -67,6 +83,7 @@ export function PlayerPage() {
             return;
           }
           setStoryTitle(vn.title ?? 'Visual Novel');
+          setStoryData(vn as StoryData);
           startGame(vn);
           loadSaves();
         } else {
@@ -86,14 +103,45 @@ export function PlayerPage() {
     };
   }, [vnId]);
 
-  // Auto-save every 60 seconds
+  // Auto-save every 60 seconds (skips during transitions)
   useEffect(() => {
     autoSaveTimer.current = setInterval(() => {
-      if (currentScene) {
+      if (currentScene && !isLoading && !isTransitioningRef.current) {
         handleQuickSave();
       }
     }, 60_000);
     return () => clearInterval(autoSaveTimer.current);
+  }, [currentScene, isLoading]);
+
+  // Progress bar calculation
+  useEffect(() => {
+    if (!currentScene || !storyData) return;
+    const currentChapter = storyData.chapters.find((c) => c.id === currentScene.chapterId);
+    const chapterIndex = currentChapter?.orderIndex ?? 0;
+    const total = storyData.chapters.length;
+    setProgress(total > 0 ? ((chapterIndex + 1) / total) * 100 : 0);
+  }, [currentScene, storyData]);
+
+  // Last save relative time indicator
+  useEffect(() => {
+    if (lastSaveTime === null) return;
+    const update = () => {
+      const diff = Math.floor((Date.now() - lastSaveTime) / 1000);
+      if (diff < 60) setRelativeTime(`Salvo há ${diff}s`);
+      else {
+        setRelativeTime(
+          `${lastSaveLabel}: ${new Date(lastSaveTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+        );
+      }
+    };
+    update();
+    const interval = setInterval(update, 5000);
+    return () => clearInterval(interval);
+  }, [lastSaveTime, lastSaveLabel]);
+
+  // Reset transition flag when scene updates
+  useEffect(() => {
+    isTransitioningRef.current = false;
   }, [currentScene]);
 
   // ── Saves ──────────────────────────────────────────────
@@ -109,6 +157,8 @@ export function PlayerPage() {
       const save = createSave(1, 'Auto Save');
       await api.createSave(save);
       setToast('Progresso salvo!');
+      setLastSaveTime(Date.now());
+      setLastSaveLabel(save.label);
       loadSaves();
     } catch {
       /* silent */
@@ -122,6 +172,8 @@ export function PlayerPage() {
         await api.createSave(save);
         setToast(`Salvo no slot ${slot}!`);
         setSaveDrawerOpen(false);
+        setLastSaveTime(Date.now());
+        setLastSaveLabel(save.label);
         loadSaves();
       } catch {
         setError('Erro ao salvar.');
@@ -132,15 +184,26 @@ export function PlayerPage() {
 
   const handleLoadSave = useCallback(
     async (save: SaveData) => {
-      if (!vnId) return;
-      const res = await api.getVN(vnId);
-      if (res.success && res.data) {
-        startGame(res.data as any, save);
-        setToast('Save carregado!');
-        setSaveDrawerOpen(false);
-      }
+      if (!vnId || !storyData) return;
+      startGame(storyData, save);
+      setToast('Save carregado!');
+      setSaveDrawerOpen(false);
     },
-    [startGame, vnId],
+    [startGame, vnId, storyData],
+  );
+
+  // Transition wrappers for robust auto-save gating
+  const handleContinue = useCallback(() => {
+    isTransitioningRef.current = true;
+    continueGame();
+  }, [continueGame]);
+
+  const handleMakeChoice = useCallback(
+    (choiceId: string) => {
+      isTransitioningRef.current = true;
+      makeChoice(choiceId);
+    },
+    [makeChoice],
   );
 
   // ── Render ─────────────────────────────────────────────
@@ -190,6 +253,11 @@ export function PlayerPage() {
         {isLLMScene && (
           <Chip label="IA" size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
         )}
+        {relativeTime && (
+          <Typography variant="caption" color="text.secondary" sx={{ mr: 1, fontSize: '0.7rem' }}>
+            {relativeTime}
+          </Typography>
+        )}
         <IconButton onClick={handleQuickSave} aria-label="Salvar rápido" title="Quick Save">
           <SaveIcon />
         </IconButton>
@@ -211,7 +279,7 @@ export function PlayerPage() {
       >
         <Box
           sx={{
-            width: '30%',
+            width: `${progress}%`,
             height: '100%',
             bgcolor: 'primary.main',
             borderRadius: 1,
@@ -232,7 +300,7 @@ export function PlayerPage() {
             <CircularProgress size={28} />
           </Box>
         ) : availableChoices.length > 0 ? (
-          <ChoicePanel choices={availableChoices} onSelect={makeChoice} />
+          <ChoicePanel choices={availableChoices} onSelect={handleMakeChoice} />
         ) : currentScene?.type === 'ending' ? (
           <Box sx={{ textAlign: 'center', py: 3 }}>
             <Typography variant="h5" color="primary" fontWeight={700} mb={2}>
@@ -249,9 +317,7 @@ export function PlayerPage() {
         ) : (
           <Button
             variant="contained"
-            onClick={() => {
-              continueGame();
-            }}
+            onClick={handleContinue}
             fullWidth
             sx={{ py: 1.5, fontSize: '1.1rem', borderRadius: 3 }}
           >
@@ -298,6 +364,17 @@ export function PlayerPage() {
                   primary={save.label}
                   secondary={new Date(save.updatedAt).toLocaleString('pt-BR')}
                 />
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSaveToDelete(save.id);
+                    setDeleteConfirmOpen(true);
+                  }}
+                  aria-label={`Deletar ${save.label}`}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
               </ListItemButton>
             ))}
           </List>
@@ -312,6 +389,32 @@ export function PlayerPage() {
         message={toast}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)}>
+        <DialogTitle>Deletar Save</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza que deseja deletar este save? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmOpen(false)}>Cancelar</Button>
+          <Button
+            color="error"
+            onClick={async () => {
+              if (saveToDelete) {
+                await api.deleteSave(saveToDelete);
+                setDeleteConfirmOpen(false);
+                setSaveToDelete(null);
+                loadSaves();
+              }
+            }}
+          >
+            Deletar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

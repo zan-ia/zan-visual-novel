@@ -125,3 +125,29 @@ savesRouter.put('/:id', authenticate, async (req, res) => {
     });
   }
 });
+
+// DELETE /api/v1/saves/:id — Delete save
+savesRouter.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const id = uuidSchema.parse(req.params.id);
+    const [existing] = await getDb()
+      .select()
+      .from(schema.saves)
+      .where(and(eq(schema.saves.id, id), eq(schema.saves.userId, req.user!.userId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Save não encontrado', code: 'NOT_FOUND' },
+      });
+      return;
+    }
+    await getDb().delete(schema.saves).where(eq(schema.saves.id, id));
+    res.json({ success: true, data: { deleted: true } });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
+  }
+});
