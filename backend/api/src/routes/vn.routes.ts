@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createVNSchema, updateVNSchema, paginationSchema } from '@zan-vn/shared';
+import { createVNSchema, updateVNSchema, paginationSchema, createChapterSchema, updateChapterSchema, createSceneSchema, updateSceneSchema, createChoiceSchema } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
 import { eq, and, desc, inArray, sql } from 'drizzle-orm';
@@ -262,5 +262,392 @@ vnRouter.patch('/:id', authenticate, async (req, res) => {
       success: false,
       error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
     });
+  }
+});
+
+// ── Helper ──────────────────────────────────────────────
+
+async function getNextOrderIndex(vnId: string): Promise<number> {
+  const [result] = await getDb()
+    .select({ maxOrder: sql<number>`coalesce(max(${schema.chapters.orderIndex}), -1)` })
+    .from(schema.chapters)
+    .where(eq(schema.chapters.vnId, vnId));
+  return (result?.maxOrder ?? -1) + 1;
+}
+
+// ── POST /api/v1/vns/:vnId/chapters — Create Chapter ─────
+
+vnRouter.post('/:vnId/chapters', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const data = createChapterSchema.parse(req.body);
+    const [chapter] = await getDb()
+      .insert(schema.chapters)
+      .values({
+        vnId,
+        title: data.title,
+        priceCredits: data.priceCredits,
+        orderIndex: await getNextOrderIndex(vnId),
+      })
+      .returning();
+
+    res.status(201).json({ success: true, data: chapter });
+  } catch (err: any) {
+    if (err.name === 'ZodError') {
+      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      return;
+    }
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── PUT /api/v1/vns/:vnId/chapters/:chapterId — Update Chapter
+
+vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+    const data = updateChapterSchema.parse(req.body);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [existing] = await getDb()
+      .select()
+      .from(schema.chapters)
+      .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    await getDb()
+      .update(schema.chapters)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.chapters.id, chapterId));
+
+    res.json({ success: true, data: { ...existing, ...data, updatedAt: new Date().toISOString() } });
+  } catch (err: any) {
+    if (err.name === 'ZodError') {
+      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      return;
+    }
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── DELETE /api/v1/vns/:vnId/chapters/:chapterId — Delete Chapter (cascade)
+
+vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [existing] = await getDb()
+      .select()
+      .from(schema.chapters)
+      .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    await getDb().delete(schema.chapters).where(eq(schema.chapters.id, chapterId));
+
+    res.json({ success: true, data: { deleted: true } });
+  } catch {
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── POST /api/v1/vns/:vnId/chapters/:chapterId/scenes — Create Scene
+
+vnRouter.post('/:vnId/chapters/:chapterId/scenes', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [chapter] = await getDb()
+      .select()
+      .from(schema.chapters)
+      .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
+      .limit(1);
+    if (!chapter) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    const data = createSceneSchema.parse(req.body);
+
+    const [scene] = await getDb()
+      .insert(schema.scenes)
+      .values({
+        chapterId,
+        title: data.title,
+        type: data.type,
+        content: data.content,
+        nextSceneId: data.nextSceneId ?? null,
+      })
+      .returning();
+
+    res.status(201).json({ success: true, data: scene });
+  } catch (err: any) {
+    if (err.name === 'ZodError') {
+      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      return;
+    }
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── PUT /api/v1/vns/:vnId/chapters/:chapterId/scenes/:sceneId — Update Scene
+
+vnRouter.put('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+    const sceneId = uuidSchema.parse(req.params.sceneId);
+    const data = updateSceneSchema.parse(req.body);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [existing] = await getDb()
+      .select()
+      .from(schema.scenes)
+      .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
+
+    const [updated] = await getDb()
+      .update(schema.scenes)
+      .set(updateData as any)
+      .where(eq(schema.scenes.id, sceneId))
+      .returning();
+
+    res.json({ success: true, data: updated });
+  } catch (err: any) {
+    if (err.name === 'ZodError') {
+      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      return;
+    }
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── DELETE /api/v1/vns/:vnId/chapters/:chapterId/scenes/:sceneId — Delete Scene (cascade)
+
+vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+    const sceneId = uuidSchema.parse(req.params.sceneId);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [existing] = await getDb()
+      .select()
+      .from(schema.scenes)
+      .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    await getDb().delete(schema.scenes).where(eq(schema.scenes.id, sceneId));
+
+    res.json({ success: true, data: { deleted: true } });
+  } catch {
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── POST /api/v1/vns/:vnId/chapters/:chapterId/scenes/:sceneId/choices — Create Choice
+
+vnRouter.post('/:vnId/chapters/:chapterId/scenes/:sceneId/choices', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+    const sceneId = uuidSchema.parse(req.params.sceneId);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    const [scene] = await getDb()
+      .select()
+      .from(schema.scenes)
+      .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
+      .limit(1);
+    if (!scene) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    const data = createChoiceSchema.parse(req.body);
+    const [choice] = await getDb()
+      .insert(schema.choices)
+      .values({
+        sceneId,
+        text: data.text,
+        targetSceneId: data.targetSceneId,
+        orderIndex: data.orderIndex,
+        isDefault: data.isDefault,
+      })
+      .returning();
+
+    res.status(201).json({ success: true, data: choice });
+  } catch (err: any) {
+    if (err.name === 'ZodError') {
+      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      return;
+    }
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+  }
+});
+
+// ── DELETE /api/v1/vns/:vnId/chapters/:chapterId/scenes/:sceneId/choices/:choiceId — Delete Choice (cascade)
+
+vnRouter.delete('/:vnId/chapters/:chapterId/scenes/:sceneId/choices/:choiceId', authenticate, async (req, res) => {
+  try {
+    const vnId = uuidSchema.parse(req.params.vnId);
+    const chapterId = uuidSchema.parse(req.params.chapterId);
+    const sceneId = uuidSchema.parse(req.params.sceneId);
+    const choiceId = uuidSchema.parse(req.params.choiceId);
+
+    const [vn] = await getDb()
+      .select()
+      .from(schema.visualNovels)
+      .where(eq(schema.visualNovels.id, vnId))
+      .limit(1);
+    if (!vn) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+    if (vn.creatorId !== req.user!.userId) {
+      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      return;
+    }
+
+    // Verify the scene belongs to the chapter
+    const [scene] = await getDb()
+      .select()
+      .from(schema.scenes)
+      .where(and(eq(schema.scenes.id, sceneId), eq(schema.scenes.chapterId, chapterId)))
+      .limit(1);
+    if (!scene) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Cena não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    const [existing] = await getDb()
+      .select()
+      .from(schema.choices)
+      .where(and(eq(schema.choices.id, choiceId), eq(schema.choices.sceneId, sceneId)))
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Escolha não encontrada', code: 'NOT_FOUND' } });
+      return;
+    }
+
+    await getDb().delete(schema.choices).where(eq(schema.choices.id, choiceId));
+
+    res.json({ success: true, data: { deleted: true } });
+  } catch {
+    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
   }
 });
