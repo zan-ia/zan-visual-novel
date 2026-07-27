@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Skeleton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
@@ -203,19 +204,45 @@ export function PlayerPage() {
         <Alert severity="error" sx={{ maxWidth: 500 }}>
           {error}
         </Alert>
-        <Button variant="outlined" onClick={() => navigate('/library')}>
-          Voltar à Biblioteca
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </Button>
+          <Button variant="outlined" onClick={() => navigate('/library')}>
+            Voltar à Biblioteca
+          </Button>
+        </Box>
       </Box>
     );
   }
 
   if (!currentScene) {
     return (
-      <Box
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60dvh' }}
-      >
-        <CircularProgress />
+      <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4 }} aria-busy="true" aria-label="Carregando cena">
+        {/* Skeleton da área da cena */}
+        <Skeleton
+          variant="rectangular"
+          height={300}
+          sx={{ mb: 2, borderRadius: 1, bgcolor: 'rgba(124,77,255,0.08)' }}
+        />
+        {/* Skeleton do texto narrativo */}
+        <Skeleton
+          variant="text"
+          width="60%"
+          sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 0.5 }}
+        />
+        <Skeleton
+          variant="text"
+          width="40%"
+          sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 3 }}
+        />
+        {/* Skeleton do botão continuar */}
+        <Skeleton
+          variant="rounded"
+          height={48}
+          width={200}
+          sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
+        />
       </Box>
     );
   }
