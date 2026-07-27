@@ -9,6 +9,7 @@ export interface UseVNEngineReturn {
   availableChoices: Choice[];
   isLLMScene: boolean;
   isLoading: boolean;
+  isGeneratingLLM: boolean;
   startGame: (story: StoryData, saveData?: SaveData) => void;
   continueGame: () => void;
   makeChoice: (choiceId: string) => void;
@@ -28,6 +29,7 @@ export function useVNEngine(): UseVNEngineReturn {
   const [currentScene, setCurrentScene] = useState<Scene | null>(null);
   const [availableChoices, setAvailableChoices] = useState<Choice[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingLLM, setIsGeneratingLLM] = useState(false);
 
   const updateScene = useCallback(() => {
     try {
@@ -87,16 +89,37 @@ export function useVNEngine(): UseVNEngineReturn {
     };
   }, []);
 
-  // Subscribe to engine events
+  // Subscribe to engine events (scene transitions + LLM state)
   useEffect(() => {
     const engine = engineRef.current;
     const unsubScene = engine.on('scene:enter', () => updateScene());
+
+    const unsubLLMRequested = engine.on('llm:requested', () => {
+      setIsGeneratingLLM(true);
+      setIsLoading(false);
+    });
+    const unsubLLMResponse = engine.on('llm:response', () => {
+      setIsGeneratingLLM(false);
+      updateScene();
+    });
+    const unsubError = engine.on('error', () => {
+      setIsGeneratingLLM(false);
+      updateScene();
+    });
+
     return () => {
       unsubScene();
+      unsubLLMRequested();
+      unsubLLMResponse();
+      unsubError();
     };
   }, [updateScene]);
 
   const isLLMScene = (currentScene?.metadata as Record<string, unknown>)?.generatedByLLM === true;
+
+  // Also treat scenes with `status: 'generating'` as still being generated
+  const isLLMGenerating =
+    (currentScene?.metadata as Record<string, unknown>)?.status === 'generating';
 
   return {
     engine: engineRef.current,
@@ -104,6 +127,7 @@ export function useVNEngine(): UseVNEngineReturn {
     availableChoices,
     isLLMScene,
     isLoading,
+    isGeneratingLLM: isGeneratingLLM || isLLMGenerating,
     startGame,
     continueGame,
     makeChoice,

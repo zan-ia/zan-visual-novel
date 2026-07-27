@@ -24,9 +24,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useVNEngine } from '@zan-vn/lib';
+import { useVNEngine, useLLM } from '@zan-vn/lib';
 import { SceneRenderer, ChoicePanel } from '@zan-vn/ui';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { SaveData, StoryData } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
 
@@ -39,11 +39,26 @@ export function PlayerPage() {
     availableChoices,
     isLLMScene,
     isLoading,
+    isGeneratingLLM,
     startGame,
     continueGame,
     makeChoice,
     createSave,
+    setLLMProvider,
   } = useVNEngine();
+
+  // LLM provider setup — detect device capabilities and auto-select provider
+  const accessToken = useMemo(() => localStorage.getItem('access_token') ?? undefined, []);
+  const llmProvider = useLLM({
+    apiBaseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
+    accessToken,
+  });
+
+  useEffect(() => {
+    if (llmProvider) {
+      setLLMProvider(llmProvider);
+    }
+  }, [llmProvider, setLLMProvider]);
 
   const [storyTitle, setStoryTitle] = useState('');
   const [saves, setSaves] = useState<SaveData[]>([]);
@@ -261,7 +276,9 @@ export function PlayerPage() {
           {storyTitle}
         </Typography>
         {isLLMScene && (
-          <Chip label="IA" size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
+          <Tooltip title="Este conteúdo foi gerado por IA" arrow>
+            <Chip label="IA" size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
+          </Tooltip>
         )}
         {relativeTime && (
           <Typography variant="caption" color="text.secondary" sx={{ mr: 1, fontSize: '0.7rem' }}>
@@ -308,7 +325,30 @@ export function PlayerPage() {
 
       {/* Choices or Continue or Ending */}
       <Box sx={{ mt: 3, mb: 6 }}>
-        {isLoading ? (
+        {isGeneratingLLM ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress size={48} sx={{ color: 'var(--color-secondary)' }} />
+              <Box
+                sx={{
+                  top: 0, left: 0, bottom: 0, right: 0, position: 'absolute',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <Typography variant="caption" sx={{ color: 'var(--color-secondary)', fontSize: '0.65rem' }}>
+                  IA
+                </Typography>
+              </Box>
+            </Box>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ animation: 'vn-pulse 1.5s ease-in-out infinite' }}
+            >
+              Gerando continuação com IA...
+            </Typography>
+          </Box>
+        ) : isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
             <CircularProgress size={28} />
           </Box>
@@ -327,6 +367,20 @@ export function PlayerPage() {
               Voltar à Biblioteca
             </Button>
           </Box>
+        ) : isLLMScene ? (
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/library')}
+            fullWidth
+            sx={{
+              py: 1.5,
+              fontSize: '1.1rem',
+              borderRadius: 3,
+              animation: 'vn-fade-in-up 0.5s ease-out',
+            }}
+          >
+            Voltar à Biblioteca
+          </Button>
         ) : (
           <Button
             variant="contained"

@@ -7,6 +7,7 @@ export type EngineEventType =
   | 'autosave'
   | 'llm:requested'
   | 'llm:response'
+  | 'llm:completed'
   | 'engine:start'
   | 'engine:end'
   | 'error';
@@ -28,4 +29,19 @@ export interface EngineConfig {
   maxHistory: number;
   /** Auto-save after each scene transition */
   autoSave: boolean;
+}
+
+/** Type of LLM provider currently active. */
+export type ProviderType = 'local' | 'cloud' | 'composite' | 'none';
+
+/** Device hardware capabilities used for provider selection. */
+export interface DeviceCapabilities {
+  /** Whether WebGPU is available for hardware-accelerated inference. */
+  webgpu: boolean;
+  /** Approximate device RAM in GB (via `navigator.deviceMemory`), or null if unavailable. */
+  memoryGB: number | null;
+  /** Number of logical CPU cores (via `navigator.hardwareConcurrency`). */
+  cores: number;
+  /** Recommended provider strategy based on detected capabilities. */
+  recommendedProvider: ProviderType;
 }
