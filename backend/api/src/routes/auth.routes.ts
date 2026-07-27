@@ -5,6 +5,7 @@ import { registerSchema, loginSchema } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { eq } from 'drizzle-orm';
+import { cacheSet, cacheGet, cacheDel } from '../lib/redis.js';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-secret';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret';
@@ -53,6 +54,9 @@ authRouter.post('/register', async (req, res) => {
         refreshToken,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
+
+    // Cache refresh token in Redis for fast lookup
+    await cacheSet(`refresh:${refreshToken}`, user!.id, 30 * 24 * 3600);
 
     res.status(201).json({
       success: true,
@@ -124,6 +128,9 @@ authRouter.post('/login', async (req, res) => {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
 
+    // Cache refresh token in Redis for fast lookup
+    await cacheSet(`refresh:${refreshToken}`, user.id, 30 * 24 * 3600);
+
     res.json({
       success: true,
       data: {
@@ -180,21 +187,26 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { userId: string };
-    const [session] = await getDb()
-      .select()
-      .from(schema.userSessions)
-      .where(eq(schema.userSessions.refreshToken, refreshToken))
-      .limit(1);
-    if (!session || new Date() > session.expiresAt) {
-      res.status(401).json({
-        success: false,
-        error: {
-          statusCode: 401,
-          message: 'Refresh token inválido ou expirado',
-          code: 'UNAUTHORIZED',
-        },
-      });
-      return;
+
+    // Try Redis first for session lookup, fallback to PostgreSQL
+    const cachedUserId = await cacheGet(`refresh:${refreshToken}`);
+    if (!cachedUserId) {
+      const [session] = await getDb()
+        .select()
+        .from(schema.userSessions)
+        .where(eq(schema.userSessions.refreshToken, refreshToken))
+        .limit(1);
+      if (!session || new Date() > session.expiresAt) {
+        res.status(401).json({
+          success: false,
+          error: {
+            statusCode: 401,
+            message: 'Refresh token inválido ou expirado',
+            code: 'UNAUTHORIZED',
+          },
+        });
+        return;
+      }
     }
 
     const [user] = await getDb()
@@ -211,7 +223,7 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     // Rotate refresh token
-    await getDb().delete(schema.userSessions).where(eq(schema.userSessions.id, session.id));
+    await getDb().delete(schema.userSessions).where(eq(schema.userSessions.refreshToken, refreshToken));
     const newRefreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
     await getDb()
       .insert(schema.userSessions)
@@ -220,6 +232,10 @@ authRouter.post('/refresh', async (req, res) => {
         refreshToken: newRefreshToken,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
+
+    // Update Redis cache with new refresh token
+    await cacheDel(`refresh:${refreshToken}`);
+    await cacheSet(`refresh:${newRefreshToken}`, user.id, 30 * 24 * 3600);
 
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
@@ -270,4 +286,35 @@ authRouter.get('/me', authenticate, async (req, res) => {
     return;
   }
   res.json({ success: true, data: user });
+});
+
+// POST /api/v1/auth/logout
+authRouter.post('/logout', authenticate, async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: 'Refresh token não fornecido',
+          code: 'VALIDATION_ERROR',
+        },
+      });
+      return;
+    }
+
+    // Remove from Redis and PostgreSQL in parallel
+    await Promise.all([
+      cacheDel(`refresh:${refreshToken}`),
+      getDb().delete(schema.userSessions).where(eq(schema.userSessions.refreshToken, refreshToken)),
+    ]);
+
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
+  }
 });

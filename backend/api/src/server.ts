@@ -26,6 +26,7 @@ import { assetsRouter } from './routes/assets.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
 import { createStorageProvider, S3StorageProvider } from './lib/storage.js';
+import { connectRedis, pingRedis } from './lib/redis.js';
 
 // ── Storage Provider (configured singleton) ─────────────
 
@@ -55,8 +56,13 @@ if (!(storageProvider instanceof S3StorageProvider)) {
 
 // ── Routes ──────────────────────────────────────────────
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (_req, res) => {
+  const redisOk = await pingRedis();
+  res.json({
+    status: 'ok',
+    redis: redisOk ? 'connected' : 'unavailable',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use('/api/v1/auth', authRouter);
@@ -73,6 +79,9 @@ app.use(errorHandler);
 // ── Start ───────────────────────────────────────────────
 
 async function start(): Promise<void> {
+  // Initialize Redis (non-blocking — app works without it)
+  await connectRedis();
+
   // Initialize S3 bucket when using S3-compatible storage
   if (storageProvider instanceof S3StorageProvider) {
     try {
