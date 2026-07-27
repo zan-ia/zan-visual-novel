@@ -138,7 +138,6 @@ export function PlayerPage() {
     return () => clearInterval(interval);
   }, [lastSaveTime, lastSaveLabel]);
 
-
   // ── Saves ──────────────────────────────────────────────
 
   const loadSaves = useCallback(async () => {
@@ -186,7 +185,6 @@ export function PlayerPage() {
     },
     [startGame, vnId, storyData],
   );
-
 
   // ── Render ─────────────────────────────────────────────
 

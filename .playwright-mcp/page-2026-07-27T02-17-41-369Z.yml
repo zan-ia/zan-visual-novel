@@ -1,21 +1,21 @@
 - generic [ref=f2e4]:
-  - heading "Creator Studio" [level=4] [ref=f2e5]
-  - paragraph [ref=f2e6]: Acesse seu painel de criação
-  - generic [ref=f2e7]:
-    - generic [ref=f2e8]:
-      - generic:
-        - text: Email
-        - generic: "*"
-      - generic [ref=f2e9]:
-        - textbox "Email" [ref=f2e10]
-        - group:
-          - generic: Email *
-    - generic [ref=f2e11]:
-      - generic:
-        - text: Senha
-        - generic: "*"
-      - generic [ref=f2e12]:
-        - textbox "Senha" [ref=f2e13]
-        - group:
-          - generic: Senha *
-    - button "Entrar" [ref=f2e14] [cursor=pointer]
+    - heading "Creator Studio" [level=4] [ref=f2e5]
+    - paragraph [ref=f2e6]: Acesse seu painel de criação
+    - generic [ref=f2e7]:
+        - generic [ref=f2e8]:
+            - generic:
+                - text: Email
+                - generic: '*'
+            - generic [ref=f2e9]:
+                - textbox "Email" [ref=f2e10]
+                - group:
+                    - generic: Email *
+        - generic [ref=f2e11]:
+            - generic:
+                - text: Senha
+                - generic: '*'
+            - generic [ref=f2e12]:
+                - textbox "Senha" [ref=f2e13]
+                - group:
+                    - generic: Senha *
+        - button "Entrar" [ref=f2e14] [cursor=pointer]

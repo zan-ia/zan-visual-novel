@@ -11,13 +11,13 @@ Replace the `echo 'lint ok'` placebo lint scripts in 4 packages with real `eslin
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `apps/client/package.json` | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/` |
-| `apps/dashboard/package.json` | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/` |
-| `packages/shared/package.json` | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/` |
-| `packages/ui/package.json` | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/` |
-| `eslint.config.mjs` | MODIFY | Add `allowDeclarations: true` to `no-namespace` rule to fix the Express augmentation pattern |
+| File                                      | Action | Description                                                                                       |
+| ----------------------------------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| `apps/client/package.json`                | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/`                                         |
+| `apps/dashboard/package.json`             | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/`                                         |
+| `packages/shared/package.json`            | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/`                                         |
+| `packages/ui/package.json`                | MODIFY | Change lint script from `echo 'lint ok'` to `eslint src/`                                         |
+| `eslint.config.mjs`                       | MODIFY | Add `allowDeclarations: true` to `no-namespace` rule to fix the Express augmentation pattern      |
 | `backend/api/src/routes/assets.routes.ts` | MODIFY | Replace `catch (err: any)` with `catch (err: unknown)` and add proper type guard for error access |
 
 ## Patterns to Follow
@@ -40,11 +40,11 @@ Replace the `echo 'lint ok'` placebo lint scripts in 4 packages with real `eslin
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| New lint errors found in the 4 placebo packages | Low | Errors will be surfaced by `turbo run lint`. The root config uses `warn` for `no-explicit-any` and `no-unused-vars`, so only real errors (from recommended ruleset) will fail the pipeline. |
-| `packages/shared` has compiled `.d.ts` files alongside `.ts` source — eslint might lint them | Low | The root eslint config already ignores `**/dist/**` and `**/node_modules/**`. The `.d.ts` files are in `src/` so they may be linted — but they are declaration files and should pass. If issues arise, add them to the ignore pattern. |
-| `packages/ui` uses `@xyflow/react` which may have complex types triggering warnings | Low | Warnings won't fail the pipeline. Only errors from the recommended ruleset (e.g., `no-namespace`, `no-unsafe-*`) would block. |
+| Risk                                                                                         | Impact | Mitigation                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New lint errors found in the 4 placebo packages                                              | Low    | Errors will be surfaced by `turbo run lint`. The root config uses `warn` for `no-explicit-any` and `no-unused-vars`, so only real errors (from recommended ruleset) will fail the pipeline.                                            |
+| `packages/shared` has compiled `.d.ts` files alongside `.ts` source — eslint might lint them | Low    | The root eslint config already ignores `**/dist/**` and `**/node_modules/**`. The `.d.ts` files are in `src/` so they may be linted — but they are declaration files and should pass. If issues arise, add them to the ignore pattern. |
+| `packages/ui` uses `@xyflow/react` which may have complex types triggering warnings          | Low    | Warnings won't fail the pipeline. Only errors from the recommended ruleset (e.g., `no-namespace`, `no-unsafe-*`) would block.                                                                                                          |
 
 ## Post-Implementation Verification
 

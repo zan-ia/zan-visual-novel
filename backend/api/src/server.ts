@@ -70,7 +70,10 @@ async function start(): Promise<void> {
     const storage = getStorage();
     await storage.ensureBucket();
   } catch (err) {
-    console.warn('⚠️ S3 storage not available, falling back to local filesystem:', (err as Error).message);
+    console.warn(
+      '⚠️ S3 storage not available, falling back to local filesystem:',
+      (err as Error).message,
+    );
   }
 
   app.listen(PORT, () => {

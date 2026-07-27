@@ -12,13 +12,13 @@ Polish the save system UX with 5 improvements: real chapter-based progress bar, 
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `backend/api/src/routes/saves.routes.ts` | MODIFY | Add `DELETE /saves/:id` endpoint |
-| `packages/lib/src/api-client.ts` | MODIFY | Add `deleteSave(id)` + private `del()` HTTP method |
-| `packages/vn-engine/src/engine.ts` | MODIFY | Add `getCurrentChapterIndex()` for progress calculation |
-| `packages/vn-engine/src/types.ts` | MODIFY | (No changes needed from initial analysis — engine internals suffice) |
-| `apps/client/src/pages/player-page.tsx` | MODIFY | Main UX changes: progress bar, load optimization, delete UI, last-save indicator, robust auto-save |
+| File                                     | Action | Description                                                                                        |
+| ---------------------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `backend/api/src/routes/saves.routes.ts` | MODIFY | Add `DELETE /saves/:id` endpoint                                                                   |
+| `packages/lib/src/api-client.ts`         | MODIFY | Add `deleteSave(id)` + private `del()` HTTP method                                                 |
+| `packages/vn-engine/src/engine.ts`       | MODIFY | Add `getCurrentChapterIndex()` for progress calculation                                            |
+| `packages/vn-engine/src/types.ts`        | MODIFY | (No changes needed from initial analysis — engine internals suffice)                               |
+| `apps/client/src/pages/player-page.tsx`  | MODIFY | Main UX changes: progress bar, load optimization, delete UI, last-save indicator, robust auto-save |
 
 ## Patterns to Follow
 
@@ -212,7 +212,7 @@ useEffect(() => {
     if (diff < 60) setRelativeTime(`Salvo há ${diff}s`);
     else {
       setRelativeTime(
-        `${lastSaveLabel}: ${new Date(lastSaveTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+        `${lastSaveLabel}: ${new Date(lastSaveTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
       );
     }
   };
@@ -232,11 +232,13 @@ setLastSaveLabel(save.label);
 Display in the top bar, next to the save icons:
 
 ```tsx
-{relativeTime && (
-  <Typography variant="caption" color="text.secondary" sx={{ mr: 1, fontSize: '0.7rem' }}>
-    {relativeTime}
-  </Typography>
-)}
+{
+  relativeTime && (
+    <Typography variant="caption" color="text.secondary" sx={{ mr: 1, fontSize: '0.7rem' }}>
+      {relativeTime}
+    </Typography>
+  );
+}
 ```
 
 #### 4f. Delete Save UI (in drawer list items)
@@ -245,10 +247,7 @@ Add a delete icon button to each `ListItemButton` in the save list:
 
 ```tsx
 <ListItemButton key={save.id} onClick={() => handleLoadSave(save)}>
-  <ListItemText
-    primary={save.label}
-    secondary={new Date(save.updatedAt).toLocaleString('pt-BR')}
-  />
+  <ListItemText primary={save.label} secondary={new Date(save.updatedAt).toLocaleString('pt-BR')} />
   <IconButton
     size="small"
     onClick={(e) => {
@@ -293,6 +292,7 @@ Add the confirmation dialog (MUI Dialog) before the closing `</Box>` of the draw
 ```
 
 New MUI imports to add:
+
 - `DeleteIcon` from `@mui/icons-material/Delete`
 - `Dialog`, `DialogTitle`, `DialogContent`, `DialogContentText`, `DialogActions` from `@mui/material`
 
@@ -335,18 +335,19 @@ useEffect(() => {
 ```
 
 Update the JSX to use the wrapped callbacks:
+
 - Replace `continueGame()` with `handleContinue()`
 - Replace `makeChoice` with `handleMakeChoice`
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Engine `getCurrentChapterIndex()` assumes `chapter.orderIndex` is zero-based and sequential | Low | The `orderIndex` field in Drizzle schema defaults to 0 and is set by the creator. Use `findIndex` as fallback if `orderIndex` is unreliable |
-| `storyData` ref may be stale on navigation away/back | Low | `storyData` is set on initial load and only used for load/restore within same session. A page remount resets state |
-| Auto-save skipped during very long LLM generation (>60s) | Low | LLM generation sets `isLLMScene` + `isLoading`; acceptable UX trade-off vs interrupting generation |
-| Delete endpoint not idempotent on repeated calls | Low | 404 is returned if already deleted; client handles this gracefully (snackbar + reload list) |
-| MUI Dialog may need `disablePortal` or specific z-index in player fullscreen layout | Low | Player page uses `position: relative` + `z-index` order; MUI Dialog renders in portal by default — test in browser |
+| Risk                                                                                        | Impact | Mitigation                                                                                                                                  |
+| ------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Engine `getCurrentChapterIndex()` assumes `chapter.orderIndex` is zero-based and sequential | Low    | The `orderIndex` field in Drizzle schema defaults to 0 and is set by the creator. Use `findIndex` as fallback if `orderIndex` is unreliable |
+| `storyData` ref may be stale on navigation away/back                                        | Low    | `storyData` is set on initial load and only used for load/restore within same session. A page remount resets state                          |
+| Auto-save skipped during very long LLM generation (>60s)                                    | Low    | LLM generation sets `isLLMScene` + `isLoading`; acceptable UX trade-off vs interrupting generation                                          |
+| Delete endpoint not idempotent on repeated calls                                            | Low    | 404 is returned if already deleted; client handles this gracefully (snackbar + reload list)                                                 |
+| MUI Dialog may need `disablePortal` or specific z-index in player fullscreen layout         | Low    | Player page uses `position: relative` + `z-index` order; MUI Dialog renders in portal by default — test in browser                          |
 
 ## Post-Implementation Verification
 

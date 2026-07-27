@@ -16,9 +16,9 @@ assignees: []
 
 ## Critérios de Aceite
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ## Design / UX (se aplicável)
 

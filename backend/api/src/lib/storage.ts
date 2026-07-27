@@ -63,7 +63,11 @@ export class StorageService {
    * Upload a file to S3-compatible storage.
    * @returns The storage URL (key path within the bucket)
    */
-  async upload(key: string, body: Buffer | Uint8Array | Blob, contentType: string): Promise<string> {
+  async upload(
+    key: string,
+    body: Buffer | Uint8Array | Blob,
+    contentType: string,
+  ): Promise<string> {
     await this.client.send(
       new PutObjectCommand({
         Bucket: this.bucket,
@@ -106,7 +110,10 @@ export class StorageService {
         console.log(`✅ S3 bucket "${this.bucket}" created`);
       }
     } catch (err) {
-      console.warn(`⚠️ Could not verify/create S3 bucket "${this.bucket}":`, (err as Error).message);
+      console.warn(
+        `⚠️ Could not verify/create S3 bucket "${this.bucket}":`,
+        (err as Error).message,
+      );
     }
   }
 }

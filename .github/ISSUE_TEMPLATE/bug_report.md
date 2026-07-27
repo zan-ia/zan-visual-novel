@@ -12,9 +12,9 @@ assignees: []
 
 ## Passos para Reproduzir
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Comportamento Esperado
 
@@ -30,9 +30,9 @@ assignees: []
 
 ## Ambiente
 
-- **SO:** 
-- **Navegador:** 
-- **Branch:** 
+- **SO:**
+- **Navegador:**
+- **Branch:**
 
 ## Severidade
 
