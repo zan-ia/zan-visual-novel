@@ -25,8 +25,12 @@ import { llmRouter } from './routes/llm.routes.js';
 import { assetsRouter } from './routes/assets.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
-import { getStorage } from './lib/storage.js';
+import { createStorageProvider, S3StorageProvider } from './lib/storage.js';
 import { connectRedis, pingRedis } from './lib/redis.js';
+
+// ── Storage Provider (configured singleton) ─────────────
+
+export const storageProvider = createStorageProvider();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -44,7 +48,11 @@ app.use(
 );
 app.use(express.json());
 app.use(rateLimiter);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Serve local uploads only when using the local storage provider
+if (!(storageProvider instanceof S3StorageProvider)) {
+  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+}
 
 // ── Routes ──────────────────────────────────────────────
 
@@ -74,15 +82,16 @@ async function start(): Promise<void> {
   // Initialize Redis (non-blocking — app works without it)
   await connectRedis();
 
-  // Initialize S3 bucket (MinIO / R2 / S3)
-  try {
-    const storage = getStorage();
-    await storage.ensureBucket();
-  } catch (err) {
-    console.warn(
-      '⚠️ S3 storage not available, falling back to local filesystem:',
-      (err as Error).message,
-    );
+  // Initialize S3 bucket when using S3-compatible storage
+  if (storageProvider instanceof S3StorageProvider) {
+    try {
+      await storageProvider.ensureBucket();
+    } catch (err) {
+      console.warn(
+        '⚠️ Could not verify/create S3 bucket:',
+        (err as Error).message,
+      );
+    }
   }
 
   app.listen(PORT, () => {

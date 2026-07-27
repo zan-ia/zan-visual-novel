@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Discussões
-    url: https://github.com/zan-ia/zan-visual-novel/discussions
-    about: Tire dúvidas e discuta ideias antes de abrir uma issue
+  - name: "Discord"
+    url: "https://discord.gg/zanvn"
+    about: "Dúvidas e discussões da comunidade"
