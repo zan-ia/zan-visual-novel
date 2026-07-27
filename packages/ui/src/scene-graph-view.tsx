@@ -439,6 +439,9 @@ function SceneGraphViewInner(props: SceneGraphViewProps) {
         deleteKeyCode={['Backspace', 'Delete']}
         selectionKeyCode="Shift"
         multiSelectionKeyCode="Control"
+        panOnDrag={false}
+        panOnScroll
+        zoomOnDoubleClick={false}
         style={{ background: '#1a1a23' }}
       >
         <Background color="rgba(255,255,255,0.04)" gap={20} />
