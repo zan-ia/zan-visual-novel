@@ -23,6 +23,8 @@ describe('GET /api/health', () => {
 
       const body = await response.json();
       expect(body).toHaveProperty('status', 'ok');
+      expect(body).toHaveProperty('redis');
+      expect(['connected', 'unavailable']).toContain(body.redis);
       expect(body).toHaveProperty('timestamp');
     } finally {
       server.close();
