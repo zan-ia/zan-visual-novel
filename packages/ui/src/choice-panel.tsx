@@ -30,7 +30,6 @@ const buttonBaseStyle: React.CSSProperties = {
   textAlign: 'left' as const,
   cursor: 'pointer',
   transition: 'all 200ms ease',
-  outline: 'none',
 };
 
 /**
@@ -77,13 +76,6 @@ export function ChoicePanel({ choices, onSelect, disabled, className }: ChoicePa
             if (disabled) return;
             e.currentTarget.style.transform = 'none';
             e.currentTarget.style.backgroundColor = 'rgba(124, 77, 255, 0.2)';
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.outline = '2px solid #7c4dff';
-            e.currentTarget.style.outlineOffset = '2px';
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.outline = 'none';
           }}
         >
           {choice.text}

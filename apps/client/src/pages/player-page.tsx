@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  Tooltip,
   Drawer,
   List,
   ListItemButton,
@@ -251,9 +252,11 @@ export function PlayerPage() {
     <Box sx={{ maxWidth: 800, mx: 'auto', position: 'relative' }}>
       {/* Top bar */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-        <IconButton onClick={() => navigate('/library')} aria-label="Voltar à biblioteca">
-          <ArrowBackIcon />
-        </IconButton>
+        <Tooltip title="Voltar à biblioteca">
+          <IconButton onClick={() => navigate('/library')} aria-label="Voltar à biblioteca">
+            <ArrowBackIcon />
+          </IconButton>
+        </Tooltip>
         <Typography variant="h6" sx={{ flexGrow: 1, fontFamily: '"Playfair Display", serif' }}>
           {storyTitle}
         </Typography>
@@ -265,19 +268,22 @@ export function PlayerPage() {
             {relativeTime}
           </Typography>
         )}
-        <IconButton onClick={handleQuickSave} aria-label="Salvar rápido" title="Quick Save">
-          <SaveIcon />
-        </IconButton>
-        <IconButton
-          onClick={() => {
-            loadSaves();
-            setSaveDrawerOpen(true);
-          }}
-          aria-label="Abrir saves"
-          title="Saves"
-        >
-          <FolderOpenIcon />
-        </IconButton>
+        <Tooltip title="Salvar progresso">
+          <IconButton onClick={handleQuickSave} aria-label="Salvar rápido">
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Abrir saves">
+          <IconButton
+            onClick={() => {
+              loadSaves();
+              setSaveDrawerOpen(true);
+            }}
+            aria-label="Abrir saves"
+          >
+            <FolderOpenIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {/* Progress bar */}
