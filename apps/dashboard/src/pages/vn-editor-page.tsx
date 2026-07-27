@@ -80,6 +80,18 @@ export function VNEditorPage() {
   const [newChoiceText, setNewChoiceText] = useState('');
   const [newChoiceTarget, setNewChoiceTarget] = useState('');
 
+  // Conditions/Effects editing
+  const [editingConditions, setEditingConditions] = useState<any[]>([]);
+  const [editingEffects, setEditingEffects] = useState<any[]>([]);
+  const [showConditionsPanel, setShowConditionsPanel] = useState(false);
+  const [showEffectsPanel, setShowEffectsPanel] = useState(false);
+  const [newConditionVar, setNewConditionVar] = useState('');
+  const [newConditionOp, setNewConditionOp] = useState('eq');
+  const [newConditionValue, setNewConditionValue] = useState('');
+  const [newEffectVar, setNewEffectVar] = useState('');
+  const [newEffectAction, setNewEffectAction] = useState('set');
+  const [newEffectValue, setNewEffectValue] = useState('');
+
   // Choice inline editing
   const [editingChoiceId, setEditingChoiceId] = useState<string | null>(null);
   const [editingChoiceText, setEditingChoiceText] = useState('');
@@ -407,12 +419,26 @@ export function VNEditorPage() {
     setEditingChoiceId(choice.id);
     setEditingChoiceText(choice.text);
     setEditingChoiceTarget(choice.targetSceneId);
+    setEditingConditions((choice as any).conditions ?? []);
+    setEditingEffects((choice as any).effects ?? []);
+    setShowConditionsPanel(false);
+    setShowEffectsPanel(false);
+    setNewConditionVar('');
+    setNewConditionOp('eq');
+    setNewConditionValue('');
+    setNewEffectVar('');
+    setNewEffectAction('set');
+    setNewEffectValue('');
   };
 
   const cancelEditingChoice = () => {
     setEditingChoiceId(null);
     setEditingChoiceText('');
     setEditingChoiceTarget('');
+    setEditingConditions([]);
+    setEditingEffects([]);
+    setShowConditionsPanel(false);
+    setShowEffectsPanel(false);
   };
 
   const handleUpdateChoice = async () => {
@@ -428,6 +454,16 @@ export function VNEditorPage() {
         {
           text: editingChoiceText,
           targetSceneId: editingChoiceTarget || undefined,
+          conditions: editingConditions.map((c: any) => ({
+            variableName: c.variableName,
+            operator: c.operator,
+            value: c.value,
+          })),
+          effects: editingEffects.map((e: any) => ({
+            variableName: e.variableName,
+            action: e.action,
+            value: e.value,
+          })),
         },
       );
       if (res.success) {
@@ -438,6 +474,8 @@ export function VNEditorPage() {
                   ...c,
                   text: editingChoiceText,
                   targetSceneId: editingChoiceTarget,
+                  conditions: editingConditions,
+                  effects: editingEffects,
                 }
               : c,
           ),
@@ -1060,11 +1098,324 @@ export function VNEditorPage() {
                                   ))}
                               </Select>
                             </FormControl>
+
+                            {/* ── Conditions Panel ── */}
+                            <Box className="choice-conditions-panel">
+                              <Button
+                                size="small"
+                                variant="text"
+                                onClick={() => setShowConditionsPanel(!showConditionsPanel)}
+                                sx={{
+                                  justifyContent: 'flex-start',
+                                  textTransform: 'none',
+                                  color: 'text.secondary',
+                                }}
+                              >
+                                {showConditionsPanel ? '▼' : '▶'} Condições
+                                {editingConditions.length > 0 && (
+                                  <Chip
+                                    label={editingConditions.length}
+                                    size="small"
+                                    sx={{ ml: 1, height: 18, fontSize: '0.65rem' }}
+                                  />
+                                )}
+                              </Button>
+
+                              {showConditionsPanel && (
+                                <>
+                                  {editingConditions.map((cond: any, ci: number) => (
+                                    <Box key={ci} className="condition-row">
+                                      <Box className="condition-row-fields">
+                                        <TextField
+                                          size="small"
+                                          placeholder="flag"
+                                          value={cond.variableName ?? ''}
+                                          onChange={(e) => {
+                                            const updated = [...editingConditions];
+                                            updated[ci] = { ...updated[ci], variableName: e.target.value };
+                                            setEditingConditions(updated);
+                                          }}
+                                          sx={{ width: 110 }}
+                                        />
+                                        <FormControl size="small" sx={{ minWidth: 90 }}>
+                                          <Select
+                                            value={cond.operator ?? 'eq'}
+                                            onChange={(e) => {
+                                              const updated = [...editingConditions];
+                                              updated[ci] = { ...updated[ci], operator: e.target.value };
+                                              setEditingConditions(updated);
+                                            }}
+                                          >
+                                            <MenuItem value="eq">==</MenuItem>
+                                            <MenuItem value="neq">!=</MenuItem>
+                                            <MenuItem value="gt">&gt;</MenuItem>
+                                            <MenuItem value="lt">&lt;</MenuItem>
+                                            <MenuItem value="gte">&gt;=</MenuItem>
+                                            <MenuItem value="lte">&lt;=</MenuItem>
+                                            <MenuItem value="in">em</MenuItem>
+                                            <MenuItem value="not_in">não em</MenuItem>
+                                            <MenuItem value="exists">existe</MenuItem>
+                                          </Select>
+                                        </FormControl>
+                                        {cond.operator !== 'exists' && (
+                                          <TextField
+                                            size="small"
+                                            placeholder="valor"
+                                            value={cond.value ?? ''}
+                                            onChange={(e) => {
+                                              const updated = [...editingConditions];
+                                              updated[ci] = { ...updated[ci], value: e.target.value };
+                                              setEditingConditions(updated);
+                                            }}
+                                            sx={{ width: 100 }}
+                                          />
+                                        )}
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setEditingConditions(editingConditions.filter((_, i) => i !== ci));
+                                          }}
+                                        >
+                                          <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                      </Box>
+                                      <Typography className="condition-preview" variant="caption">
+                                        Se {cond.variableName || 'flag'}{' '}
+                                        {cond.operator === 'eq'
+                                          ? '=='
+                                          : cond.operator === 'neq'
+                                            ? '!='
+                                            : cond.operator === 'gt'
+                                              ? '>'
+                                              : cond.operator === 'lt'
+                                                ? '<'
+                                                : cond.operator === 'gte'
+                                                  ? '>='
+                                                  : cond.operator === 'lte'
+                                                    ? '<='
+                                                    : cond.operator === 'in'
+                                                      ? 'em'
+                                                      : cond.operator === 'not_in'
+                                                        ? 'não em'
+                                                        : cond.operator === 'exists'
+                                                          ? 'existe'
+                                                          : cond.operator}{' '}
+                                        {cond.operator !== 'exists' ? cond.value || 'valor' : ''}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+
+                                  {/* Add condition row */}
+                                  <Box className="condition-add-row">
+                                    <TextField
+                                      size="small"
+                                      placeholder="flag"
+                                      value={newConditionVar}
+                                      onChange={(e) => setNewConditionVar(e.target.value)}
+                                      sx={{ width: 110 }}
+                                    />
+                                    <FormControl size="small" sx={{ minWidth: 90 }}>
+                                      <Select
+                                        value={newConditionOp}
+                                        onChange={(e) => setNewConditionOp(e.target.value)}
+                                      >
+                                        <MenuItem value="eq">==</MenuItem>
+                                        <MenuItem value="neq">!=</MenuItem>
+                                        <MenuItem value="gt">&gt;</MenuItem>
+                                        <MenuItem value="lt">&lt;</MenuItem>
+                                        <MenuItem value="gte">&gt;=</MenuItem>
+                                        <MenuItem value="lte">&lt;=</MenuItem>
+                                        <MenuItem value="in">em</MenuItem>
+                                        <MenuItem value="not_in">não em</MenuItem>
+                                        <MenuItem value="exists">existe</MenuItem>
+                                      </Select>
+                                    </FormControl>
+                                    {newConditionOp !== 'exists' && (
+                                      <TextField
+                                        size="small"
+                                        placeholder="valor"
+                                        value={newConditionValue}
+                                        onChange={(e) => setNewConditionValue(e.target.value)}
+                                        sx={{ width: 100 }}
+                                      />
+                                    )}
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      disabled={!newConditionVar.trim()}
+                                      onClick={() => {
+                                        if (!newConditionVar.trim()) return;
+                                        setEditingConditions([
+                                          ...editingConditions,
+                                          {
+                                            variableName: newConditionVar.trim(),
+                                            operator: newConditionOp,
+                                            value: newConditionOp === 'exists' ? null : newConditionValue,
+                                          },
+                                        ]);
+                                        setNewConditionVar('');
+                                        setNewConditionOp('eq');
+                                        setNewConditionValue('');
+                                      }}
+                                    >
+                                      + Condição
+                                    </Button>
+                                  </Box>
+                                </>
+                              )}
+                            </Box>
+
+                            {/* ── Effects Panel ── */}
+                            <Box className="choice-effects-panel">
+                              <Button
+                                size="small"
+                                variant="text"
+                                onClick={() => setShowEffectsPanel(!showEffectsPanel)}
+                                sx={{
+                                  justifyContent: 'flex-start',
+                                  textTransform: 'none',
+                                  color: 'text.secondary',
+                                }}
+                              >
+                                {showEffectsPanel ? '▼' : '▶'} Efeitos
+                                {editingEffects.length > 0 && (
+                                  <Chip
+                                    label={editingEffects.length}
+                                    size="small"
+                                    sx={{ ml: 1, height: 18, fontSize: '0.65rem' }}
+                                  />
+                                )}
+                              </Button>
+
+                              {showEffectsPanel && (
+                                <>
+                                  {editingEffects.map((eff: any, ei: number) => (
+                                    <Box key={ei} className="effect-row">
+                                      <Box className="effect-row-fields">
+                                        <TextField
+                                          size="small"
+                                          placeholder="flag"
+                                          value={eff.variableName ?? ''}
+                                          onChange={(e) => {
+                                            const updated = [...editingEffects];
+                                            updated[ei] = { ...updated[ei], variableName: e.target.value };
+                                            setEditingEffects(updated);
+                                          }}
+                                          sx={{ width: 110 }}
+                                        />
+                                        <FormControl size="small" sx={{ minWidth: 110 }}>
+                                          <Select
+                                            value={eff.action ?? 'set'}
+                                            onChange={(e) => {
+                                              const updated = [...editingEffects];
+                                              updated[ei] = { ...updated[ei], action: e.target.value };
+                                              setEditingEffects(updated);
+                                            }}
+                                          >
+                                            <MenuItem value="set">definir</MenuItem>
+                                            <MenuItem value="add">adicionar</MenuItem>
+                                            <MenuItem value="toggle">alternar</MenuItem>
+                                            <MenuItem value="push">push</MenuItem>
+                                          </Select>
+                                        </FormControl>
+                                        {eff.action !== 'toggle' && (
+                                          <TextField
+                                            size="small"
+                                            placeholder="valor"
+                                            value={eff.value ?? ''}
+                                            onChange={(e) => {
+                                              const updated = [...editingEffects];
+                                              updated[ei] = { ...updated[ei], value: e.target.value };
+                                              setEditingEffects(updated);
+                                            }}
+                                            sx={{ width: 100 }}
+                                          />
+                                        )}
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setEditingEffects(editingEffects.filter((_, i) => i !== ei));
+                                          }}
+                                        >
+                                          <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                      </Box>
+                                      <Typography className="effect-preview" variant="caption">
+                                        {eff.action === 'set'
+                                          ? 'definir'
+                                          : eff.action === 'add'
+                                            ? 'adicionar'
+                                            : eff.action === 'toggle'
+                                              ? 'alternar'
+                                              : eff.action === 'push'
+                                                ? 'push'
+                                                : eff.action}{' '}
+                                        {eff.variableName || 'flag'}
+                                        {eff.action !== 'toggle' ? ` = ${eff.value || 'valor'}` : ''}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+
+                                  {/* Add effect row */}
+                                  <Box className="effect-add-row">
+                                    <TextField
+                                      size="small"
+                                      placeholder="flag"
+                                      value={newEffectVar}
+                                      onChange={(e) => setNewEffectVar(e.target.value)}
+                                      sx={{ width: 110 }}
+                                    />
+                                    <FormControl size="small" sx={{ minWidth: 110 }}>
+                                      <Select
+                                        value={newEffectAction}
+                                        onChange={(e) => setNewEffectAction(e.target.value)}
+                                      >
+                                        <MenuItem value="set">definir</MenuItem>
+                                        <MenuItem value="add">adicionar</MenuItem>
+                                        <MenuItem value="toggle">alternar</MenuItem>
+                                        <MenuItem value="push">push</MenuItem>
+                                      </Select>
+                                    </FormControl>
+                                    {newEffectAction !== 'toggle' && (
+                                      <TextField
+                                        size="small"
+                                        placeholder="valor"
+                                        value={newEffectValue}
+                                        onChange={(e) => setNewEffectValue(e.target.value)}
+                                        sx={{ width: 100 }}
+                                      />
+                                    )}
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      disabled={!newEffectVar.trim()}
+                                      onClick={() => {
+                                        if (!newEffectVar.trim()) return;
+                                        setEditingEffects([
+                                          ...editingEffects,
+                                          {
+                                            variableName: newEffectVar.trim(),
+                                            action: newEffectAction,
+                                            value: newEffectAction === 'toggle' ? null : newEffectValue,
+                                          },
+                                        ]);
+                                        setNewEffectVar('');
+                                        setNewEffectAction('set');
+                                        setNewEffectValue('');
+                                      }}
+                                    >
+                                      + Efeito
+                                    </Button>
+                                  </Box>
+                                </>
+                              )}
+                            </Box>
+
                             <Box display="flex" gap={1} justifyContent="flex-end">
                               <Button size="small" onClick={cancelEditingChoice}>
                                 Cancelar
                               </Button>
-                              <Button size="small" variant="contained" onClick={handleUpdateChoice}>
+                              <Button size="small" variant="contained" onClick={handleUpdateChoice} disabled={loading}>
                                 Salvar
                               </Button>
                             </Box>

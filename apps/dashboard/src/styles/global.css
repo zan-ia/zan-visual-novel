@@ -1,1 +1,48 @@
 @import '@zan-vn/ui/styles/tokens.css';
+
+/* ── Conditions & Effects Panels ──────────────────────── */
+
+.choice-conditions-panel,
+.choice-effects-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.condition-row,
+.effect-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.condition-row-fields,
+.effect-row-fields {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.condition-preview,
+.effect-preview {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  padding-left: 4px;
+}
+
+.condition-add-row,
+.effect-add-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
