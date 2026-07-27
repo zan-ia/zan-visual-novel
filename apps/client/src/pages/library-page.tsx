@@ -1,7 +1,17 @@
-import { Box, Typography, Grid, TextField, InputAdornment, Snackbar } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Grid,
+  TextField,
+  InputAdornment,
+  Snackbar,
+  Skeleton,
+  Alert,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import BookIcon from '@mui/icons-material/MenuBook';
 import { useState, useEffect, useCallback } from 'react';
-import { VNCard } from '@zan-vn/ui';
+import { VNCard, EmptyState } from '@zan-vn/ui';
 import type { VisualNovel } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
 import { useNavigate } from 'react-router-dom';
@@ -12,15 +22,24 @@ export function LibraryPage() {
   const [vns, setVNs] = useState<VisualNovel[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    api.listVNs().then((res) => {
-      if (res.success && res.data) {
-        setVNs((res.data as any).data ?? []);
-      }
-      setLoading(false);
-    });
+    api
+      .listVNs()
+      .then((res) => {
+        if (res.success && res.data) {
+          setVNs((res.data as any).data ?? []);
+        } else {
+          setError(res.error?.message ?? 'Erro ao carregar biblioteca.');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Erro ao carregar biblioteca.');
+        setLoading(false);
+      });
   }, []);
 
   const handleCardClick = useCallback(
@@ -39,6 +58,14 @@ export function LibraryPage() {
       vn.title.toLowerCase().includes(search.toLowerCase()) ||
       vn.synopsis.toLowerCase().includes(search.toLowerCase()),
   );
+
+  if (error) {
+    return (
+      <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -67,7 +94,39 @@ export function LibraryPage() {
       />
 
       {loading ? (
-        <Typography color="text.secondary">Carregando...</Typography>
+        <Grid container spacing={3} aria-busy="true" aria-label="Carregando biblioteca">
+          {[0, 1, 2, 3].map((i) => (
+            <Box
+              key={i}
+              sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
+            >
+              <Skeleton
+                variant="rounded"
+                height={280}
+                sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
+              />
+            </Box>
+          ))}
+        </Grid>
+      ) : filtered.length === 0 ? (
+        search ? (
+          <EmptyState
+            icon={<SearchIcon style={{ width: 120, height: 120 }} />}
+            title="Nenhuma VN encontrada"
+            description={`Nenhum resultado para "${search}". Tente outro termo.`}
+            action={{
+              label: 'Explorar biblioteca',
+              onClick: () => setSearch(''),
+              variant: 'link',
+            }}
+          />
+        ) : (
+          <EmptyState
+            icon={<BookIcon style={{ width: 120, height: 120 }} />}
+            title="Em breve"
+            description="Novas histórias estão sendo preparadas..."
+          />
+        )
       ) : (
         <Grid container spacing={3}>
           {filtered.map((vn) => (
@@ -78,13 +137,6 @@ export function LibraryPage() {
               <VNCard vn={vn} empty={vn.totalChapters === 0} onClick={handleCardClick} />
             </Box>
           ))}
-          {filtered.length === 0 && (
-            <Box sx={{ gridColumn: 'span 12' }}>
-              <Typography color="text.secondary" textAlign="center">
-                Nenhuma visual novel encontrada.
-              </Typography>
-            </Box>
-          )}
         </Grid>
       )}
 

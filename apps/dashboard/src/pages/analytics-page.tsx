@@ -1,4 +1,6 @@
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import { EmptyState } from '@zan-vn/ui';
 
 export function AnalyticsPage() {
   return (
@@ -6,14 +8,11 @@ export function AnalyticsPage() {
       <Typography variant="h3" mb={4}>
         Analytics
       </Typography>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h6" mb={2}>
-          Resumo
-        </Typography>
-        <Typography color="text.secondary">
-          Métricas de consumo e créditos serão exibidas aqui.
-        </Typography>
-      </Paper>
+      <EmptyState
+        icon={<BarChartIcon style={{ width: 120, height: 120 }} />}
+        title="Analytics em breve"
+        description="Acompanhe visualizações, engajamento e ganhos das suas visual novels em um só lugar"
+      />
     </Box>
   );
 }

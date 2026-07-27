@@ -9,3 +9,6 @@ export type { VNCardProps } from './vn-card.js';
 
 export { SceneGraphView } from './scene-graph-view.js';
 export type { SceneGraphViewProps } from './scene-graph-view.js';
+
+export { EmptyState } from './empty-state.js';
+export type { EmptyStateProps } from './empty-state.js';
