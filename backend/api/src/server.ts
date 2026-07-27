@@ -25,6 +25,7 @@ import { llmRouter } from './routes/llm.routes.js';
 import { assetsRouter } from './routes/assets.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
+import { getStorage } from './lib/storage.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -63,8 +64,20 @@ app.use(errorHandler);
 
 // ── Start ───────────────────────────────────────────────
 
-app.listen(PORT, () => {
-  console.log(`🚀 API running at http://localhost:${PORT}`);
-});
+async function start(): Promise<void> {
+  // Initialize S3 bucket (MinIO / R2 / S3)
+  try {
+    const storage = getStorage();
+    await storage.ensureBucket();
+  } catch (err) {
+    console.warn('⚠️ S3 storage not available, falling back to local filesystem:', (err as Error).message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 API running at http://localhost:${PORT}`);
+  });
+}
+
+start();
 
 export default app;

@@ -7,7 +7,6 @@ tools:
   - todo
   - search
   - browser
-  - vscodeBrowser
   - vscode/askQuestions
 
 model: OpenCode Go / Mimo V2.5 (opencodego)

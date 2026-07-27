@@ -1,27 +1,15 @@
 import { Router } from 'express';
 import multer from 'multer';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
+import path from 'node:path';
 import { authenticate } from '../middleware/auth.js';
 import { getDb, schema } from '../db/index.js';
+import { getStorage } from '../lib/storage.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = crypto.randomBytes(12).toString('hex');
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
-});
+// ── Multer (memory storage — file stays in buffer for S3 upload) ──
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50 MB
   },
@@ -66,13 +54,19 @@ assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => 
     }
 
     const assetType = getAssetType(req.file.mimetype);
-    const storageUrl = `/uploads/${req.file.filename}`;
+    const ext = path.extname(req.file.originalname);
+    const uniqueKey = `assets/${crypto.randomUUID()}${ext}`;
+
+    // Upload to S3-compatible storage (MinIO / R2 / S3)
+    const storage = getStorage();
+    const key = await storage.upload(uniqueKey, req.file.buffer, req.file.mimetype);
+    const storageUrl = storage.getPublicUrl(key);
 
     const [asset] = await getDb()
       .insert(schema.assets)
       .values({
         ownerId: req.user!.userId,
-        filename: req.file.filename,
+        filename: req.file.originalname,
         originalName: req.file.originalname,
         type: assetType,
         mimeType: req.file.mimetype,
