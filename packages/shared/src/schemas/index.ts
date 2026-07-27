@@ -81,6 +81,28 @@ export const createChoiceSchema = z.object({
   targetSceneId: z.string().uuid('Cena alvo inválida'),
   orderIndex: z.number().int().min(0).default(0),
   isDefault: z.boolean().default(false),
+  conditions: z.array(z.lazy(() => choiceConditionSchema)).optional(),
+  effects: z.array(z.lazy(() => choiceEffectSchema)).optional(),
+});
+
+// ── Condition & Effect Schemas ─────────────────────────
+
+export const conditionOperatorSchema = z.enum([
+  'eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'not_in', 'exists',
+]);
+
+export const effectActionSchema = z.enum(['set', 'add', 'toggle', 'push']);
+
+export const choiceConditionSchema = z.object({
+  variableName: z.string().min(1).max(100),
+  operator: conditionOperatorSchema,
+  value: z.unknown(),
+});
+
+export const choiceEffectSchema = z.object({
+  variableName: z.string().min(1).max(100),
+  action: effectActionSchema,
+  value: z.unknown(),
 });
 
 // ── Update Schemas (PUT) ──────────────────────────────
@@ -106,6 +128,8 @@ export const updateChoiceSchema = z.object({
   targetSceneId: z.string().uuid('Cena alvo inválida').nullable().optional(),
   orderIndex: z.number().int().min(0).optional(),
   isDefault: z.boolean().optional(),
+  conditions: z.array(z.lazy(() => choiceConditionSchema)).optional(),
+  effects: z.array(z.lazy(() => choiceEffectSchema)).optional(),
 });
 
 export type UpdateChoiceInput = z.infer<typeof updateChoiceSchema>;

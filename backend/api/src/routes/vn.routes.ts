@@ -137,6 +137,8 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
     let choices: any[] = [];
     let sceneAssets: any[] = [];
     let assets: any[] = [];
+    let choiceConditions: any[] = [];
+    let choiceEffects: any[] = [];
     if (chapterIds.length > 0) {
       scenes = await getDb()
         .select()
@@ -148,6 +150,17 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
           .select()
           .from(schema.choices)
           .where(inArray(schema.choices.sceneId, sceneIds));
+        const choiceIds = choices.map((c) => c.id);
+        if (choiceIds.length > 0) {
+          choiceConditions = await getDb()
+            .select()
+            .from(schema.choiceConditions)
+            .where(inArray(schema.choiceConditions.choiceId, choiceIds));
+          choiceEffects = await getDb()
+            .select()
+            .from(schema.choiceEffects)
+            .where(inArray(schema.choiceEffects.choiceId, choiceIds));
+        }
         sceneAssets = await getDb()
           .select()
           .from(schema.sceneAssets)
@@ -168,7 +181,13 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
         .filter((s) => s.chapterId === ch.id)
         .map((s) => ({
           ...s,
-          choices: choices.filter((c) => c.sceneId === s.id),
+          choices: choices
+            .filter((c) => c.sceneId === s.id)
+            .map((c) => ({
+              ...c,
+              conditions: choiceConditions.filter((cc) => cc.choiceId === c.id),
+              effects: choiceEffects.filter((ce) => ce.choiceId === c.id),
+            })),
           assets: sceneAssets
             .filter((sa) => sa.sceneId === s.id)
             .map((sa) => ({
@@ -790,7 +809,44 @@ vnRouter.post(
         })
         .returning();
 
-      res.status(201).json({ success: true, data: choice });
+      // Insert conditions if provided
+      let conditions: any[] = [];
+      if (data.conditions && data.conditions.length > 0) {
+        const insertedConditions = await getDb()
+          .insert(schema.choiceConditions)
+          .values(
+            data.conditions.map((c) => ({
+              choiceId: choice!.id,
+              variableName: c.variableName,
+              operator: c.operator,
+              value: c.value,
+            })),
+          )
+          .returning();
+        conditions = insertedConditions;
+      }
+
+      // Insert effects if provided
+      let effects: any[] = [];
+      if (data.effects && data.effects.length > 0) {
+        const insertedEffects = await getDb()
+          .insert(schema.choiceEffects)
+          .values(
+            data.effects.map((e) => ({
+              choiceId: choice!.id,
+              variableName: e.variableName,
+              action: e.action,
+              value: e.value,
+            })),
+          )
+          .returning();
+        effects = insertedEffects;
+      }
+
+      res.status(201).json({
+        success: true,
+        data: { ...choice, conditions, effects },
+      });
     } catch (err: any) {
       if (err.name === 'ZodError') {
         res.status(400).json({
@@ -881,14 +937,63 @@ vnRouter.put(
 
       const [updated] = await getDb()
         .update(schema.choices)
-        .set({ ...data })
+        .set({
+          text: data.text,
+          targetSceneId: data.targetSceneId,
+          orderIndex: data.orderIndex,
+          isDefault: data.isDefault,
+        })
         .where(eq(schema.choices.id, choiceId))
         .returning();
+
+      // Upsert conditions: delete old, insert new if provided
+      let conditions: any[] = [];
+      if (data.conditions !== undefined) {
+        await getDb()
+          .delete(schema.choiceConditions)
+          .where(eq(schema.choiceConditions.choiceId, choiceId));
+        if (data.conditions.length > 0) {
+          const insertedConditions = await getDb()
+            .insert(schema.choiceConditions)
+            .values(
+              data.conditions.map((c) => ({
+                choiceId,
+                variableName: c.variableName,
+                operator: c.operator,
+                value: c.value,
+              })),
+            )
+            .returning();
+          conditions = insertedConditions;
+        }
+      }
+
+      // Upsert effects: delete old, insert new if provided
+      let effects: any[] = [];
+      if (data.effects !== undefined) {
+        await getDb()
+          .delete(schema.choiceEffects)
+          .where(eq(schema.choiceEffects.choiceId, choiceId));
+        if (data.effects.length > 0) {
+          const insertedEffects = await getDb()
+            .insert(schema.choiceEffects)
+            .values(
+              data.effects.map((e) => ({
+                choiceId,
+                variableName: e.variableName,
+                action: e.action,
+                value: e.value,
+              })),
+            )
+            .returning();
+          effects = insertedEffects;
+        }
+      }
 
       // Cascade: valida refs da VN
       await cascadeAfterUpdate(vnId);
 
-      res.json({ success: true, data: updated });
+      res.json({ success: true, data: { ...updated, conditions, effects } });
     } catch (err: any) {
       if (err.name === 'ZodError') {
         res.status(400).json({
