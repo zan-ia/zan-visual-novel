@@ -8,4 +8,7 @@ const p = new Pool({ connectionString: process.env.DATABASE_URL });
   }
   if (!r.rows.length) console.log('Nothing to clean');
   await p.end();
-})().catch(e => { console.error(e.message); process.exit(1); });
+})().catch((e) => {
+  console.error(e.message);
+  process.exit(1);
+});

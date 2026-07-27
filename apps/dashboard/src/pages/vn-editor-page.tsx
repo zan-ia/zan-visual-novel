@@ -70,7 +70,9 @@ export function VNEditorPage() {
   // Text block inline editing
   const [editingBlockIndex, setEditingBlockIndex] = useState<number | null>(null);
   const [editingBlockText, setEditingBlockText] = useState('');
-  const [editingBlockType, setEditingBlockType] = useState<'narration' | 'dialogue' | 'thought'>('narration');
+  const [editingBlockType, setEditingBlockType] = useState<'narration' | 'dialogue' | 'thought'>(
+    'narration',
+  );
   const [editingBlockSpeaker, setEditingBlockSpeaker] = useState('');
 
   // Choice editing
@@ -87,7 +89,9 @@ export function VNEditorPage() {
 
   const sortScenes = (list: Scene[]) => {
     return [...list].sort(
-      (a, b) => ((a.metadata as any)?.orderIndex ?? list.indexOf(a)) - ((b.metadata as any)?.orderIndex ?? list.indexOf(b)),
+      (a, b) =>
+        ((a.metadata as any)?.orderIndex ?? list.indexOf(a)) -
+        ((b.metadata as any)?.orderIndex ?? list.indexOf(b)),
     );
   };
 
@@ -293,9 +297,7 @@ export function VNEditorPage() {
         content,
       });
       if (res.success && res.data) {
-        setScenes((prev) =>
-          prev.map((s) => (s.id === selectedSceneId ? (res.data as Scene) : s)),
-        );
+        setScenes((prev) => prev.map((s) => (s.id === selectedSceneId ? (res.data as Scene) : s)));
       }
       setToast('Cena salva!');
     } catch {
@@ -418,10 +420,16 @@ export function VNEditorPage() {
     if (!editingChoiceText.trim()) return;
     setLoading(true);
     try {
-      const res = await api.updateChoice(vnId, selectedChapterId, selectedSceneId, editingChoiceId, {
-        text: editingChoiceText,
-        targetSceneId: editingChoiceTarget || undefined,
-      });
+      const res = await api.updateChoice(
+        vnId,
+        selectedChapterId,
+        selectedSceneId,
+        editingChoiceId,
+        {
+          text: editingChoiceText,
+          targetSceneId: editingChoiceTarget || undefined,
+        },
+      );
       if (res.success) {
         setChoices((prev) =>
           prev.map((c) =>
@@ -466,7 +474,7 @@ export function VNEditorPage() {
       const currentOrder = (scene.metadata as any)?.orderIndex ?? i;
       if (currentOrder !== i) {
         await api.updateScene(vnId, chapterId, scene.id, {
-          metadata: { ...(scene.metadata as Record<string, unknown> ?? {}), orderIndex: i },
+          metadata: { ...((scene.metadata as Record<string, unknown>) ?? {}), orderIndex: i },
         } as any);
       }
     }
@@ -488,31 +496,36 @@ export function VNEditorPage() {
   // ── Graph View ─────────────────────────────────────────
 
   const [choiceDialogOpen, setChoiceDialogOpen] = useState(false);
-  const [pendingConnection, setPendingConnection] = useState<{ source: string; target: string } | null>(null);
+  const [pendingConnection, setPendingConnection] = useState<{
+    source: string;
+    target: string;
+  } | null>(null);
   const [graphNewChoiceText, setGraphNewChoiceText] = useState('');
 
   const handleGraphChoiceCreate = (sourceSceneId: string, targetSceneId: string, text?: string) => {
     if (!selectedChapterId || !vnId) return;
     if (text) {
       // Text provided — create directly
-      api.createChoice(vnId, selectedChapterId, sourceSceneId, {
-        text,
-        targetSceneId,
-        orderIndex: 0,
-      }).then((res) => {
-        if (res.success) {
-          // Refresh scenes
-          api.getVN(vnId).then((vnRes) => {
-            if (vnRes.success && vnRes.data) {
-              const chs = (vnRes.data as any).chapters ?? [];
-              setChapters(chs);
-              const chapter = chs.find((c: Chapter) => c.id === selectedChapterId);
-              if (chapter) setScenes(sortScenes((chapter as any)?.scenes ?? []));
-            }
-          });
-          setToast('Escolha criada!');
-        }
-      });
+      api
+        .createChoice(vnId, selectedChapterId, sourceSceneId, {
+          text,
+          targetSceneId,
+          orderIndex: 0,
+        })
+        .then((res) => {
+          if (res.success) {
+            // Refresh scenes
+            api.getVN(vnId).then((vnRes) => {
+              if (vnRes.success && vnRes.data) {
+                const chs = (vnRes.data as any).chapters ?? [];
+                setChapters(chs);
+                const chapter = chs.find((c: Chapter) => c.id === selectedChapterId);
+                if (chapter) setScenes(sortScenes((chapter as any)?.scenes ?? []));
+              }
+            });
+            setToast('Escolha criada!');
+          }
+        });
     } else {
       // No text — show dialog
       setPendingConnection({ source: sourceSceneId, target: targetSceneId });
@@ -828,12 +841,17 @@ export function VNEditorPage() {
                         bgcolor: isEditing ? 'rgba(25, 118, 210, 0.08)' : 'rgba(255,255,255,0.03)',
                         borderRadius: 1,
                         position: 'relative',
-                        border: isEditing ? '1px solid rgba(25, 118, 210, 0.3)' : '1px solid transparent',
+                        border: isEditing
+                          ? '1px solid rgba(25, 118, 210, 0.3)'
+                          : '1px solid transparent',
                         cursor: isEditing ? 'default' : 'pointer',
                         transition: 'all 0.15s ease',
                         '&:hover': isEditing
                           ? {}
-                          : { bgcolor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' },
+                          : {
+                              bgcolor: 'rgba(255,255,255,0.06)',
+                              borderColor: 'rgba(255,255,255,0.1)',
+                            },
                       }}
                       onClick={() => !isEditing && startEditingBlock(i)}
                     >
@@ -881,10 +899,23 @@ export function VNEditorPage() {
                             autoFocus
                           />
                           <Box display="flex" gap={1} justifyContent="flex-end">
-                            <Button size="small" onClick={(e) => { e.stopPropagation(); cancelEditingBlock(); }}>
+                            <Button
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelEditingBlock();
+                              }}
+                            >
                               Cancelar
                             </Button>
-                            <Button size="small" variant="contained" onClick={(e) => { e.stopPropagation(); handleUpdateTextBlock(); }}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUpdateTextBlock();
+                              }}
+                            >
                               Salvar
                             </Button>
                           </Box>
@@ -920,10 +951,17 @@ export function VNEditorPage() {
                                 <ArrowDownwardIcon fontSize="inherit" />
                               </IconButton>
                             </Box>
-                            <Chip label={block.type} size="small" color="primary" variant="outlined" />
+                            <Chip
+                              label={block.type}
+                              size="small"
+                              color="primary"
+                              variant="outlined"
+                            />
                             {block.speaker && <Chip label={block.speaker} size="small" />}
                           </Box>
-                          <Typography variant="body2" sx={{ ml: 4 }}>{block.text}</Typography>
+                          <Typography variant="body2" sx={{ ml: 4 }}>
+                            {block.text}
+                          </Typography>
                           <IconButton
                             size="small"
                             sx={{ position: 'absolute', top: 4, right: 4 }}
@@ -990,7 +1028,9 @@ export function VNEditorPage() {
                         p: isEditing ? 1.5 : 0,
                         bgcolor: isEditing ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
                         borderRadius: 1,
-                        border: isEditing ? '1px solid rgba(25, 118, 210, 0.3)' : '1px solid transparent',
+                        border: isEditing
+                          ? '1px solid rgba(25, 118, 210, 0.3)'
+                          : '1px solid transparent',
                       }}
                     >
                       {isEditing ? (
@@ -1114,9 +1154,7 @@ export function VNEditorPage() {
               </Box>
               <SceneGraphView
                 scenes={scenes}
-                choices={
-                  scenes.flatMap((s) => (s as any)?.choices ?? [])
-                }
+                choices={scenes.flatMap((s) => (s as any)?.choices ?? [])}
                 selectedSceneId={selectedSceneId}
                 onSceneSelect={(id) => {
                   setSelectedSceneId(id);
@@ -1137,9 +1175,7 @@ export function VNEditorPage() {
       {tab === 'preview' && selectedScene && (
         <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h6">
-              Preview — {selectedScene.title}
-            </Typography>
+            <Typography variant="h6">Preview — {selectedScene.title}</Typography>
             <Button
               variant="contained"
               startIcon={<PlayArrowIcon />}
@@ -1236,7 +1272,12 @@ export function VNEditorPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setChoiceDialogOpen(false); setPendingConnection(null); }}>
+          <Button
+            onClick={() => {
+              setChoiceDialogOpen(false);
+              setPendingConnection(null);
+            }}
+          >
             Cancelar
           </Button>
           <Button variant="contained" onClick={handleConfirmGraphChoice}>

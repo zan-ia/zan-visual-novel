@@ -169,9 +169,7 @@ function getLayoutedElements(
     const dagreNode = g.node(node.id);
     return {
       ...node,
-      position: dagreNode
-        ? { x: dagreNode.x - 100, y: dagreNode.y - 40 }
-        : node.position,
+      position: dagreNode ? { x: dagreNode.x - 100, y: dagreNode.y - 40 } : node.position,
     };
   });
 
@@ -283,9 +281,7 @@ function SceneGraphViewInner(props: SceneGraphViewProps) {
       setNodes(initialNodes);
       setEdges(initialEdges);
       // Re-apply layout for new nodes without positions
-      const nodesWithoutPos = initialNodes.filter(
-        (n) => n.position.x === 0 && n.position.y === 0,
-      );
+      const nodesWithoutPos = initialNodes.filter((n) => n.position.x === 0 && n.position.y === 0);
       if (nodesWithoutPos.length > 0) {
         const layouted = getLayoutedElements(initialNodes, initialEdges);
         setNodes(layouted.nodes);

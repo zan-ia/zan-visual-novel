@@ -67,9 +67,7 @@ function createStory(overrides?: Partial<StoryData>): StoryData {
       createChapter({
         id: 'ch-1',
         startSceneId: 'scene-1',
-        scenes: [
-          createScene({ id: 'scene-1', title: 'Opening' }),
-        ],
+        scenes: [createScene({ id: 'scene-1', title: 'Opening' })],
       }),
     ],
     ...overrides,
@@ -293,13 +291,15 @@ describe('VNEngine — Choice Conditions', () => {
                   id: 'c-locked',
                   text: 'Locked path',
                   targetSceneId: 'scene-secret',
-                  conditions: [{
-                    id: 'cond-1',
-                    choiceId: 'c-locked',
-                    variableName: 'hasKey',
-                    operator: 'eq',
-                    value: true,
-                  }],
+                  conditions: [
+                    {
+                      id: 'cond-1',
+                      choiceId: 'c-locked',
+                      variableName: 'hasKey',
+                      operator: 'eq',
+                      value: true,
+                    },
+                  ],
                 }),
                 createChoice({
                   id: 'c-always',
@@ -356,19 +356,37 @@ describe('VNEngine — Choice Conditions', () => {
                   id: 'c-gt',
                   text: 'Level > 5',
                   targetSceneId: 'scene-high',
-                  conditions: [{ id: 'c1', choiceId: 'c-gt', variableName: 'level', operator: 'gt', value: 5 }],
+                  conditions: [
+                    { id: 'c1', choiceId: 'c-gt', variableName: 'level', operator: 'gt', value: 5 },
+                  ],
                 }),
                 createChoice({
                   id: 'c-lte',
                   text: 'Level <= 5',
                   targetSceneId: 'scene-low',
-                  conditions: [{ id: 'c2', choiceId: 'c-lte', variableName: 'level', operator: 'lte', value: 5 }],
+                  conditions: [
+                    {
+                      id: 'c2',
+                      choiceId: 'c-lte',
+                      variableName: 'level',
+                      operator: 'lte',
+                      value: 5,
+                    },
+                  ],
                 }),
                 createChoice({
                   id: 'c-neq',
                   text: 'Not banned',
                   targetSceneId: 'scene-ok',
-                  conditions: [{ id: 'c3', choiceId: 'c-neq', variableName: 'banned', operator: 'neq', value: true }],
+                  conditions: [
+                    {
+                      id: 'c3',
+                      choiceId: 'c-neq',
+                      variableName: 'banned',
+                      operator: 'neq',
+                      value: true,
+                    },
+                  ],
                 }),
               ],
             }),
@@ -413,7 +431,15 @@ describe('VNEngine — Choice Conditions', () => {
                   id: 'c-exists',
                   text: 'Has flag',
                   targetSceneId: 'scene-yes',
-                  conditions: [{ id: 'c1', choiceId: 'c-exists', variableName: 'myFlag', operator: 'exists', value: null }],
+                  conditions: [
+                    {
+                      id: 'c1',
+                      choiceId: 'c-exists',
+                      variableName: 'myFlag',
+                      operator: 'exists',
+                      value: null,
+                    },
+                  ],
                 }),
               ],
             }),
@@ -452,25 +478,51 @@ describe('VNEngine — Choice Effects', () => {
                   id: 'c-set',
                   text: 'Set flag',
                   targetSceneId: 'scene-end',
-                  effects: [{ id: 'e1', choiceId: 'c-set', variableName: 'hero', action: 'set', value: 'Alice' }],
+                  effects: [
+                    {
+                      id: 'e1',
+                      choiceId: 'c-set',
+                      variableName: 'hero',
+                      action: 'set',
+                      value: 'Alice',
+                    },
+                  ],
                 }),
                 createChoice({
                   id: 'c-add',
                   text: 'Add gold',
                   targetSceneId: 'scene-end',
-                  effects: [{ id: 'e2', choiceId: 'c-add', variableName: 'gold', action: 'add', value: 10 }],
+                  effects: [
+                    { id: 'e2', choiceId: 'c-add', variableName: 'gold', action: 'add', value: 10 },
+                  ],
                 }),
                 createChoice({
                   id: 'c-toggle',
                   text: 'Toggle',
                   targetSceneId: 'scene-end',
-                  effects: [{ id: 'e3', choiceId: 'c-toggle', variableName: 'active', action: 'toggle', value: null }],
+                  effects: [
+                    {
+                      id: 'e3',
+                      choiceId: 'c-toggle',
+                      variableName: 'active',
+                      action: 'toggle',
+                      value: null,
+                    },
+                  ],
                 }),
                 createChoice({
                   id: 'c-push',
                   text: 'Push item',
                   targetSceneId: 'scene-end',
-                  effects: [{ id: 'e4', choiceId: 'c-push', variableName: 'items', action: 'push', value: 'sword' }],
+                  effects: [
+                    {
+                      id: 'e4',
+                      choiceId: 'c-push',
+                      variableName: 'items',
+                      action: 'push',
+                      value: 'sword',
+                    },
+                  ],
                 }),
               ],
             }),
@@ -585,9 +637,7 @@ describe('VNEngine — History', () => {
               id: 'scene-loop',
               title: 'Loop',
               type: 'choice',
-              choices: [
-                createChoice({ id: 'c-1', text: 'Go', targetSceneId: 'scene-loop' }),
-              ],
+              choices: [createChoice({ id: 'c-1', text: 'Go', targetSceneId: 'scene-loop' })],
             }),
           ],
         }),
@@ -745,9 +795,7 @@ describe('VNEngine — Events', () => {
               id: 'scene-1',
               title: 'Choice',
               type: 'choice',
-              choices: [
-                createChoice({ id: 'c-1', text: 'Go', targetSceneId: 'scene-1' }),
-              ],
+              choices: [createChoice({ id: 'c-1', text: 'Go', targetSceneId: 'scene-1' })],
             }),
           ],
         }),

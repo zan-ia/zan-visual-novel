@@ -16,8 +16,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  format:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
   typecheck:
     name: TypeScript Type Check
+    needs: [format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +51,7 @@ jobs:
 
   lint:
     name: ESLint
+    needs: [format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

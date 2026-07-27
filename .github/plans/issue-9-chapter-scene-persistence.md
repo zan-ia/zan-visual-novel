@@ -12,12 +12,12 @@ The dashboard editor currently creates chapters, scenes, text blocks, and choice
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `packages/shared/src/schemas/index.ts` | MODIFY | Add `updateChapterSchema`, `updateSceneSchema` Zod schemas for PUT endpoints |
-| `backend/api/src/routes/vn.routes.ts` | MODIFY | Add 8 new endpoints: POST/PUT/DELETE chapters, POST/PUT/DELETE scenes, POST/DELETE choices |
-| `packages/lib/src/api-client.ts` | MODIFY | Add 8 public methods: `createChapter`, `updateChapter`, `deleteChapter`, `createScene`, `updateScene`, `deleteScene`, `createChoice`, `deleteChoice` |
-| `apps/dashboard/src/pages/vn-editor-page.tsx` | MODIFY | Refactor all handlers to call API, add scene save, fix tab disabled logic, enable Preview |
+| File                                          | Action | Description                                                                                                                                          |
+| --------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/shared/src/schemas/index.ts`        | MODIFY | Add `updateChapterSchema`, `updateSceneSchema` Zod schemas for PUT endpoints                                                                         |
+| `backend/api/src/routes/vn.routes.ts`         | MODIFY | Add 8 new endpoints: POST/PUT/DELETE chapters, POST/PUT/DELETE scenes, POST/DELETE choices                                                           |
+| `packages/lib/src/api-client.ts`              | MODIFY | Add 8 public methods: `createChapter`, `updateChapter`, `deleteChapter`, `createScene`, `updateScene`, `deleteScene`, `createChoice`, `deleteChoice` |
+| `apps/dashboard/src/pages/vn-editor-page.tsx` | MODIFY | Refactor all handlers to call API, add scene save, fix tab disabled logic, enable Preview                                                            |
 
 ## Patterns to Follow
 
@@ -83,11 +83,17 @@ vnRouter.post('/:vnId/chapters', authenticate, async (req, res) => {
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -105,10 +111,20 @@ vnRouter.post('/:vnId/chapters', authenticate, async (req, res) => {
     res.status(201).json({ success: true, data: chapter });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 ```
@@ -143,11 +159,17 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -157,7 +179,10 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
       .limit(1);
     if (!existing) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' } });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -166,13 +191,26 @@ vnRouter.put('/:vnId/chapters/:chapterId', authenticate, async (req, res) => {
       .set({ ...data, updatedAt: new Date() })
       .where(eq(schema.chapters.id, chapterId));
 
-    res.json({ success: true, data: { ...existing, ...data, updatedAt: new Date().toISOString() } });
+    res.json({
+      success: true,
+      data: { ...existing, ...data, updatedAt: new Date().toISOString() },
+    });
   } catch (err: any) {
     if (err.name === 'ZodError') {
-      res.status(400).json({ success: false, error: { statusCode: 400, message: err.errors[0]?.message ?? 'Dados inválidos', code: 'VALIDATION_ERROR' } });
+      res.status(400).json({
+        success: false,
+        error: {
+          statusCode: 400,
+          message: err.errors[0]?.message ?? 'Dados inválidos',
+          code: 'VALIDATION_ERROR',
+        },
+      });
       return;
     }
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 ```
@@ -192,11 +230,17 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
       .where(eq(schema.visualNovels.id, vnId))
       .limit(1);
     if (!vn) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' } });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'VN não encontrada', code: 'NOT_FOUND' },
+      });
       return;
     }
     if (vn.creatorId !== req.user!.userId) {
-      res.status(403).json({ success: false, error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' } });
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Acesso negado', code: 'FORBIDDEN' },
+      });
       return;
     }
 
@@ -206,7 +250,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
       .where(and(eq(schema.chapters.id, chapterId), eq(schema.chapters.vnId, vnId)))
       .limit(1);
     if (!existing) {
-      res.status(404).json({ success: false, error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' } });
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Capítulo não encontrado', code: 'NOT_FOUND' },
+      });
       return;
     }
 
@@ -215,7 +262,10 @@ vnRouter.delete('/:vnId/chapters/:chapterId', authenticate, async (req, res) => 
 
     res.json({ success: true, data: { deleted: true } });
   } catch {
-    res.status(500).json({ success: false, error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' } });
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
   }
 });
 ```
@@ -231,6 +281,7 @@ Add 3 new endpoints. **Import:** add `createSceneSchema, updateSceneSchema` to t
 Ownership verified by looking up the VN via chapterId → chapters.vnId. Same try/catch/ZodError pattern.
 
 Key details:
+
 - Validate `createSceneSchema.parse(req.body)` — includes `content: TextBlock[]` min 1
 - Insert with `.returning()` to get the DB-generated UUID
 
@@ -467,12 +518,14 @@ However, when a scene is created via API, it's added to local `scenes` state. Af
 #### 7a. Fix disabled logic (line ~245)
 
 Currently:
+
 ```tsx
 <Tab label="Cenas" value="scenes" disabled={!selectedChapterId} />
 <Tab label="Preview" value="preview" disabled={!selectedSceneId} />
 ```
 
 The Preview tab's disabled state is `!selectedSceneId`, so it only enables when a scene is selected. This is correct behavior. The issue says "mesmo selecionada fica disabled" — this may be because `selectedSceneId` isn't being set properly or the scene's content array is null. Verify by checking:
+
 - The `selectedSceneId` is set when clicking a scene in the list (line ~370)
 - The `selectedScene` is correctly resolved from `scenes` array
 
@@ -496,8 +549,22 @@ The current Preview renders scene content inline. Add a "Open in Player" button 
 This requires the player route (`/play/:vnId`) to exist in the client app (`apps/client`), which it does based on the project structure (`apps/client/src/pages/player-page.tsx`). Alternatively, embed an iframe:
 
 ```tsx
-<Box sx={{ width: '100%', height: '70vh', border: '1px solid', borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
-  <iframe src={`http://localhost:5173/play/${vnId}`} width="100%" height="100%" style={{ border: 'none' }} />
+<Box
+  sx={{
+    width: '100%',
+    height: '70vh',
+    border: '1px solid',
+    borderColor: 'divider',
+    borderRadius: 1,
+    overflow: 'hidden',
+  }}
+>
+  <iframe
+    src={`http://localhost:5173/play/${vnId}`}
+    width="100%"
+    height="100%"
+    style={{ border: 'none' }}
+  />
 </Box>
 ```
 
@@ -505,14 +572,14 @@ Use `window.location.origin` for the player URL to work across environments.
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| `createSceneSchema` requires `content` min 1 — breaking for scenes created via "Add Scene" button with no text yet | Medium | Create scenes with a placeholder text block `[{ type: 'narration', text: 'Nova cena...' }]` |
-| Race condition: reloading VN data after mutation may overwrite unsaved local state | Low | Use optimistic updates: append API response to local state immediately, only re-fetch on mount |
-| DELETE cascade may delete more than expected if DB FK constraints are misconfigured | Low | Verify `onDelete: 'cascade'` on all FK columns in schema.ts (already confirmed in all relevant tables) |
-| `updateSceneSchema.partial()` makes `content` optional — but type system may still expect `TextBlock[]` in the editor state | Low | Only send changed fields in PUT body; keep local state as source of truth |
-| Preview tab still disabled after fix — root cause may be in state synchronization | Medium | Add logging/debug in `useEffect` for `selectedSceneId` changes; verify scene list renders correctly after API create |
-| CORS issues when embedding player iframe from different port (dashboard :5174 → client :5173) | Low | Use relative URLs in production (same origin); for dev, configure Vite proxy or open in new tab |
+| Risk                                                                                                                        | Impact | Mitigation                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
+| `createSceneSchema` requires `content` min 1 — breaking for scenes created via "Add Scene" button with no text yet          | Medium | Create scenes with a placeholder text block `[{ type: 'narration', text: 'Nova cena...' }]`                          |
+| Race condition: reloading VN data after mutation may overwrite unsaved local state                                          | Low    | Use optimistic updates: append API response to local state immediately, only re-fetch on mount                       |
+| DELETE cascade may delete more than expected if DB FK constraints are misconfigured                                         | Low    | Verify `onDelete: 'cascade'` on all FK columns in schema.ts (already confirmed in all relevant tables)               |
+| `updateSceneSchema.partial()` makes `content` optional — but type system may still expect `TextBlock[]` in the editor state | Low    | Only send changed fields in PUT body; keep local state as source of truth                                            |
+| Preview tab still disabled after fix — root cause may be in state synchronization                                           | Medium | Add logging/debug in `useEffect` for `selectedSceneId` changes; verify scene list renders correctly after API create |
+| CORS issues when embedding player iframe from different port (dashboard :5174 → client :5173)                               | Low    | Use relative URLs in production (same origin); for dev, configure Vite proxy or open in new tab                      |
 
 ## Post-Implementation Verification
 

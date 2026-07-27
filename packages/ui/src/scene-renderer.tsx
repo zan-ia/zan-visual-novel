@@ -12,12 +12,16 @@ export interface SceneRendererProps {
  * text blocks overlaid on top. Falls back to text-only when no assets exist.
  * Uses BEM-style CSS classes: .vn-scene, .vn-scene__background, etc.
  */
-export function SceneRenderer({ scene, isLLMGenerated, className, baseAssetUrl = '' }: SceneRendererProps) {
+export function SceneRenderer({
+  scene,
+  isLLMGenerated,
+  className,
+  baseAssetUrl = '',
+}: SceneRendererProps) {
   const bgAsset = scene.assets?.find((a: SceneAsset) => a.role === 'background');
   const spriteAssets = scene.assets?.filter((a: SceneAsset) => a.role === 'sprite') ?? [];
-  const audioAssets = scene.assets?.filter(
-    (a: SceneAsset) => a.role === 'music' || a.role === 'sfx',
-  ) ?? [];
+  const audioAssets =
+    scene.assets?.filter((a: SceneAsset) => a.role === 'music' || a.role === 'sfx') ?? [];
   const hasVisuals = bgAsset || spriteAssets.length > 0;
 
   return (
@@ -41,8 +45,10 @@ export function SceneRenderer({ scene, isLLMGenerated, className, baseAssetUrl =
                 src={`${baseAssetUrl}${sa.asset.storageUrl}`}
                 alt=""
                 style={{
-                  left: sa.config?.position?.x !== undefined ? `${sa.config.position.x}%` : undefined,
-                  top: sa.config?.position?.y !== undefined ? `${sa.config.position.y}%` : undefined,
+                  left:
+                    sa.config?.position?.x !== undefined ? `${sa.config.position.x}%` : undefined,
+                  top:
+                    sa.config?.position?.y !== undefined ? `${sa.config.position.y}%` : undefined,
                   opacity: sa.config?.opacity,
                   maxHeight: sa.config?.size?.height ? `${sa.config.size.height}px` : undefined,
                 }}

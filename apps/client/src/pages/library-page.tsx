@@ -75,11 +75,7 @@ export function LibraryPage() {
               key={vn.id}
               sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
             >
-              <VNCard
-                vn={vn}
-                empty={vn.totalChapters === 0}
-                onClick={handleCardClick}
-              />
+              <VNCard vn={vn} empty={vn.totalChapters === 0} onClick={handleCardClick} />
             </Box>
           ))}
           {filtered.length === 0 && (

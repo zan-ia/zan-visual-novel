@@ -15,6 +15,13 @@
       "dependsOn": ["build"],
       "inputs": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts"]
     },
+    "format": {
+      "cache": true
+    },
+    "format:check": {
+      "cache": true,
+      "inputs": ["src/**/*"]
+    },
     "lint": {
       "dependsOn": ["^build"]
     },
