@@ -1,4 +1,5 @@
 import { Chip } from '@mui/material';
+import BookIcon from '@mui/icons-material/MenuBook';
 import type { VisualNovel } from '@zan-vn/shared';
 
 export interface VNCardProps {
@@ -22,7 +23,12 @@ export function VNCard({ vn, onClick, className, empty = false }: VNCardProps) {
     <article
       className={`vn-card ${className ?? ''}`.trim()}
       onClick={() => onClick?.(vn)}
-      onKeyDown={(e) => e.key === 'Enter' && onClick?.(vn)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.(vn);
+        }
+      }}
       tabIndex={0}
       role="button"
       style={empty ? { opacity: 0.6, cursor: 'not-allowed' } : undefined}
@@ -30,12 +36,12 @@ export function VNCard({ vn, onClick, className, empty = false }: VNCardProps) {
         empty ? ' — Em breve, sem capítulos publicados' : ''
       }`}
     >
-      <div className="vn-card__cover" style={{ position: 'relative' }}>
+      <div className="vn-card__cover">
         {vn.coverUrl ? (
           <img src={vn.coverUrl} alt={`Capa de ${vn.title}`} loading="lazy" />
         ) : (
           <div className="vn-card__cover-placeholder" aria-hidden="true">
-            📖
+            <BookIcon sx={{ fontSize: '3rem' }} />
           </div>
         )}
         {empty && (
@@ -43,7 +49,7 @@ export function VNCard({ vn, onClick, className, empty = false }: VNCardProps) {
             label="Em breve"
             color="warning"
             size="small"
-            aria-label="Em breve — sem capítulos publicados"
+
             sx={{
               position: 'absolute',
               top: 8,

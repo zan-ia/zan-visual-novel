@@ -1,13 +1,13 @@
 import {
   Box,
   Typography,
-  Grid,
   TextField,
   InputAdornment,
   Snackbar,
   Skeleton,
   Alert,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import SearchIcon from '@mui/icons-material/Search';
 import BookIcon from '@mui/icons-material/MenuBook';
 import { useState, useEffect, useCallback } from 'react';
@@ -96,16 +96,13 @@ export function LibraryPage() {
       {loading ? (
         <Grid container spacing={3} aria-busy="true" aria-label="Carregando biblioteca">
           {[0, 1, 2, 3].map((i) => (
-            <Box
-              key={i}
-              sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
-            >
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <Skeleton
                 variant="rounded"
                 height={280}
                 sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
               />
-            </Box>
+            </Grid>
           ))}
         </Grid>
       ) : filtered.length === 0 ? (
@@ -130,12 +127,9 @@ export function LibraryPage() {
       ) : (
         <Grid container spacing={3}>
           {filtered.map((vn) => (
-            <Box
-              key={vn.id}
-              sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
-            >
+            <Grid key={vn.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <VNCard vn={vn} empty={vn.totalChapters === 0} onClick={handleCardClick} />
-            </Box>
+            </Grid>
           ))}
         </Grid>
       )}
