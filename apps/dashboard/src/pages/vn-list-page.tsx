@@ -1,4 +1,5 @@
-import { Box, Typography, Button, Card, CardContent, CardActions, Grid, Chip, Skeleton, Alert } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, CardActions, Chip, Skeleton, Alert } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState, useEffect } from 'react';
@@ -49,16 +50,13 @@ export function VNListPage() {
       {loading ? (
         <Grid container spacing={3} aria-busy="true" aria-label="Carregando VNs">
           {[0, 1, 2].map((i) => (
-            <Box
-              key={i}
-              sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4' } }}
-            >
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
               <Skeleton
                 variant="rounded"
                 height={200}
                 sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
               />
-            </Box>
+            </Grid>
           ))}
         </Grid>
       ) : vns.length === 0 ? (
@@ -74,7 +72,7 @@ export function VNListPage() {
       ) : (
         <Grid container spacing={3}>
           {vns.map((vn) => (
-            <Box key={vn.id} sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4' } }}>
+            <Grid key={vn.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/studio/${vn.id}`)}>
                 <CardContent>
                   <Typography variant="h6">{vn.title}</Typography>
@@ -99,7 +97,7 @@ export function VNListPage() {
                   </Button>
                 </CardActions>
               </Card>
-            </Box>
+            </Grid>
           ))}
         </Grid>
       )}
