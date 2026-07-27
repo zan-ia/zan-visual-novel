@@ -1,4 +1,5 @@
 import type { Scene, TextBlock, SceneAsset } from '@zan-vn/shared';
+import { Tooltip } from '@mui/material';
 
 export interface SceneRendererProps {
   scene: Scene;
@@ -25,7 +26,11 @@ export function SceneRenderer({
   const hasVisuals = bgAsset || spriteAssets.length > 0;
 
   return (
-    <div className={`vn-scene ${className ?? ''}`} data-scene-type={scene.type}>
+    <div
+      className={`vn-scene ${isLLMGenerated ? 'vn-scene--llm' : ''} ${className ?? ''}`}
+      data-scene-type={scene.type}
+      data-llm-generated={isLLMGenerated ? 'true' : undefined}
+    >
       {/* Visual layers */}
       {hasVisuals && (
         <div className="vn-scene__visuals">
@@ -73,9 +78,15 @@ export function SceneRenderer({
       {/* Text overlay */}
       <div className="vn-scene__text-overlay">
         {isLLMGenerated && (
-          <div className="vn-scene__llm-badge" aria-label="Conteúdo gerado por IA">
-            ✦ IA
-          </div>
+          <Tooltip title="Este conteúdo foi gerado por Inteligência Artificial" arrow>
+            <div
+              className="vn-scene__llm-badge"
+              aria-label="Conteúdo gerado por IA"
+              data-llm-generated="true"
+            >
+              ✦ IA
+            </div>
+          </Tooltip>
         )}
         <div className="vn-scene__content">
           {scene.content.map((block, index) => (
