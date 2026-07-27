@@ -16,6 +16,10 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/uploads': 'http://localhost:3001',
+      '/assets': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+      },
     },
   },
   build: {

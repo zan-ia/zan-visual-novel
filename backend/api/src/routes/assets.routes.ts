@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-import crypto from 'node:crypto';
-import path from 'node:path';
 import { authenticate } from '../middleware/auth.js';
 import { getDb, schema } from '../db/index.js';
 import { getStorage } from '../lib/storage.js';
@@ -54,13 +52,14 @@ assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => 
     }
 
     const assetType = getAssetType(req.file.mimetype);
-    const ext = path.extname(req.file.originalname);
-    const uniqueKey = `assets/${crypto.randomUUID()}${ext}`;
 
-    // Upload to S3-compatible storage (MinIO / R2 / S3)
+    // Upload to configured storage (local or S3-compatible)
     const storage = getStorage();
-    const key = await storage.upload(uniqueKey, req.file.buffer, req.file.mimetype);
-    const storageUrl = storage.getPublicUrl(key);
+    const { url: storageUrl } = await storage.upload(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype,
+    );
 
     const [asset] = await getDb()
       .insert(schema.assets)
