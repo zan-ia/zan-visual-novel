@@ -1,19 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
+import type { AuthPayload } from '../types/express.js';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-secret';
-
-export interface AuthPayload {
-  userId: string;
-  email: string;
-  role: 'player' | 'creator' | 'admin';
-}
-
-declare module 'express' {
-  interface Request {
-    user?: AuthPayload;
-  }
-}
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
