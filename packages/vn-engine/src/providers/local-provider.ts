@@ -37,10 +37,7 @@ export interface LocalProviderConfig {
  * Uses Vite's `new URL()` pattern for bundler compatibility.
  */
 export function createDefaultLFMWorker(): Worker {
-  return new Worker(
-    new URL('./lfm-worker.js', import.meta.url),
-    { type: 'module' },
-  );
+  return new Worker(new URL('./lfm-worker.js', import.meta.url), { type: 'module' });
 }
 
 /**
@@ -62,7 +59,10 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
   let initError: string | null = null;
 
   // Pending generation promises keyed by request id
-  const pending = new Map<string, { resolve: (r: LLMGenerateResponse) => void; reject: (e: Error) => void }>();
+  const pending = new Map<
+    string,
+    { resolve: (r: LLMGenerateResponse) => void; reject: (e: Error) => void }
+  >();
   let nextId = 0;
 
   /** Detect WebGPU support for hardware-accelerated inference. */
@@ -194,8 +194,14 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
         const origResolve = resolve;
         const origReject = reject;
         pending.set(id, {
-          resolve: (r) => { clearTimeout(timeout); origResolve(r); },
-          reject: (e) => { clearTimeout(timeout); origReject(e); },
+          resolve: (r) => {
+            clearTimeout(timeout);
+            origResolve(r);
+          },
+          reject: (e) => {
+            clearTimeout(timeout);
+            origReject(e);
+          },
         });
 
         worker!.postMessage({ type: 'generate', id, prompt, maxTokens } satisfies WorkerRequest);

@@ -47,9 +47,7 @@ function buildMessages(
   const contextBlock = [
     `Título da história: ${context.storyTitle}`,
     `Cena atual: ${context.currentScene}`,
-    context.characterNames.length > 0
-      ? `Personagens: ${context.characterNames.join(', ')}`
-      : '',
+    context.characterNames.length > 0 ? `Personagens: ${context.characterNames.join(', ')}` : '',
     context.recentHistory.length > 0
       ? `Histórico recente:\n${context.recentHistory.join('\n')}`
       : '',

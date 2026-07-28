@@ -186,10 +186,7 @@ export class ApiClient {
    * Upload an asset file to the server.
    * Uses XMLHttpRequest to support upload progress tracking (fetch does not).
    */
-  async uploadAsset(
-    file: File,
-    onProgress?: (pct: number) => void,
-  ): Promise<ApiResponse<unknown>> {
+  async uploadAsset(file: File, onProgress?: (pct: number) => void): Promise<ApiResponse<unknown>> {
     return new Promise((resolve) => {
       const formData = new FormData();
       formData.append('file', file);

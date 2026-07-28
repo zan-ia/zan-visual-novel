@@ -1,11 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  type DragEvent,
-  type ChangeEvent,
-} from 'react';
+import { useState, useEffect, useCallback, useRef, type DragEvent, type ChangeEvent } from 'react';
 import {
   Box,
   Typography,
@@ -144,7 +137,7 @@ export function AssetsPage() {
     let completedCount = 0;
     for (const file of fileArray) {
       const res = await api.uploadAsset(file, (pct) => {
-        setUploadProgress(Math.round(((completedCount * 100) + pct) / fileArray.length));
+        setUploadProgress(Math.round((completedCount * 100 + pct) / fileArray.length));
       });
 
       if (!res.success) {
@@ -417,12 +410,7 @@ export function AssetsPage() {
       )}
 
       {/* Preview Modal */}
-      <Dialog
-        open={!!previewAsset}
-        onClose={() => setPreviewAsset(null)}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={!!previewAsset} onClose={() => setPreviewAsset(null)} maxWidth="md" fullWidth>
         {previewAsset && (
           <>
             <DialogTitle>{previewAsset.originalName}</DialogTitle>
@@ -441,10 +429,7 @@ export function AssetsPage() {
                 />
               ) : previewAsset.type === 'audio' ? (
                 <Box component="audio" controls sx={{ width: '100%', mt: 2 }}>
-                  <source
-                    src={previewAsset.storageUrl}
-                    type={previewAsset.mimeType}
-                  />
+                  <source src={previewAsset.storageUrl} type={previewAsset.mimeType} />
                 </Box>
               ) : (
                 <Box
@@ -452,23 +437,12 @@ export function AssetsPage() {
                   controls
                   sx={{ width: '100%', maxHeight: '70vh', borderRadius: 1 }}
                 >
-                  <source
-                    src={previewAsset.storageUrl}
-                    type={previewAsset.mimeType}
-                  />
+                  <source src={previewAsset.storageUrl} type={previewAsset.mimeType} />
                 </Box>
               )}
               <Box mt={2} display="flex" gap={1} flexWrap="wrap">
-                <Chip
-                  label={getTypeLabel(previewAsset.type)}
-                  size="small"
-                  variant="outlined"
-                />
-                <Chip
-                  label={formatSize(previewAsset.sizeBytes)}
-                  size="small"
-                  variant="outlined"
-                />
+                <Chip label={getTypeLabel(previewAsset.type)} size="small" variant="outlined" />
+                <Chip label={formatSize(previewAsset.sizeBytes)} size="small" variant="outlined" />
                 {previewAsset.width && previewAsset.height && (
                   <Chip
                     label={`${previewAsset.width}×${previewAsset.height}`}
@@ -486,10 +460,7 @@ export function AssetsPage() {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button
-                startIcon={<ContentCopyIcon />}
-                onClick={() => copyAssetUrl(previewAsset)}
-              >
+              <Button startIcon={<ContentCopyIcon />} onClick={() => copyAssetUrl(previewAsset)}>
                 Copiar URL
               </Button>
               <Button onClick={() => setPreviewAsset(null)}>Fechar</Button>
@@ -503,9 +474,8 @@ export function AssetsPage() {
         <DialogTitle>Remover asset</DialogTitle>
         <DialogContent>
           <Typography>
-            Tem certeza que deseja remover{' '}
-            <strong>{deleteTarget?.originalName}</strong>? Esta ação não pode ser
-            desfeita.
+            Tem certeza que deseja remover <strong>{deleteTarget?.originalName}</strong>? Esta ação
+            não pode ser desfeita.
           </Typography>
         </DialogContent>
         <DialogActions>

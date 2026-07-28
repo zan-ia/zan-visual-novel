@@ -76,7 +76,7 @@ async function handleGenerate(id: string, prompt: string, maxTokens: number): Pr
 
     // result is an array of { generated_text: string } objects
     const generatedText = Array.isArray(result)
-      ? result[0]?.generated_text ?? ''
+      ? (result[0]?.generated_text ?? '')
       : (result as { generated_text: string }).generated_text;
 
     // Strip the original prompt from the output

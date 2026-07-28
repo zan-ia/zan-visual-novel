@@ -12,10 +12,10 @@ Replace the placeholder in `POST /api/v1/llm/generate` with a real cloud LLM cal
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `backend/api/src/lib/llm/cloud-llm.ts` | CREATE | Cloud LLM service (OpenAI-compatible) |
-| `backend/api/src/routes/llm.routes.ts` | MODIFY | Replace placeholder with real LLM call |
+| File                                         | Action | Description                             |
+| -------------------------------------------- | ------ | --------------------------------------- |
+| `backend/api/src/lib/llm/cloud-llm.ts`       | CREATE | Cloud LLM service (OpenAI-compatible)   |
+| `backend/api/src/routes/llm.routes.ts`       | MODIFY | Replace placeholder with real LLM call  |
 | `backend/api/src/middleware/rate-limiter.ts` | MODIFY | Add per-route rate limit config for LLM |
 
 ## Implementation Order
@@ -23,6 +23,7 @@ Replace the placeholder in `POST /api/v1/llm/generate` with a real cloud LLM cal
 ### Step 1: Cloud LLM Service (`backend/api/src/lib/llm/cloud-llm.ts`)
 
 Create a service that:
+
 - Reads `LLM_API_KEY` and `LLM_API_BASE_URL` from env (default: OpenAI)
 - Sends requests to OpenAI-compatible chat completions endpoint
 - Handles errors gracefully
@@ -38,6 +39,7 @@ const LLM_MODEL = process.env.LLM_MODEL ?? 'gpt-4o-mini';
 ### Step 2: Update LLM Route (`backend/api/src/routes/llm.routes.ts`)
 
 Replace placeholder with:
+
 - Call cloud LLM service
 - Add rate limiting (10 req/min per user)
 - Add simple Redis prompt cache (TTL 1h)
