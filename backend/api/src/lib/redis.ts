@@ -46,6 +46,9 @@ export function isRedisAvailable(): boolean {
   return isAvailable;
 }
 
+/** Convenience alias — get the shared Redis client. */
+export const getRedis = getRedisClient;
+
 export async function pingRedis(): Promise<boolean> {
   try {
     if (!isAvailable) return false;
