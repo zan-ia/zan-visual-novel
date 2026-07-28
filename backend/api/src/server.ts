@@ -78,7 +78,7 @@ app.use(errorHandler);
 
 // ── Start ───────────────────────────────────────────────
 
-async function start(): Promise<void> {
+export async function start(): Promise<void> {
   // Initialize Redis in background — server starts immediately even without it
   connectRedis();
 
@@ -96,6 +96,10 @@ async function start(): Promise<void> {
   });
 }
 
-start();
+// Only auto-start in production/development, not during tests
+// (tests create their own server with http.createServer(app))
+if (process.env.NODE_ENV !== 'test') {
+  start();
+}
 
 export default app;
