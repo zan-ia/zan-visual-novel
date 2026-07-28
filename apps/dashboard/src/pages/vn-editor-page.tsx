@@ -22,6 +22,7 @@ import {
   InputLabel,
   Snackbar,
 } from '@mui/material';
+import { Switch, Slider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -36,7 +37,7 @@ import type { Chapter, Scene, TextBlock, Choice } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
 import { SceneGraphView } from '@zan-vn/ui';
 
-type TabValue = 'details' | 'chapters' | 'scenes' | 'graph' | 'preview';
+type TabValue = 'details' | 'chapters' | 'scenes' | 'graph' | 'ia' | 'preview';
 
 export function VNEditorPage() {
   const { vnId } = useParams<{ vnId: string }>();
@@ -54,6 +55,12 @@ export function VNEditorPage() {
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+
+  // IA Config
+  const [iaEnabled, setIaEnabled] = useState(true);
+  const [iaSystemPrompt, setIaSystemPrompt] = useState('');
+  const [iaPersona, setIaPersona] = useState('');
+  const [iaMaxTokens, setIaMaxTokens] = useState(500);
 
   // Chapter dialog
   const [chapterDialogOpen, setChapterDialogOpen] = useState(false);
@@ -114,6 +121,10 @@ export function VNEditorPage() {
         const vn = res.data as any;
         setTitle(vn.title ?? '');
         setSynopsis(vn.synopsis ?? '');
+        setIaEnabled(vn.iaEnabled ?? true);
+        setIaSystemPrompt(vn.iaSystemPrompt ?? '');
+        setIaPersona(vn.iaPersona ?? '');
+        setIaMaxTokens(vn.iaMaxTokens ?? 500);
         const chs = (vn.chapters ?? []) as Chapter[];
         setChapters(chs);
         if (chs.length > 0) {
@@ -156,7 +167,14 @@ export function VNEditorPage() {
   const handleSaveVN = async () => {
     setLoading(true);
     try {
-      const data = { title, synopsis };
+      const data = {
+        title,
+        synopsis,
+        iaEnabled,
+        iaSystemPrompt: iaSystemPrompt || undefined,
+        iaPersona: iaPersona || undefined,
+        iaMaxTokens,
+      };
       if (isNew) {
         const res = await api.createVN(data);
         if (res.success && res.data) {
@@ -653,6 +671,7 @@ export function VNEditorPage() {
         <Tab label="Capítulos" value="chapters" />
         <Tab label="Cenas" value="scenes" disabled={!selectedChapterId} />
         <Tab label="Grafo" value="graph" disabled={!selectedChapterId} />
+        <Tab label="IA Config" value="ia" />
         <Tab label="Preview" value="preview" disabled={!selectedSceneId} />
       </Tabs>
 
@@ -682,6 +701,71 @@ export function VNEditorPage() {
             </Button>
             <Button variant="outlined" onClick={() => navigate('/studio')}>
               Cancelar
+            </Button>
+          </Box>
+        </Paper>
+      )}
+
+      {/* ── IA Config Tab ───────────────────────────────── */}
+      {tab === 'ia' && (
+        <Paper sx={{ p: 4, maxWidth: 800 }}>
+          <Typography variant="h6" gutterBottom>
+            Configuração de IA
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Configure como a inteligência artificial gera narrativas para esta visual novel.
+          </Typography>
+
+          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+            <Typography>Ativar geração de narrativa por IA</Typography>
+            <Switch checked={iaEnabled} onChange={(_, v) => setIaEnabled(v)} />
+          </Box>
+
+          <TextField
+            fullWidth
+            label="System Prompt"
+            value={iaSystemPrompt}
+            onChange={(e) => setIaSystemPrompt(e.target.value)}
+            margin="normal"
+            multiline
+            rows={4}
+            placeholder="Você é um narrador de fantasia medieval. Continue a história de forma imersiva, com descrições vívidas e diálogos naturais."
+            helperText="Instruções gerais para o LLM — define o estilo e tom da narrativa."
+          />
+
+          <TextField
+            fullWidth
+            label="Persona do Narrador"
+            value={iaPersona}
+            onChange={(e) => setIaPersona(e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+            placeholder="Sarcástico, misterioso, formal, poético..."
+            helperText="Personalidade e voz do narrador IA. Ex: 'Um contador de histórias sábio e melancólico.'"
+          />
+
+          <Box mt={3}>
+            <Typography gutterBottom>
+              Max Tokens: {iaMaxTokens}
+            </Typography>
+            <Slider
+              value={iaMaxTokens}
+              onChange={(_, v) => setIaMaxTokens(v as number)}
+              min={50}
+              max={2000}
+              step={50}
+              marks={[{ value: 50, label: '50' }, { value: 500, label: '500' }, { value: 2000, label: '2000' }]}
+              valueLabelDisplay="auto"
+            />
+            <Typography variant="caption" color="text.secondary">
+              Limite de tokens por geração. Valores maiores produzem textos mais longos mas custam mais.
+            </Typography>
+          </Box>
+
+          <Box mt={3} display="flex" gap={2}>
+            <Button variant="contained" onClick={handleSaveVN} disabled={loading}>
+              {loading ? 'Salvando...' : 'Salvar Configurações de IA'}
             </Button>
           </Box>
         </Paper>
