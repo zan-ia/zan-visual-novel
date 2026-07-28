@@ -79,8 +79,8 @@ app.use(errorHandler);
 // ── Start ───────────────────────────────────────────────
 
 async function start(): Promise<void> {
-  // Initialize Redis (non-blocking — app works without it)
-  await connectRedis();
+  // Initialize Redis in background — server starts immediately even without it
+  connectRedis();
 
   // Initialize S3 bucket when using S3-compatible storage
   if (storageProvider instanceof S3StorageProvider) {

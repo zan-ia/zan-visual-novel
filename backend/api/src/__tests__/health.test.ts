@@ -3,7 +3,7 @@ import http from 'node:http';
 import app from '../server.js';
 
 describe('GET /api/health', () => {
-  it('should return 200 with status ok', async () => {
+  it('should return 200 with status ok', { timeout: 15000 }, async () => {
     // Start the server on a random port for testing
     const server = http.createServer(app);
 

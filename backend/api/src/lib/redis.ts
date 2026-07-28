@@ -13,7 +13,16 @@ let isAvailable = false;
 
 export function getRedisClient(): RedisClientType {
   if (!client) {
-    client = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
+    client = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      socket: {
+        connectTimeout: 3000, // Fail fast if Redis is unreachable (CI, etc.)
+        reconnectStrategy: (retries) => {
+          if (retries > 2) return new Error('Redis unavailable after 3 attempts');
+          return Math.min(retries * 200, 1000);
+        },
+      },
+    });
     client.on('error', (err) => {
       console.warn('⚠️ Redis connection error:', err.message);
       isAvailable = false;
