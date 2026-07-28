@@ -1132,7 +1132,10 @@ export function VNEditorPage() {
                                           value={cond.variableName ?? ''}
                                           onChange={(e) => {
                                             const updated = [...editingConditions];
-                                            updated[ci] = { ...updated[ci], variableName: e.target.value };
+                                            updated[ci] = {
+                                              ...updated[ci],
+                                              variableName: e.target.value,
+                                            };
                                             setEditingConditions(updated);
                                           }}
                                           sx={{ width: 110 }}
@@ -1142,7 +1145,10 @@ export function VNEditorPage() {
                                             value={cond.operator ?? 'eq'}
                                             onChange={(e) => {
                                               const updated = [...editingConditions];
-                                              updated[ci] = { ...updated[ci], operator: e.target.value };
+                                              updated[ci] = {
+                                                ...updated[ci],
+                                                operator: e.target.value,
+                                              };
                                               setEditingConditions(updated);
                                             }}
                                           >
@@ -1164,7 +1170,10 @@ export function VNEditorPage() {
                                             value={cond.value ?? ''}
                                             onChange={(e) => {
                                               const updated = [...editingConditions];
-                                              updated[ci] = { ...updated[ci], value: e.target.value };
+                                              updated[ci] = {
+                                                ...updated[ci],
+                                                value: e.target.value,
+                                              };
                                               setEditingConditions(updated);
                                             }}
                                             sx={{ width: 100 }}
@@ -1173,7 +1182,9 @@ export function VNEditorPage() {
                                         <IconButton
                                           size="small"
                                           onClick={() => {
-                                            setEditingConditions(editingConditions.filter((_, i) => i !== ci));
+                                            setEditingConditions(
+                                              editingConditions.filter((_, i) => i !== ci),
+                                            );
                                           }}
                                         >
                                           <DeleteIcon fontSize="small" />
@@ -1250,7 +1261,10 @@ export function VNEditorPage() {
                                           {
                                             variableName: newConditionVar.trim(),
                                             operator: newConditionOp,
-                                            value: newConditionOp === 'exists' ? null : newConditionValue,
+                                            value:
+                                              newConditionOp === 'exists'
+                                                ? null
+                                                : newConditionValue,
                                           },
                                         ]);
                                         setNewConditionVar('');
@@ -1298,7 +1312,10 @@ export function VNEditorPage() {
                                           value={eff.variableName ?? ''}
                                           onChange={(e) => {
                                             const updated = [...editingEffects];
-                                            updated[ei] = { ...updated[ei], variableName: e.target.value };
+                                            updated[ei] = {
+                                              ...updated[ei],
+                                              variableName: e.target.value,
+                                            };
                                             setEditingEffects(updated);
                                           }}
                                           sx={{ width: 110 }}
@@ -1308,7 +1325,10 @@ export function VNEditorPage() {
                                             value={eff.action ?? 'set'}
                                             onChange={(e) => {
                                               const updated = [...editingEffects];
-                                              updated[ei] = { ...updated[ei], action: e.target.value };
+                                              updated[ei] = {
+                                                ...updated[ei],
+                                                action: e.target.value,
+                                              };
                                               setEditingEffects(updated);
                                             }}
                                           >
@@ -1325,7 +1345,10 @@ export function VNEditorPage() {
                                             value={eff.value ?? ''}
                                             onChange={(e) => {
                                               const updated = [...editingEffects];
-                                              updated[ei] = { ...updated[ei], value: e.target.value };
+                                              updated[ei] = {
+                                                ...updated[ei],
+                                                value: e.target.value,
+                                              };
                                               setEditingEffects(updated);
                                             }}
                                             sx={{ width: 100 }}
@@ -1334,7 +1357,9 @@ export function VNEditorPage() {
                                         <IconButton
                                           size="small"
                                           onClick={() => {
-                                            setEditingEffects(editingEffects.filter((_, i) => i !== ei));
+                                            setEditingEffects(
+                                              editingEffects.filter((_, i) => i !== ei),
+                                            );
                                           }}
                                         >
                                           <DeleteIcon fontSize="small" />
@@ -1351,7 +1376,9 @@ export function VNEditorPage() {
                                                 ? 'push'
                                                 : eff.action}{' '}
                                         {eff.variableName || 'flag'}
-                                        {eff.action !== 'toggle' ? ` = ${eff.value || 'valor'}` : ''}
+                                        {eff.action !== 'toggle'
+                                          ? ` = ${eff.value || 'valor'}`
+                                          : ''}
                                       </Typography>
                                     </Box>
                                   ))}
@@ -1396,7 +1423,8 @@ export function VNEditorPage() {
                                           {
                                             variableName: newEffectVar.trim(),
                                             action: newEffectAction,
-                                            value: newEffectAction === 'toggle' ? null : newEffectValue,
+                                            value:
+                                              newEffectAction === 'toggle' ? null : newEffectValue,
                                           },
                                         ]);
                                         setNewEffectVar('');
@@ -1415,7 +1443,12 @@ export function VNEditorPage() {
                               <Button size="small" onClick={cancelEditingChoice}>
                                 Cancelar
                               </Button>
-                              <Button size="small" variant="contained" onClick={handleUpdateChoice} disabled={loading}>
+                              <Button
+                                size="small"
+                                variant="contained"
+                                onClick={handleUpdateChoice}
+                                disabled={loading}
+                              >
                                 Salvar
                               </Button>
                             </Box>

@@ -5,6 +5,7 @@ import { StudioLayout } from './components/studio-layout.js';
 import { VNListPage } from './pages/vn-list-page.js';
 import { VNEditorPage } from './pages/vn-editor-page.js';
 import { AnalyticsPage } from './pages/analytics-page.js';
+import { AssetsPage } from './pages/assets-page.js';
 import { LoginPage } from './pages/login-page.js';
 import { theme } from './theme.js';
 
@@ -19,6 +20,7 @@ export function App() {
             <Route element={<StudioLayout />}>
               <Route path="/studio" element={<VNListPage />} />
               <Route path="/studio/:vnId" element={<VNEditorPage />} />
+              <Route path="/assets" element={<AssetsPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/studio" replace />} />

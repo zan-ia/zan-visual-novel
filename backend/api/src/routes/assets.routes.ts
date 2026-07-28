@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import { eq, and } from 'drizzle-orm';
 import { authenticate } from '../middleware/auth.js';
 import { getDb, schema } from '../db/index.js';
 import { getStorage } from '../lib/storage.js';
@@ -64,7 +65,7 @@ assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => 
     const [asset] = await getDb()
       .insert(schema.assets)
       .values({
-        ownerId: req.user!.userId,
+        ownerId: (req as any).user.userId,
         filename: req.file.originalname,
         originalName: req.file.originalname,
         type: assetType,
@@ -114,6 +115,80 @@ assetsRouter.post('/', authenticate, upload.single('file'), async (req, res) => 
     res.status(500).json({
       success: false,
       error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+    });
+  }
+});
+
+// GET /api/v1/assets — List user's assets
+assetsRouter.get('/', authenticate, async (req, res) => {
+  try {
+    const type = req.query.type as string | undefined;
+    const db = getDb();
+    const userId = (req as any).user.userId;
+
+    const conditions = [eq(schema.assets.ownerId, userId)];
+    if (type && ['image', 'audio', 'video'].includes(type)) {
+      conditions.push(eq(schema.assets.type, type as 'image' | 'audio' | 'video'));
+    }
+
+    const assets = await db
+      .select()
+      .from(schema.assets)
+      .where(and(...conditions))
+      .orderBy(schema.assets.createdAt);
+
+    res.json({ success: true, data: assets });
+  } catch (err: unknown) {
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro ao listar assets', code: 'INTERNAL_ERROR' },
+    });
+  }
+});
+
+// DELETE /api/v1/assets/:id — Delete an asset
+assetsRouter.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+
+    const [asset] = await db
+      .select()
+      .from(schema.assets)
+      .where(eq(schema.assets.id, id as any));
+
+    if (!asset) {
+      res.status(404).json({
+        success: false,
+        error: { statusCode: 404, message: 'Asset não encontrado', code: 'NOT_FOUND' },
+      });
+      return;
+    }
+
+    const userId = (req as any).user.userId;
+    if (asset.ownerId !== userId) {
+      res.status(403).json({
+        success: false,
+        error: { statusCode: 403, message: 'Não autorizado', code: 'FORBIDDEN' },
+      });
+      return;
+    }
+
+    // Delete from storage
+    try {
+      const storage = getStorage();
+      await storage.delete(asset.storageUrl);
+    } catch {
+      // Storage deletion is best-effort; DB deletion is the source of truth
+    }
+
+    await db.delete(schema.assets).where(eq(schema.assets.id, id as any));
+
+    res.json({ success: true, data: { deleted: true } });
+  } catch (err: unknown) {
+    res.status(500).json({
+      success: false,
+      error: { statusCode: 500, message: 'Erro ao deletar asset', code: 'INTERNAL_ERROR' },
     });
   }
 });

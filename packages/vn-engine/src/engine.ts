@@ -139,11 +139,13 @@ export class VNEngine {
       const placeholder = this.generateLLMScenePlaceholder(scene);
       this.emit('scene:enter', { sceneId: placeholder.id });
       // Fire-and-forget async generation — updates scene in-place
-      this.generateLLMSceneAsync(scene).then((finalScene) => {
-        this.emit('scene:enter', { sceneId: finalScene.id });
-      }).catch((err: unknown) => {
-        this.emit('error', { error: err instanceof Error ? err : new Error(String(err)) });
-      });
+      this.generateLLMSceneAsync(scene)
+        .then((finalScene) => {
+          this.emit('scene:enter', { sceneId: finalScene.id });
+        })
+        .catch((err: unknown) => {
+          this.emit('error', { error: err instanceof Error ? err : new Error(String(err)) });
+        });
       return placeholder;
     }
 
@@ -169,11 +171,13 @@ export class VNEngine {
       const placeholder = this.generateLLMScenePlaceholder(scene);
       this.emit('scene:enter', { sceneId: placeholder.id });
       // Fire-and-forget async generation — updates scene in-place
-      this.generateLLMSceneAsync(scene).then((finalScene) => {
-        this.emit('scene:enter', { sceneId: finalScene.id });
-      }).catch((err: unknown) => {
-        this.emit('error', { error: err instanceof Error ? err : new Error(String(err)) });
-      });
+      this.generateLLMSceneAsync(scene)
+        .then((finalScene) => {
+          this.emit('scene:enter', { sceneId: finalScene.id });
+        })
+        .catch((err: unknown) => {
+          this.emit('error', { error: err instanceof Error ? err : new Error(String(err)) });
+        });
       return placeholder;
     }
     throw new Error('End of story reached');

@@ -1,8 +1,8 @@
 ---
-name: "Feature Request"
-about: "Sugira uma nova funcionalidade"
-title: "feat: "
-labels: ["type:feature"]
+name: 'Feature Request'
+about: 'Sugira uma nova funcionalidade'
+title: 'feat: '
+labels: ['type:feature']
 ---
 
 ## Motivação

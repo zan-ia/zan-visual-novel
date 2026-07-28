@@ -1,8 +1,8 @@
 ---
-name: "Bug Report"
-about: "Reporte um bug para ajudar a melhorar o projeto"
-title: "fix: "
-labels: ["type:bug"]
+name: 'Bug Report'
+about: 'Reporte um bug para ajudar a melhorar o projeto'
+title: 'fix: '
+labels: ['type:bug']
 ---
 
 ## Descrição do Problema

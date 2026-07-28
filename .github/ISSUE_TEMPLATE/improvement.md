@@ -1,8 +1,8 @@
 ---
-name: "Improvement"
-about: "Sugira uma melhoria para funcionalidade existente"
-title: "improve: "
-labels: ["type:improvement"]
+name: 'Improvement'
+about: 'Sugira uma melhoria para funcionalidade existente'
+title: 'improve: '
+labels: ['type:improvement']
 ---
 
 ## Problema

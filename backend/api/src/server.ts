@@ -87,10 +87,7 @@ async function start(): Promise<void> {
     try {
       await storageProvider.ensureBucket();
     } catch (err) {
-      console.warn(
-        '⚠️ Could not verify/create S3 bucket:',
-        (err as Error).message,
-      );
+      console.warn('⚠️ Could not verify/create S3 bucket:', (err as Error).message);
     }
   }
 

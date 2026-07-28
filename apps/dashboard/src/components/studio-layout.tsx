@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import FolderIcon from '@mui/icons-material/Folder';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../providers/auth-provider.js';
 
@@ -33,13 +34,34 @@ export function StudioLayout() {
     <>
       <Toolbar />
       <List sx={{ mt: 2 }}>
-        <ListItemButton onClick={() => { navigate('/studio'); setMobileOpen(false); }}>
+        <ListItemButton
+          onClick={() => {
+            navigate('/studio');
+            setMobileOpen(false);
+          }}
+        >
           <ListItemIcon>
             <MenuBookIcon />
           </ListItemIcon>
           <ListItemText primary="Minhas VNs" />
         </ListItemButton>
-        <ListItemButton onClick={() => { navigate('/analytics'); setMobileOpen(false); }}>
+        <ListItemButton
+          onClick={() => {
+            navigate('/assets');
+            setMobileOpen(false);
+          }}
+        >
+          <ListItemIcon>
+            <FolderIcon />
+          </ListItemIcon>
+          <ListItemText primary="Assets" />
+        </ListItemButton>
+        <ListItemButton
+          onClick={() => {
+            navigate('/analytics');
+            setMobileOpen(false);
+          }}
+        >
           <ListItemIcon>
             <BarChartIcon />
           </ListItemIcon>
