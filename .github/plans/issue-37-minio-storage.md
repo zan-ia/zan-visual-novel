@@ -11,16 +11,16 @@ The branch `feat/minio-storage` already contains the core S3-compatible storage 
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `backend/api/src/lib/storage.ts` | MODIFY | Refactor to Strategy Pattern: add `IStorageProvider` interface, rename `StorageService` → `S3StorageProvider`, add `LocalStorageProvider`, add `STORAGE_PROVIDER` env var switch in `getStorage()` |
-| `backend/api/src/routes/assets.routes.ts` | MODIFY | Update `storage.upload()` call to work with new `IStorageProvider` interface (signature change: `upload(file, filename, mimeType)` → returns `{ url: string }`) |
-| `backend/api/src/server.ts` | MODIFY | Simplify startup: remove try/catch wrapping `ensureBucket()` (only S3 provider needs it); keep `express.static('/uploads')` only for `local` provider |
-| `docker-compose.yml` | MODIFY | Add `minio` to API service's `depends_on`; pass `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_PUBLIC_URL` env vars to API container |
-| `apps/client/vite.config.ts` | MODIFY | Change `/uploads` proxy to point to MinIO URL (`http://localhost:9000`) instead of API server |
-| `apps/dashboard/vite.config.ts` | MODIFY | Same proxy change as client |
-| `.env.docker` | MODIFY | Add MinIO/S3 variables: `MINIO_PORT`, `MINIO_CONSOLE_PORT`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_PUBLIC_URL`, `STORAGE_PROVIDER` |
-| `backend/api/src/__tests__/storage.test.ts` | CREATE | Unit tests for `LocalStorageProvider` and `S3StorageProvider` |
+| File                                        | Action | Description                                                                                                                                                                                                       |
+| ------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backend/api/src/lib/storage.ts`            | MODIFY | Refactor to Strategy Pattern: add `IStorageProvider` interface, rename `StorageService` → `S3StorageProvider`, add `LocalStorageProvider`, add `STORAGE_PROVIDER` env var switch in `getStorage()`                |
+| `backend/api/src/routes/assets.routes.ts`   | MODIFY | Update `storage.upload()` call to work with new `IStorageProvider` interface (signature change: `upload(file, filename, mimeType)` → returns `{ url: string }`)                                                   |
+| `backend/api/src/server.ts`                 | MODIFY | Simplify startup: remove try/catch wrapping `ensureBucket()` (only S3 provider needs it); keep `express.static('/uploads')` only for `local` provider                                                             |
+| `docker-compose.yml`                        | MODIFY | Add `minio` to API service's `depends_on`; pass `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_PUBLIC_URL` env vars to API container                                                 |
+| `apps/client/vite.config.ts`                | MODIFY | Change `/uploads` proxy to point to MinIO URL (`http://localhost:9000`) instead of API server                                                                                                                     |
+| `apps/dashboard/vite.config.ts`             | MODIFY | Same proxy change as client                                                                                                                                                                                       |
+| `.env.docker`                               | MODIFY | Add MinIO/S3 variables: `MINIO_PORT`, `MINIO_CONSOLE_PORT`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_PUBLIC_URL`, `STORAGE_PROVIDER` |
+| `backend/api/src/__tests__/storage.test.ts` | CREATE | Unit tests for `LocalStorageProvider` and `S3StorageProvider`                                                                                                                                                     |
 
 ## Patterns to Follow
 
@@ -69,12 +69,12 @@ The branch `feat/minio-storage` already contains the core S3-compatible storage 
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| **Backwards compatibility** | Medium — Existing code in `assets.routes.ts` calls `storage.upload(key, buffer, mimeType)` returning `string`; new interface may change signature | Keep `upload()` return as `string` key but also provide `getPublicUrl()` method; adapt `assets.routes.ts` to construct URL using `getPublicUrl()` |
-| **MinIO bucket auto-creation** | Low — `ensureBucket()` already implemented and called on startup | Verify MinIO healthcheck passes before API starts (`depends_on` with condition) |
-| **Local provider untested** | Medium — No existing local storage fallback | Create `LocalStorageProvider` with full test coverage |
-| **Vite proxy change breaks local dev without Docker** | Medium — If developer runs without Docker, `/uploads` won't work | Keep `STORAGE_PROVIDER=local` as option; proxy stays unchanged when using local provider |
+| Risk                                                  | Impact                                                                                                                                            | Mitigation                                                                                                                                        |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Backwards compatibility**                           | Medium — Existing code in `assets.routes.ts` calls `storage.upload(key, buffer, mimeType)` returning `string`; new interface may change signature | Keep `upload()` return as `string` key but also provide `getPublicUrl()` method; adapt `assets.routes.ts` to construct URL using `getPublicUrl()` |
+| **MinIO bucket auto-creation**                        | Low — `ensureBucket()` already implemented and called on startup                                                                                  | Verify MinIO healthcheck passes before API starts (`depends_on` with condition)                                                                   |
+| **Local provider untested**                           | Medium — No existing local storage fallback                                                                                                       | Create `LocalStorageProvider` with full test coverage                                                                                             |
+| **Vite proxy change breaks local dev without Docker** | Medium — If developer runs without Docker, `/uploads` won't work                                                                                  | Keep `STORAGE_PROVIDER=local` as option; proxy stays unchanged when using local provider                                                          |
 
 ## Post-Implementation Verification
 

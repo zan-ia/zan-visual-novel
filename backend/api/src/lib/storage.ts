@@ -39,11 +39,7 @@ export class LocalStorageProvider implements StorageProvider {
     if (!existsSync(this.baseDir)) mkdirSync(this.baseDir, { recursive: true });
   }
 
-  async upload(
-    buffer: Buffer,
-    originalName: string,
-    _mimeType: string,
-  ): Promise<{ url: string }> {
+  async upload(buffer: Buffer, originalName: string, _mimeType: string): Promise<{ url: string }> {
     const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 16);
     const ext = extname(originalName) || '.bin';
     const filename = `${hash}${ext}`;
@@ -91,11 +87,7 @@ export class S3StorageProvider implements StorageProvider {
     this.publicUrlBase = config.publicUrlBase.replace(/\/+$/, '');
   }
 
-  async upload(
-    buffer: Buffer,
-    originalName: string,
-    mimeType: string,
-  ): Promise<{ url: string }> {
+  async upload(buffer: Buffer, originalName: string, mimeType: string): Promise<{ url: string }> {
     const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 16);
     const ext = extname(originalName) || '.bin';
     const key = `assets/${hash}${ext}`;
@@ -113,9 +105,7 @@ export class S3StorageProvider implements StorageProvider {
   async delete(url: string): Promise<void> {
     const key = url.replace(this.publicUrlBase + '/', '');
     if (!key) return;
-    await this.client.send(
-      new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
-    );
+    await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
   }
 
   /**
@@ -166,8 +156,7 @@ export function createStorageProvider(): StorageProvider {
       region: process.env.S3_REGION || 'auto',
       endpoint: process.env.S3_ENDPOINT,
       bucket: process.env.S3_BUCKET || 'zan-vn-assets',
-      publicUrlBase:
-        process.env.S3_PUBLIC_URL || 'http://localhost:9000',
+      publicUrlBase: process.env.S3_PUBLIC_URL || 'http://localhost:9000',
       accessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',
       forcePathStyle: true,

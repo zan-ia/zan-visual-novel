@@ -242,16 +242,8 @@ export function PlayerPage() {
           sx={{ mb: 2, borderRadius: 1, bgcolor: 'rgba(124,77,255,0.08)' }}
         />
         {/* Skeleton do texto narrativo */}
-        <Skeleton
-          variant="text"
-          width="60%"
-          sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 0.5 }}
-        />
-        <Skeleton
-          variant="text"
-          width="40%"
-          sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 3 }}
-        />
+        <Skeleton variant="text" width="60%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 0.5 }} />
+        <Skeleton variant="text" width="40%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 3 }} />
         {/* Skeleton do botão continuar */}
         <Skeleton
           variant="rounded"
@@ -326,16 +318,27 @@ export function PlayerPage() {
       {/* Choices or Continue or Ending */}
       <Box sx={{ mt: 3, mb: 6 }}>
         {isGeneratingLLM ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
+          <Box
+            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}
+          >
             <Box sx={{ position: 'relative', display: 'inline-flex' }}>
               <CircularProgress size={48} sx={{ color: 'var(--color-secondary)' }} />
               <Box
                 sx={{
-                  top: 0, left: 0, bottom: 0, right: 0, position: 'absolute',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <Typography variant="caption" sx={{ color: 'var(--color-secondary)', fontSize: '0.65rem' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'var(--color-secondary)', fontSize: '0.65rem' }}
+                >
                   IA
                 </Typography>
               </Box>

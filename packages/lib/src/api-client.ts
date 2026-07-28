@@ -176,6 +176,68 @@ export class ApiClient {
     return this.post('/llm/generate', data);
   }
 
+  // ── Assets ─────────────────────────────────────────────
+
+  async getAssets(type?: string): Promise<ApiResponse<unknown[]>> {
+    return this.get('/assets', type ? { type } : undefined);
+  }
+
+  /**
+   * Upload an asset file to the server.
+   * Uses XMLHttpRequest to support upload progress tracking (fetch does not).
+   */
+  async uploadAsset(
+    file: File,
+    onProgress?: (pct: number) => void,
+  ): Promise<ApiResponse<unknown>> {
+    return new Promise((resolve) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const xhr = new XMLHttpRequest();
+      const url = `${this.config.baseUrl}/api/v1/assets`;
+
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        try {
+          const json = JSON.parse(xhr.responseText);
+          if (xhr.status === 401 && json?.error?.code === 'TOKEN_EXPIRED') {
+            this.config.onAuthError();
+          }
+          resolve(json);
+        } catch {
+          resolve({
+            success: false,
+            error: { statusCode: xhr.status, message: 'Invalid response', code: 'UNKNOWN' },
+          });
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        resolve({
+          success: false,
+          error: { statusCode: 0, message: 'Network error', code: 'NETWORK_ERROR' },
+        });
+      });
+
+      xhr.open('POST', url);
+      const token = this.config.getAccessToken();
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+      xhr.send(formData);
+    });
+  }
+
+  async deleteAsset(id: string): Promise<ApiResponse<{ deleted: boolean }>> {
+    return this.del(`/assets/${id}`);
+  }
+
   // ── HTTP Core ──────────────────────────────────────────
 
   private async get<T>(

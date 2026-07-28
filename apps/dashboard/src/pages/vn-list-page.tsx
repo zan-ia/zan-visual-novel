@@ -1,4 +1,14 @@
-import { Box, Typography, Button, Card, CardContent, CardActions, Chip, Skeleton, Alert } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Skeleton,
+  Alert,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,18 +26,21 @@ export function VNListPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.listVNs({ creator: 'me' }).then((res) => {
-      if (res.success && res.data) {
-        const response = res.data as any;
-        setVNs(response.data ?? []);
-      } else {
-        setError(res.error?.message ?? 'Erro ao carregar VNs.');
-      }
-      setLoading(false);
-    }).catch(() => {
-      setError('Erro ao carregar VNs.');
-      setLoading(false);
-    });
+    api
+      .listVNs({ creator: 'me' })
+      .then((res) => {
+        if (res.success && res.data) {
+          const response = res.data as any;
+          setVNs(response.data ?? []);
+        } else {
+          setError(res.error?.message ?? 'Erro ao carregar VNs.');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Erro ao carregar VNs.');
+        setLoading(false);
+      });
   }, []);
 
   if (error) {
@@ -51,11 +64,7 @@ export function VNListPage() {
         <Grid container spacing={3} aria-busy="true" aria-label="Carregando VNs">
           {[0, 1, 2].map((i) => (
             <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Skeleton
-                variant="rounded"
-                height={200}
-                sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
-              />
+              <Skeleton variant="rounded" height={200} sx={{ bgcolor: 'rgba(124,77,255,0.08)' }} />
             </Grid>
           ))}
         </Grid>

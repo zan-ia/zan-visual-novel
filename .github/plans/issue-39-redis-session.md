@@ -15,13 +15,13 @@ The issue requests installing `ioredis`, but `"redis": "^4.7.0"` (the official `
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `backend/api/src/lib/redis.ts` | **CREATE** | Redis client singleton with auto-reconnect, health check, fallback |
-| `backend/api/src/routes/auth.routes.ts` | **MODIFY** | Add Redis cache on login/refresh, add logout endpoint |
-| `backend/api/src/middleware/rate-limiter.ts` | **MODIFY** | Replace in-memory Map with Redis INCR/EXPIRE |
-| `backend/api/src/server.ts` | **MODIFY** | Add Redis ping to health endpoint, init Redis on startup |
-| `backend/api/src/__tests__/health.test.ts` | **MODIFY** | Update test to expect Redis health field |
+| File                                         | Action     | Description                                                        |
+| -------------------------------------------- | ---------- | ------------------------------------------------------------------ |
+| `backend/api/src/lib/redis.ts`               | **CREATE** | Redis client singleton with auto-reconnect, health check, fallback |
+| `backend/api/src/routes/auth.routes.ts`      | **MODIFY** | Add Redis cache on login/refresh, add logout endpoint              |
+| `backend/api/src/middleware/rate-limiter.ts` | **MODIFY** | Replace in-memory Map with Redis INCR/EXPIRE                       |
+| `backend/api/src/server.ts`                  | **MODIFY** | Add Redis ping to health endpoint, init Redis on startup           |
+| `backend/api/src/__tests__/health.test.ts`   | **MODIFY** | Update test to expect Redis health field                           |
 
 ## Patterns to Follow
 
@@ -32,11 +32,11 @@ The issue requests installing `ioredis`, but `"redis": "^4.7.0"` (the official `
 
 ## Redis Key Schema
 
-| Purpose | Key Pattern | Value | TTL |
-|---------|-------------|-------|-----|
-| Refresh token cache | `session:{refreshTokenHash}` | `JSON { userId, expiresAt }` | 30 days |
-| Rate limiter | `ratelimit:{ip}` | `integer` (INCR counter) | 60 seconds (sliding) |
-| Health | `ping` | — | — |
+| Purpose             | Key Pattern                  | Value                        | TTL                  |
+| ------------------- | ---------------------------- | ---------------------------- | -------------------- |
+| Refresh token cache | `session:{refreshTokenHash}` | `JSON { userId, expiresAt }` | 30 days              |
+| Rate limiter        | `ratelimit:{ip}`             | `integer` (INCR counter)     | 60 seconds (sliding) |
+| Health              | `ping`                       | —                            | —                    |
 
 > Note: Use a SHA-256 hash of the refresh token as the key to avoid long keys (tokens are 500+ chars). This also prevents token leakage via `KEYS` commands.
 
@@ -72,7 +72,9 @@ The issue requests installing `ioredis`, but `"redis": "^4.7.0"` (the official `
     try {
       const redis = getRedis();
       redisStatus = (await redis.ping()) ? 'connected' : 'disconnected';
-    } catch { /* default disconnected */ }
+    } catch {
+      /* default disconnected */
+    }
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
@@ -85,16 +87,20 @@ The issue requests installing `ioredis`, but `"redis": "^4.7.0"` (the official `
 ### Step 3: Modify `backend/api/src/routes/auth.routes.ts`
 
 **3a. Login (`POST /login`)** — after successful PG insert:
+
 ```typescript
 // Attempt Redis cache (non-blocking)
 try {
   const redis = getRedis();
   const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
   await redis.set(`session:${hash}`, JSON.stringify({ userId: user.id, expiresAt }), 30 * 86400);
-} catch { /* Redis offline, cache miss is acceptable */ }
+} catch {
+  /* Redis offline, cache miss is acceptable */
+}
 ```
 
 **3b. Refresh (`POST /refresh`)** — check Redis cache before PG:
+
 ```typescript
 // Try Redis cache first
 let sessionData: { userId: string; expiresAt: string } | null = null;
@@ -118,9 +124,11 @@ if (!sessionData) {
   }
 }
 ```
+
 - On token rotation (delete old session, insert new): also delete old key from Redis and set new key
 
 **3c. Logout (`POST /logout`)** — new endpoint:
+
 ```typescript
 authRouter.post('/logout', authenticate, async (req, res) => {
   try {
@@ -148,6 +156,7 @@ authRouter.post('/logout', authenticate, async (req, res) => {
 ### Step 4: Modify `backend/api/src/middleware/rate-limiter.ts`
 
 Current implementation:
+
 ```typescript
 const requestCounts = new Map<string, { count: number; resetAt: number }>();
 const WINDOW_MS = 60_000;
@@ -155,6 +164,7 @@ const MAX_REQUESTS = 100;
 ```
 
 New implementation — Redis-backed with in-memory fallback:
+
 ```typescript
 import { getRedis } from '../lib/redis.js';
 
@@ -165,7 +175,7 @@ const MAX_REQUESTS = 100;
 
 export async function rateLimiter(req: Request, res: Response, next: NextFunction): Promise<void> {
   const key = req.ip ?? 'unknown';
-  
+
   try {
     const redis = getRedis();
     const redisKey = `ratelimit:${key}`;
@@ -191,7 +201,7 @@ export async function rateLimiter(req: Request, res: Response, next: NextFunctio
       return;
     }
   }
-  
+
   next();
 }
 ```
@@ -203,6 +213,7 @@ Also: cleanup interval for in-memory fallback should be kept.
 ### Step 5: Modify `backend/api/src/__tests__/health.test.ts`
 
 Update the health check test to accept the optional `redis` field:
+
 ```typescript
 expect(body).toHaveProperty('status', 'ok');
 expect(body).toHaveProperty('timestamp');
@@ -218,6 +229,7 @@ npm install redis  # or npm install ioredis if preferred
 ```
 
 Run build/lint:
+
 ```bash
 npm run typecheck
 npm run lint
@@ -226,13 +238,13 @@ npm run test
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| **Redis dependency swap confusion** — issue says `ioredis`, but `redis` is already installed | low | Note in plan; implementer decides which to use. If using `redis` (already installed), no package.json change needed |
-| **Express 4 async middleware** — changing `rateLimiter` from sync to async may cause unhandled rejections | medium | Ensure all async paths call `next()` or return response. The `errorHandler` middleware catches thrown errors |
-| **Refresh token hash collisions** — SHA-256 of token as Redis key | negligible | SHA-256 collision probability is astronomically low for ~500 char tokens |
-| **Rate limiter fallback inconsistency** — Redis and in-memory states diverge during Redis outage | low | Acceptable — rate limiter resets on Redis reconnect. Fallback is per-instance only |
-| **Health check test flakiness** — test may fail if Redis is not running in CI | medium | Test should accept both `connected` and `disconnected` as valid states |
+| Risk                                                                                                      | Impact     | Mitigation                                                                                                          |
+| --------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Redis dependency swap confusion** — issue says `ioredis`, but `redis` is already installed              | low        | Note in plan; implementer decides which to use. If using `redis` (already installed), no package.json change needed |
+| **Express 4 async middleware** — changing `rateLimiter` from sync to async may cause unhandled rejections | medium     | Ensure all async paths call `next()` or return response. The `errorHandler` middleware catches thrown errors        |
+| **Refresh token hash collisions** — SHA-256 of token as Redis key                                         | negligible | SHA-256 collision probability is astronomically low for ~500 char tokens                                            |
+| **Rate limiter fallback inconsistency** — Redis and in-memory states diverge during Redis outage          | low        | Acceptable — rate limiter resets on Redis reconnect. Fallback is per-instance only                                  |
+| **Health check test flakiness** — test may fail if Redis is not running in CI                             | medium     | Test should accept both `connected` and `disconnected` as valid states                                              |
 
 ## Post-Implementation Verification
 

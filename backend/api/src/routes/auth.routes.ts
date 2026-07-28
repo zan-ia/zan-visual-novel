@@ -223,7 +223,9 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     // Rotate refresh token
-    await getDb().delete(schema.userSessions).where(eq(schema.userSessions.refreshToken, refreshToken));
+    await getDb()
+      .delete(schema.userSessions)
+      .where(eq(schema.userSessions.refreshToken, refreshToken));
     const newRefreshToken = jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
     await getDb()
       .insert(schema.userSessions)

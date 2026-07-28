@@ -97,11 +97,7 @@ export function LibraryPage() {
         <Grid container spacing={3} aria-busy="true" aria-label="Carregando biblioteca">
           {[0, 1, 2, 3].map((i) => (
             <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-              <Skeleton
-                variant="rounded"
-                height={280}
-                sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
-              />
+              <Skeleton variant="rounded" height={280} sx={{ bgcolor: 'rgba(124,77,255,0.08)' }} />
             </Grid>
           ))}
         </Grid>

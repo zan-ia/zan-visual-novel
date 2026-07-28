@@ -12,23 +12,23 @@ Connect real LLM providers (local WebLLM + cloud API) to the VN Engine, which cu
 
 ## Files to Modify/Create
 
-| File                                               | Action | Description                                                            |
-| -------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
-| `packages/vn-engine/src/providers/local-provider.ts` | CREATE | WebLLM/ONNX local provider implementing `ILLMProvider`                 |
-| `packages/vn-engine/src/providers/cloud-provider.ts` | CREATE | Cloud API provider implementing `ILLMProvider` (calls backend `/llm`) |
-| `packages/vn-engine/src/index.ts`                  | MODIFY | Export new provider factories + `createCompositeLLMProvider`          |
-| `packages/vn-engine/src/engine.ts`                 | MODIFY | Refactor `generateLLMScene` to async; add `generateLLMSceneAsync`     |
-| `packages/vn-engine/src/llm-provider.ts`           | MODIFY | Export `createCompositeLLMProvider` (already exists, verify export)   |
-| `packages/vn-engine/src/engine.ts`                 | MODIFY | Wire `continue()` and `choose()` to use async LLM path when needed    |
-| `packages/lib/src/hooks/use-vn-engine.ts`          | MODIFY | Add `isGeneratingLLM` state; make `continue/choose` async-aware       |
-| `packages/lib/src/hooks/use-llm.ts`                | CREATE | Device detection + provider selection + engine injection hook         |
-| `packages/lib/src/index.ts`                        | MODIFY | Export `useLLM` hook                                                  |
-| `packages/ui/src/scene-renderer.tsx`               | MODIFY | Add Tooltip to IA badge; add `data-llm-generated` attribute           |
-| `apps/client/src/styles/global.css`                | MODIFY | Add `.vn-scene--llm` tint, text fade-in animation                     |
-| `apps/client/src/pages/player-page.tsx`            | MODIFY | Wire `useLLM()`; generation loading state + fade-in + Continue button |
-| `apps/client/src/theme.ts`                         | MODIFY | (Optional) Add LLM-specific theme palette tokens                      |
-| `packages/vn-engine/src/types.ts`                  | MODIFY | Add `ProviderType`, `DeviceCapabilities` types; add `llm:completed` event |
-| `packages/shared/src/types/index.ts`               | MODIFY | Add `llm:completed` to `EngineEventType` union if needed             |
+| File                                                  | Action | Description                                                                                     |
+| ----------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------- |
+| `packages/vn-engine/src/providers/local-provider.ts`  | CREATE | WebLLM/ONNX local provider implementing `ILLMProvider`                                          |
+| `packages/vn-engine/src/providers/cloud-provider.ts`  | CREATE | Cloud API provider implementing `ILLMProvider` (calls backend `/llm`)                           |
+| `packages/vn-engine/src/index.ts`                     | MODIFY | Export new provider factories + `createCompositeLLMProvider`                                    |
+| `packages/vn-engine/src/engine.ts`                    | MODIFY | Refactor `generateLLMScene` to async; add `generateLLMSceneAsync`                               |
+| `packages/vn-engine/src/llm-provider.ts`              | MODIFY | Export `createCompositeLLMProvider` (already exists, verify export)                             |
+| `packages/vn-engine/src/engine.ts`                    | MODIFY | Wire `continue()` and `choose()` to use async LLM path when needed                              |
+| `packages/lib/src/hooks/use-vn-engine.ts`             | MODIFY | Add `isGeneratingLLM` state; make `continue/choose` async-aware                                 |
+| `packages/lib/src/hooks/use-llm.ts`                   | CREATE | Device detection + provider selection + engine injection hook                                   |
+| `packages/lib/src/index.ts`                           | MODIFY | Export `useLLM` hook                                                                            |
+| `packages/ui/src/scene-renderer.tsx`                  | MODIFY | Add Tooltip to IA badge; add `data-llm-generated` attribute                                     |
+| `apps/client/src/styles/global.css`                   | MODIFY | Add `.vn-scene--llm` tint, text fade-in animation                                               |
+| `apps/client/src/pages/player-page.tsx`               | MODIFY | Wire `useLLM()`; generation loading state + fade-in + Continue button                           |
+| `apps/client/src/theme.ts`                            | MODIFY | (Optional) Add LLM-specific theme palette tokens                                                |
+| `packages/vn-engine/src/types.ts`                     | MODIFY | Add `ProviderType`, `DeviceCapabilities` types; add `llm:completed` event                       |
+| `packages/shared/src/types/index.ts`                  | MODIFY | Add `llm:completed` to `EngineEventType` union if needed                                        |
 | `packages/vn-engine/src/__tests__/llm-scenes.test.ts` | CREATE | Unit tests: placeholder→completion, error path, `__llm_generate__` choice, `llmScenes` fallback |
 
 ## Patterns to Follow
@@ -409,12 +409,16 @@ function detectDeviceCapabilities(): DeviceCapabilities {
   let webgpu = false;
   try {
     webgpu = 'gpu' in navigator && typeof (navigator as any).gpu?.requestAdapter === 'function';
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   let memoryGB: number | null = null;
   try {
     memoryGB = ((navigator as any).deviceMemory as number) ?? null;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const cores = navigator.hardwareConcurrency ?? 4;
   const recommendedProvider: ProviderType =
@@ -461,8 +465,7 @@ useEffect(() => {
 }, [updateScene]);
 
 // Updated isLLMScene detection — also check metadata.status
-const isLLMScene =
-  (currentScene?.metadata as Record<string, unknown>)?.generatedByLLM === true;
+const isLLMScene = (currentScene?.metadata as Record<string, unknown>)?.generatedByLLM === true;
 const isLLMGenerating =
   (currentScene?.metadata as Record<string, unknown>)?.status === 'generating';
 
@@ -555,8 +558,13 @@ Add CSS keyframes and class:
 }
 
 @keyframes vn-pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .vn-scene--llm .vn-text {
@@ -564,9 +572,15 @@ Add CSS keyframes and class:
   animation-fill-mode: both; /* MINOR FIX: prevent flash before animation starts */
 }
 
-.vn-scene--llm .vn-text:nth-child(1) { animation-delay: 0.1s; }
-.vn-scene--llm .vn-text:nth-child(2) { animation-delay: 0.2s; }
-.vn-scene--llm .vn-text:nth-child(3) { animation-delay: 0.3s; }
+.vn-scene--llm .vn-text:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.vn-scene--llm .vn-text:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.vn-scene--llm .vn-text:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 /* Subtle LLM scene tint */
 .vn-scene--llm {
@@ -580,28 +594,32 @@ Add CSS keyframes and class:
 **MAJOR FIX:** After an LLM-generated scene completes, `continue()` returns the same scene without triggering another generation (guarded by `wasGeneratedByLLM`). The UI must detect this and show a "Voltar à Biblioteca" exit button instead of a "Continuar" button:
 
 ```tsx
-{/* LLM-generated scene completed — show exit, not another continuation */}
-{isLLMScene && !isGeneratingLLM && availableChoices.length === 0 && (
-  <Button
-    variant="outlined"
-    onClick={() => navigate('/library')}
-    fullWidth
-    sx={{
-      py: 1.5,
-      fontSize: '1.1rem',
-      borderRadius: 3,
-      borderColor: 'var(--color-secondary)',
-      color: 'var(--color-secondary)',
-      animation: 'vn-fade-in-up 0.5s ease-out',
-      '&:hover': {
-        borderColor: 'var(--color-primary)',
-        color: 'var(--color-primary)',
-      },
-    }}
-  >
-    Voltar à Biblioteca
-  </Button>
-)}
+{
+  /* LLM-generated scene completed — show exit, not another continuation */
+}
+{
+  isLLMScene && !isGeneratingLLM && availableChoices.length === 0 && (
+    <Button
+      variant="outlined"
+      onClick={() => navigate('/library')}
+      fullWidth
+      sx={{
+        py: 1.5,
+        fontSize: '1.1rem',
+        borderRadius: 3,
+        borderColor: 'var(--color-secondary)',
+        color: 'var(--color-secondary)',
+        animation: 'vn-fade-in-up 0.5s ease-out',
+        '&:hover': {
+          borderColor: 'var(--color-primary)',
+          color: 'var(--color-primary)',
+        },
+      }}
+    >
+      Voltar à Biblioteca
+    </Button>
+  );
+}
 ```
 
 ### Step 8: AI Content Indicator — Polish
@@ -611,18 +629,22 @@ Add CSS keyframes and class:
 The existing badge already renders. Add a MUI Tooltip and a data attribute:
 
 ```tsx
-{/* MINOR FIX: Use MUI Tooltip instead of HTML title attribute */}
-{isLLMGenerated && (
-  <Tooltip title="Este conteúdo foi gerado por Inteligência Artificial" arrow placement="top">
-    <div
-      className="vn-scene__llm-badge"
-      aria-label="Conteúdo gerado por IA"
-      data-llm-generated="true"
-    >
-      ✦ IA
-    </div>
-  </Tooltip>
-)}
+{
+  /* MINOR FIX: Use MUI Tooltip instead of HTML title attribute */
+}
+{
+  isLLMGenerated && (
+    <Tooltip title="Este conteúdo foi gerado por Inteligência Artificial" arrow placement="top">
+      <div
+        className="vn-scene__llm-badge"
+        aria-label="Conteúdo gerado por IA"
+        data-llm-generated="true"
+      >
+        ✦ IA
+      </div>
+    </Tooltip>
+  );
+}
 ```
 
 Also add `data-llm-generated` to the scene wrapper when `isLLMGenerated`:
@@ -640,11 +662,13 @@ Also add `data-llm-generated` to the scene wrapper when `isLLMGenerated`:
 The existing Chip "IA" in the top bar location already works. Add a Tooltip to it:
 
 ```tsx
-{isLLMScene && (
-  <Tooltip title="Este conteúdo foi gerado por IA" arrow>
-    <Chip label="IA" size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
-  </Tooltip>
-)}
+{
+  isLLMScene && (
+    <Tooltip title="Este conteúdo foi gerado por IA" arrow>
+      <Chip label="IA" size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
+    </Tooltip>
+  );
+}
 ```
 
 ### Step 9: Build Verification
@@ -663,14 +687,15 @@ Alternatively, run the Turborepo-level build: `npm run build` from root.
 
 ## Identified Risks
 
-| Risk                                                    | Impact | Mitigation                                                                          |
-| ------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
-| WebLLM worker not yet implemented (#41, #42)            | High   | Scaffold worker with TODO comments; cloud provider works independently as fallback   |
-| Async scene replacement may cause UI flicker            | Medium | Placeholder scene shown immediately; CSS fade-in smooths content update              |
-| `navigator.gpu` / `navigator.deviceMemory` not in TS lib| Low    | Use `(navigator as any)` casts; add type declarations if needed                     |
-| Engine `continue()` fire-and-forget may miss errors     | Medium | Emit `error` event on failure; hook listens and updates UI accordingly              |
-| Composite provider fallback to cloud on every call      | Low    | Cache `isAvailable()` result per-session with TTL; fine for initial implementation   |
-- Placeholder scene ID collision with saved scenes        | Low    | Use `llm-` prefix + `crypto.randomUUID()` for guaranteed uniqueness                 |
+| Risk                                                     | Impact | Mitigation                                                                         |
+| -------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| WebLLM worker not yet implemented (#41, #42)             | High   | Scaffold worker with TODO comments; cloud provider works independently as fallback |
+| Async scene replacement may cause UI flicker             | Medium | Placeholder scene shown immediately; CSS fade-in smooths content update            |
+| `navigator.gpu` / `navigator.deviceMemory` not in TS lib | Low    | Use `(navigator as any)` casts; add type declarations if needed                    |
+| Engine `continue()` fire-and-forget may miss errors      | Medium | Emit `error` event on failure; hook listens and updates UI accordingly             |
+| Composite provider fallback to cloud on every call       | Low    | Cache `isAvailable()` result per-session with TTL; fine for initial implementation |
+
+- Placeholder scene ID collision with saved scenes | Low | Use `llm-` prefix + `crypto.randomUUID()` for guaranteed uniqueness |
 
 ---
 
@@ -683,6 +708,7 @@ Review identified **1 CRITICAL**, **4 MAJOR**, and **4 MINOR** issues. The plan 
 **Root cause:** `findScene()` only iterates `this.story.chapters[i].scenes[]`. The placeholder created in `generateLLMScenePlaceholder` has ID `llm-${crypto.randomUUID()}` and is **never inserted** into any chapter's `scenes` array. `getCurrentScene()` → `findScene(placeholder.id)` → `undefined` → throws `Scene not found`.
 
 **Resolution (amended in Step 4c):**
+
 - Add `private llmScenes: Map<string, Scene>` to `VNEngine`
 - `findScene()` falls back to `this.llmScenes.get(sceneId)` after checking chapters
 - `generateLLMScenePlaceholder()` stores the placeholder via `this.llmScenes.set(placeholder.id, placeholder)`
@@ -699,6 +725,7 @@ Review identified **1 CRITICAL**, **4 MAJOR**, and **4 MINOR** issues. The plan 
 ### 🟠 MAJOR #3: Add unit tests
 
 **Resolution (new Step 10 below):** Create `packages/vn-engine/src/__tests__/llm-scenes.test.ts` covering:
+
 - Placeholder → completion lifecycle
 - Error path (provider throws → error text + `error` event)
 - `__llm_generate__` choice target triggers generation

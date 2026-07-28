@@ -12,9 +12,15 @@ let redisAvailable = false;
 function getRedis(): RedisClientType {
   if (!redisClient) {
     redisClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
-    redisClient.on('error', () => { redisAvailable = false; });
-    redisClient.on('connect', () => { redisAvailable = true; });
-    redisClient.on('end', () => { redisAvailable = false; });
+    redisClient.on('error', () => {
+      redisAvailable = false;
+    });
+    redisClient.on('connect', () => {
+      redisAvailable = true;
+    });
+    redisClient.on('end', () => {
+      redisAvailable = false;
+    });
   }
   return redisClient;
 }
@@ -94,12 +100,7 @@ async function checkRateLimitRedis(key: string, now: number): Promise<boolean> {
 
 // ── In-memory fallback ─────────────────────────────────
 
-function checkRateLimitMemory(
-  key: string,
-  now: number,
-  res: Response,
-  next: NextFunction,
-): void {
+function checkRateLimitMemory(key: string, now: number, res: Response, next: NextFunction): void {
   let record = memoryStore.get(key);
 
   if (!record || now > record.resetAt) {

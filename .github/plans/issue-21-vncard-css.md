@@ -13,13 +13,13 @@ The fix introduces complete CSS for VNCard using the existing design tokens, rep
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `packages/ui/src/vn-card.tsx` | MODIFY | Replace 📖 emoji placeholder with MUI `BookIcon`; add `@mui/icons-material` as peer dependency; fix `meta` div rendering when tags and price are both absent |
-| `packages/ui/package.json` | MODIFY | Add `@mui/material` and `@mui/icons-material` as peer dependencies (currently undeclared but used at runtime via hoisting) |
-| `apps/client/src/styles/global.css` | MODIFY | Add complete `.vn-card` CSS block with all BEM classes, hover/focus states, and responsive image handling |
-| `apps/client/src/pages/library-page.tsx` | MODIFY | Fix 2 occurrences of `<Box sx={{ gridColumn }}>` inside `<Grid>` — replace with `<Grid size={{...}}>` using `Grid2` API; update Grid import |
-| `apps/dashboard/src/pages/vn-list-page.tsx` | ⏭️ SCOPE | **Deferido para #26** — mesma correção de grid, PR separado |
+| File                                        | Action   | Description                                                                                                                                                  |
+| ------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `packages/ui/src/vn-card.tsx`               | MODIFY   | Replace 📖 emoji placeholder with MUI `BookIcon`; add `@mui/icons-material` as peer dependency; fix `meta` div rendering when tags and price are both absent |
+| `packages/ui/package.json`                  | MODIFY   | Add `@mui/material` and `@mui/icons-material` as peer dependencies (currently undeclared but used at runtime via hoisting)                                   |
+| `apps/client/src/styles/global.css`         | MODIFY   | Add complete `.vn-card` CSS block with all BEM classes, hover/focus states, and responsive image handling                                                    |
+| `apps/client/src/pages/library-page.tsx`    | MODIFY   | Fix 2 occurrences of `<Box sx={{ gridColumn }}>` inside `<Grid>` — replace with `<Grid size={{...}}>` using `Grid2` API; update Grid import                  |
+| `apps/dashboard/src/pages/vn-list-page.tsx` | ⏭️ SCOPE | **Deferido para #26** — mesma correção de grid, PR separado                                                                                                  |
 
 ## CSS Specification for VNCard
 
@@ -36,7 +36,10 @@ The following CSS must be added to `apps/client/src/styles/global.css` (after th
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   outline: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -134,6 +137,7 @@ The following CSS must be added to `apps/client/src/styles/global.css` (after th
 ```
 
 **Why these values:**
+
 - `--color-surface` for card background — matches MUI `paper` token and existing design system
 - `border-radius: 12px` — matches MUI `shape.borderRadius` from `theme.ts` (line ~25)
 - `rgba(255, 255, 255, 0.06)` border — subtle card separation on dark surface, not harsh
@@ -146,10 +150,12 @@ The following CSS must be added to `apps/client/src/styles/global.css` (after th
 ## Grid Fix Specification
 
 ### Problem
+
 Both `library-page.tsx` and `vn-list-page.tsx` use this anti-pattern:
+
 ```tsx
 <Grid container spacing={3}>
-  {items.map(item => (
+  {items.map((item) => (
     <Box sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}>
       {/* content */}
     </Box>
@@ -160,17 +166,21 @@ Both `library-page.tsx` and `vn-list-page.tsx` use this anti-pattern:
 MUI `Grid` (classic) is **flexbox-based**. The `gridColumn` CSS property is ignored by flexbox — it only works in CSS Grid layouts. The items collapse into a single row or wrap unpredictably.
 
 ### Fix
+
 Replace with MUI `Grid2` (available as `@mui/material/Grid2` in MUI v6+), which is CSS Grid-based and supports the `size` prop:
 
 **Library page (2 occurrences):**
+
 - Loading skeleton: `<Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>`
 - VN list: `<Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>`
 
 **Dashboard page (2 occurrences) — ⏭️ Deferido para #26:**
+
 - Loading skeleton: `<Grid size={{ xs: 12, sm: 6, md: 4 }}>`
 - VN list: `<Grid size={{ xs: 12, sm: 6, md: 4 }}>`
 
 **Import change (both files):**
+
 - Remove `Grid` from `import { ... } from '@mui/material'`
 - Add `import Grid from '@mui/material/Grid2';`
 
@@ -179,10 +189,14 @@ Replace with MUI `Grid2` (available as `@mui/material/Grid2` in MUI v6+), which 
 ### Before → After comparison
 
 **Before (library-page.tsx):**
+
 ```tsx
 <Grid container spacing={3}>
   {filtered.map((vn) => (
-    <Box key={vn.id} sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}>
+    <Box
+      key={vn.id}
+      sx={{ gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 4', lg: 'span 3' } }}
+    >
       <VNCard vn={vn} empty={vn.totalChapters === 0} onClick={handleCardClick} />
     </Box>
   ))}
@@ -190,6 +204,7 @@ Replace with MUI `Grid2` (available as `@mui/material/Grid2` in MUI v6+), which 
 ```
 
 **After:**
+
 ```tsx
 <Grid container spacing={3}>
   {filtered.map((vn) => (
@@ -221,12 +236,12 @@ Replace with MUI `Grid2` (available as `@mui/material/Grid2` in MUI v6+), which 
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| `Grid2` might not be available in the installed MUI v6.x version | Medium — could break dev server | Verify `@mui/material` version is ^6.0.0. Grid2 is available since MUI v6 beta. If using MUI v5, fall back to classic Grid with `item` + `xs/sm/md/lg` props |
-| `@mui/icons-material` not hoisted correctly in monorepo | Medium — could cause module-not-found at runtime | Adding as peerDependency ensures proper resolution. Also run `npm install` after package.json change |
-| Dashboard grid fix **deferido para #26** — mesma correção estrutural do Grid2/size | Low — risco gerenciado via escopo separado | Issue #26 já documenta o mesmo padrão de correção |
-| VNCard `Chip` import from `@mui/material` already works via hoisting — adding formal peerDep is a no-op for the app | Low — no functional change, just explicit declaration | Verify `@mui/material` is already a dep of `@zan-vn/client` (it is, per `package.json`) |
+| Risk                                                                                                                | Impact                                                | Mitigation                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Grid2` might not be available in the installed MUI v6.x version                                                    | Medium — could break dev server                       | Verify `@mui/material` version is ^6.0.0. Grid2 is available since MUI v6 beta. If using MUI v5, fall back to classic Grid with `item` + `xs/sm/md/lg` props |
+| `@mui/icons-material` not hoisted correctly in monorepo                                                             | Medium — could cause module-not-found at runtime      | Adding as peerDependency ensures proper resolution. Also run `npm install` after package.json change                                                         |
+| Dashboard grid fix **deferido para #26** — mesma correção estrutural do Grid2/size                                  | Low — risco gerenciado via escopo separado            | Issue #26 já documenta o mesmo padrão de correção                                                                                                            |
+| VNCard `Chip` import from `@mui/material` already works via hoisting — adding formal peerDep is a no-op for the app | Low — no functional change, just explicit declaration | Verify `@mui/material` is already a dep of `@zan-vn/client` (it is, per `package.json`)                                                                      |
 
 ## Post-Implementation Verification
 

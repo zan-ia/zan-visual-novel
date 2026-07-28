@@ -18,8 +18,12 @@ export function getRedisClient(): RedisClientType {
       console.warn('⚠️ Redis connection error:', err.message);
       isAvailable = false;
     });
-    client.on('connect', () => { isAvailable = true; });
-    client.on('end', () => { isAvailable = false; });
+    client.on('connect', () => {
+      isAvailable = true;
+    });
+    client.on('end', () => {
+      isAvailable = false;
+    });
   }
   return client;
 }

@@ -35,7 +35,17 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         textAlign: 'center',
       }}
     >
-      <Box sx={{ width: 120, height: 120, color: 'primary.main', opacity: 0.6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box
+        sx={{
+          width: 120,
+          height: 120,
+          color: 'primary.main',
+          opacity: 0.6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {icon}
       </Box>
       <Typography variant="h5" fontWeight={600}>
@@ -46,8 +56,8 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
           {description}
         </Typography>
       )}
-      {action && (
-        action.variant === 'link' ? (
+      {action &&
+        (action.variant === 'link' ? (
           <Button
             variant="text"
             onClick={action.onClick}
@@ -59,8 +69,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
           <Button variant="contained" onClick={action.onClick}>
             {action.label}
           </Button>
-        )
-      )}
+        ))}
     </Box>
   );
 }

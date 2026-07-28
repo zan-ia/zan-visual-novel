@@ -12,15 +12,15 @@ Create three standardized issue templates (bug, feature, improvement) aligned wi
 
 ## Files to Modify/Create
 
-| File | Action | Description |
-|------|--------|-------------|
-| `.github/ISSUE_TEMPLATE/bug_report.md` | RENAME → `bug.md` + MODIFY | Rename to `bug.md`, update frontmatter (title prefix `fix:`, labels `['bug']`), add `Motivação` and `Referências` sections |
-| `.github/ISSUE_TEMPLATE/feature_request.md` | RENAME → `feature.md` + MODIFY | Rename to `feature.md`, update frontmatter (title prefix `feat:`, labels `['enhancement']`), add `Referências` section |
-| `.github/ISSUE_TEMPLATE/improvement.md` | CREATE | New template for improvements (`improve:`, labels `['improvement']`) with sections: Motivação, Descrição, Critérios de Aceite, Referências |
-| `.github/ISSUE_TEMPLATE/config.yml` | MODIFY | Minor update — already has `blank_issues_enabled: false`, no major changes needed, but ensure contact link is correct |
-| *(GitHub UI)* Project Board | CREATE | Manual setup via github.com/zan-ia/zan-visual-novel/projects — Projects V2 with columns: Backlog, To Do, In Progress, Review, Done |
-| *(GitHub UI)* Milestones | CREATE | Verify M1, M3, M4 exist as milestones (M0 already exists as milestone #1); create if missing |
-| *(GitHub UI)* Board Automation | CONFIGURE | Set workflow: closed issues → Done column |
+| File                                        | Action                         | Description                                                                                                                                |
+| ------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.github/ISSUE_TEMPLATE/bug_report.md`      | RENAME → `bug.md` + MODIFY     | Rename to `bug.md`, update frontmatter (title prefix `fix:`, labels `['bug']`), add `Motivação` and `Referências` sections                 |
+| `.github/ISSUE_TEMPLATE/feature_request.md` | RENAME → `feature.md` + MODIFY | Rename to `feature.md`, update frontmatter (title prefix `feat:`, labels `['enhancement']`), add `Referências` section                     |
+| `.github/ISSUE_TEMPLATE/improvement.md`     | CREATE                         | New template for improvements (`improve:`, labels `['improvement']`) with sections: Motivação, Descrição, Critérios de Aceite, Referências |
+| `.github/ISSUE_TEMPLATE/config.yml`         | MODIFY                         | Minor update — already has `blank_issues_enabled: false`, no major changes needed, but ensure contact link is correct                      |
+| _(GitHub UI)_ Project Board                 | CREATE                         | Manual setup via github.com/zan-ia/zan-visual-novel/projects — Projects V2 with columns: Backlog, To Do, In Progress, Review, Done         |
+| _(GitHub UI)_ Milestones                    | CREATE                         | Verify M1, M3, M4 exist as milestones (M0 already exists as milestone #1); create if missing                                               |
+| _(GitHub UI)_ Board Automation              | CONFIGURE                      | Set workflow: closed issues → Done column                                                                                                  |
 
 ## Patterns to Follow
 
@@ -31,8 +31,11 @@ Create three standardized issue templates (bug, feature, improvement) aligned wi
 - **Section structure**: Each template should follow this model:
   ```markdown
   ## Motivação
+
   ## Descrição
+
   ## Critérios de Aceite
+
   ## Referências
   ```
   With issue-type-specific additions where appropriate (Steps to Reproduce for bugs, Impact for improvements).
@@ -42,6 +45,7 @@ Create three standardized issue templates (bug, feature, improvement) aligned wi
 ### `bug.md` (RENAME + MODIFY from `bug_report.md`)
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: Bug Report
@@ -53,21 +57,23 @@ assignees: []
 ```
 
 **Sections:**
-1. **Motivação** — *NEW* — "<!-- Por que este bug precisa ser corrigido? Qual o impacto? -->"
+
+1. **Motivação** — _NEW_ — "<!-- Por que este bug precisa ser corrigido? Qual o impacto? -->"
 2. **Descrição do Bug** (existing)
 3. **Passos para Reproduzir** (existing)
 4. **Comportamento Esperado** (existing)
 5. **Comportamento Atual** (existing)
 6. **Screenshots** (existing)
-7. **Critérios de Aceite** — *NEW* — checklist do que define a correção como completa
+7. **Critérios de Aceite** — _NEW_ — checklist do que define a correção como completa
 8. **Ambiente** (existing — SO, Navegador, Branch)
 9. **Severidade** (existing — Critical/High/Medium/Low)
 10. **Área** (existing — Client/Dashboard/Backend/Engine/IA/Infra)
-11. **Referências** — *NEW* — "<!-- Links, docs, arquivos relacionados -->"
+11. **Referências** — _NEW_ — "<!-- Links, docs, arquivos relacionados -->"
 
 ### `feature.md` (RENAME + MODIFY from `feature_request.md`)
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: Feature Request
@@ -79,6 +85,7 @@ assignees: []
 ```
 
 **Sections:**
+
 1. **Motivação** (existing)
 2. **Descrição** (existing — currently "Descrição da Feature")
 3. **Critérios de Aceite** (existing)
@@ -86,11 +93,12 @@ assignees: []
 5. **Impacto Técnico** (existing)
 6. **Prioridade** (existing)
 7. **Área** (existing — add Infra option)
-8. **Referências** — *NEW* — "<!-- Links, docs, referências -->"
+8. **Referências** — _NEW_ — "<!-- Links, docs, referências -->"
 
 ### `improvement.md` (CREATE)
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: Improvement
@@ -102,6 +110,7 @@ assignees: []
 ```
 
 **Sections:**
+
 1. **Motivação** — "<!-- Por que esta melhoria é necessária? Qual problema resolve? -->"
 2. **Descrição** — "<!-- O que será melhorado ou refatorado -->"
 3. **Critérios de Aceite** — checklist
@@ -164,24 +173,26 @@ Since the GitHub MCP tools do not support Projects V2 API, the following must be
 
 M0 already exists (milestone #1 — "M0 — Organizacional"). Create the others if they don't exist:
 
-| Milestone | Title | Description |
-|-----------|-------|-------------|
-| M0 | M0 — Organizacional | ✅ Already exists — milestones/1 |
-| M1 | M1 — Fundação | Core do player e API (auth, VN CRUD, engine base) |
-| M3 | M3 — Criação | Dashboard creator, editor de VN, publicação |
-| M4 | M4 — Monetização | Créditos, Stripe, analytics, PWA |
+| Milestone | Title               | Description                                       |
+| --------- | ------------------- | ------------------------------------------------- |
+| M0        | M0 — Organizacional | ✅ Already exists — milestones/1                  |
+| M1        | M1 — Fundação       | Core do player e API (auth, VN CRUD, engine base) |
+| M3        | M3 — Criação        | Dashboard creator, editor de VN, publicação       |
+| M4        | M4 — Monetização    | Créditos, Stripe, analytics, PWA                  |
 
 To create: https://github.com/zan-ia/zan-visual-novel/milestones → **"Create a milestone"**
 
 ### 5.3 Associate Milestones with Board
 
 In the Project Board settings:
+
 1. Add fields: **Milestone** (custom field type "Milestone")
 2. Group or filter by milestone to visualize per-milestone progress
 
 ### 5.4 Configure Automation
 
 In the Project Board settings → **Workflows**:
+
 1. Create workflow: **"Close issue → Move to Done"**
    - Trigger: When an issue is closed
    - Action: Move item to **Done** column
@@ -192,6 +203,7 @@ In the Project Board settings → **Workflows**:
 ### 5.5 Categorize Existing Issues
 
 After creating the board, manually add existing issues:
+
 1. Open each open issue
 2. In the **Projects** section (right sidebar), select "Zan Visual Novel Pipeline"
 3. Set the correct column and milestone
@@ -200,17 +212,18 @@ After creating the board, manually add existing issues:
 ### 5.6 Create `improvement` Label
 
 Since the improvement template uses label `['improvement']`:
+
 1. Go to https://github.com/zan-ia/zan-visual-novel/labels
 2. Check if `improvement` label exists; if not, create it with a distinctive color (e.g., `#fbca04` — orange)
 
 ## Identified Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| **Project Board creation not automatable** | low | Document step-by-step manual instructions; user must execute via GitHub UI |
+| Risk                                                         | Impact | Mitigation                                                                                                                              |
+| ------------------------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Project Board creation not automatable**                   | low    | Document step-by-step manual instructions; user must execute via GitHub UI                                                              |
 | **Milestones M1, M3, M4 may not exist as milestone objects** | medium | Plan includes creation instructions; verify after board setup; if they only exist as labels, delete labels and create proper milestones |
-| **Template renaming breaks existing issue references** | low | Old template files (`bug_report.md`, `feature_request.md`) are only used when creating *new* issues; existing issues are unaffected |
-| **`improvement` label missing** | low | Document manual label creation step; add to implementation checklist |
+| **Template renaming breaks existing issue references**       | low    | Old template files (`bug_report.md`, `feature_request.md`) are only used when creating _new_ issues; existing issues are unaffected     |
+| **`improvement` label missing**                              | low    | Document manual label creation step; add to implementation checklist                                                                    |
 
 ## Post-Implementation Verification
 

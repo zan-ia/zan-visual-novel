@@ -39,7 +39,11 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
   /** Detect WebGPU support for hardware-accelerated inference. */
   function detectWebGPU(): boolean {
     try {
-      return 'gpu' in navigator && typeof (navigator as unknown as { gpu?: { requestAdapter?: unknown } }).gpu?.requestAdapter === 'function';
+      return (
+        'gpu' in navigator &&
+        typeof (navigator as unknown as { gpu?: { requestAdapter?: unknown } }).gpu
+          ?.requestAdapter === 'function'
+      );
     } catch {
       return false;
     }

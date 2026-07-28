@@ -88,7 +88,15 @@ export const createChoiceSchema = z.object({
 // ── Condition & Effect Schemas ─────────────────────────
 
 export const conditionOperatorSchema = z.enum([
-  'eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'not_in', 'exists',
+  'eq',
+  'neq',
+  'gt',
+  'lt',
+  'gte',
+  'lte',
+  'in',
+  'not_in',
+  'exists',
 ]);
 
 export const effectActionSchema = z.enum(['set', 'add', 'toggle', 'push']);
