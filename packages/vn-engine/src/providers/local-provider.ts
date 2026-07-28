@@ -12,29 +12,58 @@ export class LocalProviderUnavailableError extends Error {
   }
 }
 
-/** Configuration for the local WebLLM/ONNX provider. */
+// ── Worker IPC types (mirrors lfm-worker.ts) ──────────────
+
+type WorkerRequest =
+  | { type: 'init'; model: string }
+  | { type: 'generate'; id: string; prompt: string; maxTokens: number };
+
+type WorkerResponse =
+  | { type: 'ready'; model: string }
+  | { type: 'result'; id: string; text: string; duration: number }
+  | { type: 'error'; id: string; message: string }
+  | { type: 'progress'; status: string; progress?: number };
+
+/** Configuration for the local LLM provider. */
 export interface LocalProviderConfig {
-  /** Model type to use (e.g. 'lfm-230m'). */
+  /** Model type / HF model ID (e.g. 'Xenova/gpt2' or 'lfm-230m'). */
   modelType: LLMModelType;
-  /** Optional URL to the Web Worker bundle for inference. */
-  workerUrl?: string;
+  /** Factory that creates a Worker running the lfm-worker script. */
+  workerFactory: () => Worker;
+}
+
+/**
+ * Creates a default Web Worker that loads the LFM worker script.
+ * Uses Vite's `new URL()` pattern for bundler compatibility.
+ */
+export function createDefaultLFMWorker(): Worker {
+  return new Worker(
+    new URL('./lfm-worker.js', import.meta.url),
+    { type: 'module' },
+  );
 }
 
 /**
  * Creates a local LLM provider that runs inference in-browser
- * via WebLLM / ONNX Runtime Web / Transformers.js.
+ * using Transformers.js via a Web Worker.
  *
  * Design: Strategy pattern — implements `ILLMProvider` so the engine
  * can use it interchangeably with cloud or composite providers.
+ * The actual inference happens in a Web Worker (lfm-worker.ts) to
+ * keep the main thread responsive.
  *
- * @param config Provider configuration.
+ * @param config Provider configuration including a worker factory.
  * @returns An `ILLMProvider` instance.
  */
 export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvider {
-  // TODO(#41): Replace with actual WebLLM worker
-  // let worker: Worker | null = null;
-  let available = false;
+  let worker: Worker | null = null;
+  let ready = false;
   let initializing = false;
+  let initError: string | null = null;
+
+  // Pending generation promises keyed by request id
+  const pending = new Map<string, { resolve: (r: LLMGenerateResponse) => void; reject: (e: Error) => void }>();
+  let nextId = 0;
 
   /** Detect WebGPU support for hardware-accelerated inference. */
   function detectWebGPU(): boolean {
@@ -49,43 +78,132 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
     }
   }
 
-  /** Lazily initialise the inference worker (stub — pending #41, #42). */
+  /** Lazily initialise the inference worker. */
   async function initWorker(): Promise<void> {
-    if (initializing || available) return;
+    if (ready) return;
+    if (initializing) {
+      // Wait a bit and retry (simple spin-wait for concurrent calls)
+      for (let i = 0; i < 50 && !ready && !initError; i++) {
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      if (!ready && initError) throw new LocalProviderUnavailableError(initError);
+      if (ready) return;
+      throw new LocalProviderUnavailableError('Local LLM indisponível');
+    }
+
     initializing = true;
     try {
-      // TODO(#41): Replace with actual WebLLM worker initialisation
-      // worker = new Worker(config.workerUrl ?? '/workers/llm-worker.js');
-      // await worker.postMessage({ type: 'init', model: config.modelType });
-      available = true;
-    } catch {
-      available = false;
-    } finally {
+      worker = config.workerFactory();
+
+      worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+        const msg = event.data;
+        switch (msg.type) {
+          case 'ready':
+            ready = true;
+            initializing = false;
+            break;
+          case 'result': {
+            const prom = pending.get(msg.id);
+            if (prom) {
+              pending.delete(msg.id);
+              prom.resolve({
+                text: msg.text,
+                modelUsed: config.modelType,
+                isLocal: true,
+                tokensUsed: 0,
+                duration: msg.duration,
+              });
+            }
+            break;
+          }
+          case 'error': {
+            const prom = pending.get(msg.id);
+            if (prom) {
+              pending.delete(msg.id);
+              if (msg.id === 'init') {
+                initError = msg.message;
+                ready = false;
+                initializing = false;
+              }
+              prom.reject(new Error(msg.message));
+            }
+            break;
+          }
+          case 'progress':
+            // Progress updates can be used for UI feedback
+            break;
+        }
+      };
+
+      worker.onerror = () => {
+        initError = 'Worker crashed';
+        ready = false;
+        initializing = false;
+      };
+
+      // Send init message — model maps to HF model IDs
+      const hfModel = MODEL_MAP[config.modelType] ?? config.modelType;
+      worker.postMessage({ type: 'init', model: hfModel } satisfies WorkerRequest);
+
+      // Wait for ready with timeout
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          if (!ready) reject(new LocalProviderUnavailableError('Model load timeout (30s)'));
+        }, 30_000);
+
+        const check = setInterval(() => {
+          if (ready) {
+            clearTimeout(timeout);
+            clearInterval(check);
+            resolve();
+          }
+          if (initError) {
+            clearTimeout(timeout);
+            clearInterval(check);
+            reject(new LocalProviderUnavailableError(initError));
+          }
+        }, 200);
+      });
+    } catch (err) {
       initializing = false;
+      throw err instanceof LocalProviderUnavailableError
+        ? err
+        : new LocalProviderUnavailableError((err as Error).message);
     }
   }
 
   return {
-    async generate(_request: LLMGenerateRequest): Promise<LLMGenerateResponse> {
+    async generate(request: LLMGenerateRequest): Promise<LLMGenerateResponse> {
       await initWorker();
-      if (!available) throw new LocalProviderUnavailableError('Local LLM indisponível');
+      if (!worker || !ready) throw new LocalProviderUnavailableError('Local LLM indisponível');
 
-      const startTime = Date.now();
+      const id = `gen-${++nextId}`;
+      const prompt = `${request.config.systemPrompt ?? ''}\n\n${request.prompt}`.trim();
+      const maxTokens = request.config.maxTokens ?? 200;
 
-      // TODO(#41): Call worker for generation
-      // const result = await callWorker(worker, request);
+      return new Promise((resolve, reject) => {
+        pending.set(id, { resolve, reject });
 
-      return {
-        text: '[texto gerado localmente]',
-        modelUsed: config.modelType,
-        isLocal: true,
-        tokensUsed: 0,
-        duration: Date.now() - startTime,
-      };
+        // Timeout after 30s
+        const timeout = setTimeout(() => {
+          pending.delete(id);
+          reject(new LocalProviderUnavailableError('Generation timeout (30s)'));
+        }, 30_000);
+
+        // Override resolve/reject to clear timeout
+        const origResolve = resolve;
+        const origReject = reject;
+        pending.set(id, {
+          resolve: (r) => { clearTimeout(timeout); origResolve(r); },
+          reject: (e) => { clearTimeout(timeout); origReject(e); },
+        });
+
+        worker!.postMessage({ type: 'generate', id, prompt, maxTokens } satisfies WorkerRequest);
+      });
     },
 
     isAvailable(): boolean {
-      return detectWebGPU() && available;
+      return detectWebGPU() && !initError;
     },
 
     getModelType(): string {
@@ -93,3 +211,9 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
     },
   };
 }
+
+/** Map of LFM model types to HuggingFace model IDs. */
+const MODEL_MAP: Record<string, string> = {
+  'lfm-230m': 'Xenova/LaMini-Flan-T5-77M',
+  'lfm-350m': 'Xenova/gpt2',
+};

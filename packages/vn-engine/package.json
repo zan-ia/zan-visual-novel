@@ -19,6 +19,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "@zan-vn/shared": "*"
   },
   "devDependencies": {
