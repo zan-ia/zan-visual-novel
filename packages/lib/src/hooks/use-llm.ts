@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import {
   createLocalLLMProvider,
+  createDefaultLFMWorker,
   createCloudLLMProvider,
   createCompositeLLMProvider,
 } from '@zan-vn/vn-engine';
@@ -42,7 +43,12 @@ export function useLLM(options: UseLLMOptions): ILLMProvider | null {
     const providers: ILLMProvider[] = [];
 
     if (caps.recommendedProvider === 'local' || caps.webgpu) {
-      providers.push(createLocalLLMProvider({ modelType: 'lfm-230m' }));
+      providers.push(
+        createLocalLLMProvider({
+          modelType: 'lfm-230m',
+          workerFactory: createDefaultLFMWorker,
+        }),
+      );
     }
 
     providers.push(

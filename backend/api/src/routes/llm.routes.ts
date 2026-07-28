@@ -30,8 +30,7 @@ llmRouter.post('/generate', authenticate, async (req, res) => {
           success: false,
           error: {
             statusCode: 429,
-            message:
-              'Muitas requisições. Tente novamente em um minuto.',
+            message: 'Muitas requisições. Tente novamente em um minuto.',
             code: 'RATE_LIMITED',
           },
         });

@@ -746,20 +746,23 @@ export function VNEditorPage() {
           />
 
           <Box mt={3}>
-            <Typography gutterBottom>
-              Max Tokens: {iaMaxTokens}
-            </Typography>
+            <Typography gutterBottom>Max Tokens: {iaMaxTokens}</Typography>
             <Slider
               value={iaMaxTokens}
               onChange={(_, v) => setIaMaxTokens(v as number)}
               min={50}
               max={2000}
               step={50}
-              marks={[{ value: 50, label: '50' }, { value: 500, label: '500' }, { value: 2000, label: '2000' }]}
+              marks={[
+                { value: 50, label: '50' },
+                { value: 500, label: '500' },
+                { value: 2000, label: '2000' },
+              ]}
               valueLabelDisplay="auto"
             />
             <Typography variant="caption" color="text.secondary">
-              Limite de tokens por geração. Valores maiores produzem textos mais longos mas custam mais.
+              Limite de tokens por geração. Valores maiores produzem textos mais longos mas custam
+              mais.
             </Typography>
           </Box>
 
