@@ -55,5 +55,3 @@ jobs:
           WHATSAPP_APP_SECRET: ${{ secrets.WHATSAPP_APP_SECRET }}
           PAYMENT_PROVIDER: ${{ secrets.PAYMENT_PROVIDER }}
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
-        id: deployment
-        uses: actions/deploy-pages@v4
