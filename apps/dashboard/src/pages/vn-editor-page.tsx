@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   Select,
   MenuItem,
@@ -103,6 +104,13 @@ export function VNEditorPage() {
   const [editingChoiceId, setEditingChoiceId] = useState<string | null>(null);
   const [editingChoiceText, setEditingChoiceText] = useState('');
   const [editingChoiceTarget, setEditingChoiceTarget] = useState('');
+
+  // Confirm delete dialog
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: 'chapter' | 'scene' | 'choice';
+    id: string;
+    label: string;
+  } | null>(null);
 
   // ── Load VN data ───────────────────────────────────────
 
@@ -229,24 +237,9 @@ export function VNEditorPage() {
     }
   };
 
-  const handleDeleteChapter = async (id: string) => {
-    if (!vnId) return;
-    setLoading(true);
-    try {
-      const res = await api.deleteChapter(vnId, id);
-      if (res.success) {
-        setChapters(chapters.filter((c) => c.id !== id));
-        if (selectedChapterId === id) {
-          setSelectedChapterId(null);
-          setScenes([]);
-        }
-        setToast('Capítulo removido');
-      }
-    } catch {
-      setToast('Erro ao remover capítulo');
-    } finally {
-      setLoading(false);
-    }
+  const handleDeleteChapter = (id: string) => {
+    const ch = chapters.find((c) => c.id === id);
+    setDeleteConfirm({ type: 'chapter', id, label: ch?.title ?? id });
   };
 
   const handlePublishChapter = async (id: string) => {
@@ -294,26 +287,9 @@ export function VNEditorPage() {
     }
   };
 
-  const handleDeleteScene = async (sceneId: string) => {
-    if (!selectedChapterId || !vnId) return;
-    setLoading(true);
-    try {
-      const res = await api.deleteScene(vnId, selectedChapterId, sceneId);
-      if (res.success) {
-        setScenes(scenes.filter((s) => s.id !== sceneId));
-        if (selectedSceneId === sceneId) {
-          setSelectedSceneId(null);
-          setSceneContent([]);
-          setChoices([]);
-          setSceneTitle('');
-        }
-        setToast('Cena removida!');
-      }
-    } catch {
-      setToast('Erro ao remover cena');
-    } finally {
-      setLoading(false);
-    }
+  const handleDeleteScene = (sceneId: string) => {
+    const sc = scenes.find((s) => s.id === sceneId);
+    setDeleteConfirm({ type: 'scene', id: sceneId, label: sc?.title ?? sceneId });
   };
 
   const handleSaveScene = async (contentOverride?: TextBlock[]) => {
@@ -417,19 +393,42 @@ export function VNEditorPage() {
     }
   };
 
-  const handleDeleteChoice = async (choiceId: string) => {
-    if (!selectedSceneId || !selectedChapterId || !vnId) return;
+  const handleDeleteChoice = (choiceId: string) => {
+    const ch = choices.find((c) => c.id === choiceId);
+    setDeleteConfirm({ type: 'choice', id: choiceId, label: ch?.text?.slice(0, 40) ?? choiceId });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirm || !vnId) return;
     setLoading(true);
+    const { type, id } = deleteConfirm;
     try {
-      const res = await api.deleteChoice(vnId, selectedChapterId, selectedSceneId, choiceId);
-      if (res.success) {
-        setChoices(choices.filter((c) => c.id !== choiceId));
-        setToast('Escolha removida');
+      if (type === 'chapter') {
+        const res = await api.deleteChapter(vnId, id);
+        if (res.success) {
+          setChapters((prev) => prev.filter((c) => c.id !== id));
+          if (selectedChapterId === id) { setSelectedChapterId(null); setScenes([]); }
+          setToast('Capítulo removido');
+        }
+      } else if (type === 'scene' && selectedChapterId) {
+        const res = await api.deleteScene(vnId, selectedChapterId, id);
+        if (res.success) {
+          setScenes((prev) => prev.filter((s) => s.id !== id));
+          if (selectedSceneId === id) { setSelectedSceneId(null); setSceneContent([]); setChoices([]); setSceneTitle(''); }
+          setToast('Cena removida!');
+        }
+      } else if (type === 'choice' && selectedChapterId && selectedSceneId) {
+        const res = await api.deleteChoice(vnId, selectedChapterId, selectedSceneId, id);
+        if (res.success) {
+          setChoices((prev) => prev.filter((c) => c.id !== id));
+          setToast('Escolha removida');
+        }
       }
     } catch {
-      setToast('Erro ao remover escolha');
+      setToast(`Erro ao remover ${type === 'chapter' ? 'capítulo' : type === 'scene' ? 'cena' : 'escolha'}`);
     } finally {
       setLoading(false);
+      setDeleteConfirm(null);
     }
   };
 
@@ -1753,6 +1752,43 @@ export function VNEditorPage() {
           </Button>
           <Button variant="contained" onClick={handleConfirmGraphChoice}>
             Criar Escolha
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Confirm Delete Dialog ────────────────────────── */}
+      <Dialog open={!!deleteConfirm} onClose={() => setDeleteConfirm(null)}>
+        <DialogTitle>
+          {deleteConfirm?.type === 'chapter'
+            ? 'Deletar Capítulo'
+            : deleteConfirm?.type === 'scene'
+              ? 'Deletar Cena'
+              : 'Deletar Escolha'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {deleteConfirm?.type === 'chapter'
+              ? `Tem certeza que deseja deletar "${deleteConfirm?.label}"? Todas as cenas serão perdidas.`
+              : deleteConfirm?.type === 'scene'
+                ? `Tem certeza que deseja deletar "${deleteConfirm?.label}"? Blocos de texto e escolhas serão perdidos.`
+                : `Tem certeza que deseja deletar a escolha "${deleteConfirm?.label}"?`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirm(null)} autoFocus>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={handleConfirmDelete}
+            disabled={loading}
+          >
+            {deleteConfirm?.type === 'chapter'
+              ? 'Deletar Capítulo'
+              : deleteConfirm?.type === 'scene'
+                ? 'Deletar Cena'
+                : 'Deletar Escolha'}
           </Button>
         </DialogActions>
       </Dialog>
