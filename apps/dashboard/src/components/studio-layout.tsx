@@ -19,6 +19,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FolderIcon from '@mui/icons-material/Folder';
 import MenuIcon from '@mui/icons-material/Menu';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../providers/auth-provider.js';
 
 const DRAWER_WIDTH = 240;
@@ -67,6 +68,52 @@ export function StudioLayout() {
           </ListItemIcon>
           <ListItemText primary="Analytics" />
         </ListItemButton>
+
+        {user?.role === 'admin' && (
+          <>
+            <Box sx={{ px: 2, mt: 2 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}
+              >
+                Admin
+              </Typography>
+            </Box>
+            <ListItemButton
+              onClick={() => {
+                navigate('/admin/users');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Usuários" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => {
+                navigate('/admin/moderation');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Moderação" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => {
+                navigate('/admin/credits');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Créditos" />
+            </ListItemButton>
+          </>
+        )}
       </List>
     </>
   );
