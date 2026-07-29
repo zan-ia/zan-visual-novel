@@ -137,7 +137,7 @@ Browser tools are essential for visual verification, documentation research, and
 
 **`fetch_webpage`** — documentation and research:
 
-- Check official dependency documentation (Svelte, SvelteKit, Vite, MD3)
+- Check official dependency documentation (React, Express, Vite, MUI)
 - Research solutions for errors or code patterns
 - Search for API references and best practices
 - ALWAYS validate the URL before fetching

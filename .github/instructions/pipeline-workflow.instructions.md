@@ -174,11 +174,11 @@ The planner:
 **Example planner return:**
 
 ```
-📋 Plan: .github/plans/issue-42-fix-header-colors.md
-📝 Summary: Fix header colors that diverge between DEV and LIVE.
-   Adjust 2 tokens in Header.svelte and verify glass-panel in app.css.
+📋 Plan: .github/plans/issue-42-fix-button-variant.md
+📝 Summary: Fix button variant inconsistency between client and dashboard.
+   Adjust MUI variant prop in VNCard and verify theming consistency.
 🔧 Complexity: Low
-📁 Files: Header.svelte, app.css
+📁 Files: packages/ui/src/vn-card.tsx, apps/dashboard/src/theme.ts
 ```
 
 The orchestrator saves this information to `/memories/session/pipeline-state.md`.
@@ -201,7 +201,7 @@ The implementer:
 4. Runs `npm run check` at the end
 5. Runs `npm run build` at the end
 6. NEVER modifies `build/` directly
-7. Respects ALL conventions: scoped CSS, design tokens, BEM naming, no Tailwind
+7. Respects ALL conventions: MUI sx props, design tokens, React patterns, no hardcoded colors
 8. Returns: summary of what was implemented + list of modified files
 
 ---
@@ -220,7 +220,7 @@ The reviewer analyzes the diff (`git diff`) against the plan and verifies:
 
 | Dimension           | What to check                                                                                     |
 | ------------------- | ------------------------------------------------------------------------------------------------- |
-| **Code**            | Scoped CSS, design tokens, BEM naming, Svelte 5 Runes, no Tailwind, no hex hardcoded              |
+| **Code**            | MUI sx props, design tokens, React patterns, no Tailwind, no hex hardcoded                        |
 | **Architecture**    | Correct component composition, no layout breakage, correct imports                                |
 | **Design**          | Glass-panel applied, correct typography, MD3 palette, standardized badges and sections            |
 | **Readability**     | Descriptive names, clean code, comments where needed                                              |
@@ -244,8 +244,8 @@ Status: CHANGES_NEEDED
 
 Issues Found:
 🔴 CRITICAL (2):
-  - Header.svelte: hardcoded color #1a1a2e instead of var(--color-surface)
-  - app.css: animation uses 'height' instead of 'transform'
+  - packages/ui/src/vn-card.tsx: hardcoded color #1a1a2e instead of MUI theme palette
+  - apps/dashboard/src/pages/vn-editor-page.tsx: inline style instead of MUI sx prop
 
 🟡 MAJOR (1):
   - New component doesn't use glass-panel

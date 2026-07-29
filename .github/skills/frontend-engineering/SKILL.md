@@ -43,7 +43,7 @@ Reference for building modern, accessible, performant user interfaces. This is a
 | **MobX**           | Observable             | OOP-style, minimal boilerplate |
 | **Pinia**          | Composition API        | Vue.js apps                    |
 | **TanStack Query** | Server cache only      | API data fetching/caching      |
-| **Svelte stores**  | Built-in, simple       | Svelte apps                    |
+| **MUI theme**      | Built-in, typed        | React MUI apps                 |
 
 ### Render strategies
 

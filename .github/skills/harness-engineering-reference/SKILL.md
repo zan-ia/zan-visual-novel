@@ -191,11 +191,11 @@ This is the MOST IMPORTANT meta-lesson. Not all storage is equal.
 
 ### `.instructions.md` All Fields
 
-| Field         | Type   | Required | Notes                                                                                                                                         |
-| ------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | string | No       | Display name. Default: filename                                                                                                               |
-| `description` | string | No       | Semantic matching. Use "Use when: ..."                                                                                                        |
-| `applyTo`     | string | No       | Glob for auto-attachment. Comma-separated for multiple: `"src/**/*.svelte, src/lib/app.css"`. Without it, loaded only via `description` match |
+| Field         | Type   | Required | Notes                                                                                                                                      |
+| ------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`        | string | No       | Display name. Default: filename                                                                                                            |
+| `description` | string | No       | Semantic matching. Use "Use when: ..."                                                                                                     |
+| `applyTo`     | string | No       | Glob for auto-attachment. Comma-separated for multiple: `"src/**/*.tsx, src/lib/app.css"`. Without it, loaded only via `description` match |
 
 ### `SKILL.md` All Fields
 
