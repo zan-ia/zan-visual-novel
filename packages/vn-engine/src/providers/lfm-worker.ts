@@ -2,12 +2,17 @@
  * Web Worker for local LLM inference using Transformers.js.
  * Runs text generation off the main thread to keep the UI responsive.
  *
+ * Strategy:
+ * 1. Prefer WebGPU for performance when available.
+ * 2. Fall back to WASM/CPU if WebGPU fails (e.g. Electron/Chromium quirks).
+ * 3. Cache the pipeline singleton per model to avoid redundant downloads.
+ *
  * @worker
  */
 
 import { pipeline, env } from '@huggingface/transformers';
 
-// Configure Transformers.js to use local cache and prefer WebGPU
+// Use the Hugging Face Hub and browser cache; local models are not bundled.
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 
@@ -16,58 +21,98 @@ type WorkerMessage =
   | { type: 'generate'; id: string; prompt: string; maxTokens: number };
 
 type WorkerResponse =
-  | { type: 'ready'; model: string }
+  | { type: 'ready'; model: string; device: string }
   | { type: 'result'; id: string; text: string; duration: number }
   | { type: 'error'; id: string; message: string }
   | { type: 'progress'; status: string; progress?: number };
 
-let generator: Awaited<ReturnType<typeof pipeline<'text-generation'>>> | null = null;
-let currentModel: string | null = null;
+interface PipelineInstance {
+  generator: Awaited<ReturnType<typeof pipeline<'text-generation' | 'text2text-generation'>>>;
+  model: string;
+  device: string;
+  task: 'text-generation' | 'text2text-generation';
+}
 
-async function handleInit(model: string): Promise<void> {
-  if (generator && currentModel === model) {
-    postMessage({ type: 'ready', model } satisfies WorkerResponse);
-    return;
+let pipelineInstance: PipelineInstance | null = null;
+
+function reportProgress(info: { status: string; progress?: number; file?: string }): void {
+  postMessage({
+    type: 'progress',
+    status: info.file ? `${info.status}: ${info.file}` : info.status,
+    progress: info.progress ?? undefined,
+  } satisfies WorkerResponse);
+}
+
+/** Infer the Transformers.js task from the model id. */
+function detectTask(model: string): 'text-generation' | 'text2text-generation' {
+  const lower = model.toLowerCase();
+  if (lower.includes('t5') || lower.includes('flan') || lower.includes('bart')) {
+    return 'text2text-generation';
+  }
+  return 'text-generation';
+}
+
+async function loadPipeline(model: string): Promise<PipelineInstance> {
+  if (pipelineInstance && pipelineInstance.model === model) {
+    return pipelineInstance;
   }
 
+  reportProgress({ status: 'loading', progress: 0 });
+
+  const task = detectTask(model);
+
+  // Try WebGPU first; fall back to WASM/CPU if it fails.
+  const devices: Array<{ device: 'webgpu' | undefined; label: string }> = [
+    { device: 'webgpu', label: 'webgpu' },
+    { device: undefined, label: 'wasm' },
+  ];
+
+  let lastError: Error | null = null;
+  for (const { device, label } of devices) {
+    try {
+      const generator = await pipeline(task, model, {
+        device,
+        progress_callback: reportProgress,
+      });
+
+      pipelineInstance = { generator, model, device: label, task };
+      return pipelineInstance;
+    } catch (err: unknown) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      reportProgress({
+        status: `fallback-${label}`,
+        progress: undefined,
+      });
+    }
+  }
+
+  throw lastError ?? new Error('Falha ao carregar modelo local');
+}
+
+async function handleInit(model: string): Promise<void> {
   try {
-    postMessage({ type: 'progress', status: 'loading', progress: 0 } satisfies WorkerResponse);
-
-    // Use text-generation pipeline with the specified model
-    generator = await pipeline('text-generation', model, {
-      progress_callback: (info: { status: string; progress?: number }) => {
-        postMessage({
-          type: 'progress',
-          status: info.status,
-          progress: info.progress ?? undefined,
-        } satisfies WorkerResponse);
-      },
-    });
-
-    currentModel = model;
-    postMessage({ type: 'ready', model } satisfies WorkerResponse);
+    const instance = await loadPipeline(model);
+    postMessage({
+      type: 'ready',
+      model: instance.model,
+      device: instance.device,
+    } satisfies WorkerResponse);
   } catch (err: unknown) {
+    pipelineInstance = null;
     postMessage({
       type: 'error',
       id: 'init',
-      message: err instanceof Error ? err.message : 'Failed to load model',
+      message: err instanceof Error ? err.message : 'Falha ao carregar modelo local',
     } satisfies WorkerResponse);
   }
 }
 
 async function handleGenerate(id: string, prompt: string, maxTokens: number): Promise<void> {
-  if (!generator) {
-    postMessage({
-      type: 'error',
-      id,
-      message: 'Model not loaded. Call init first.',
-    } satisfies WorkerResponse);
-    return;
-  }
-
   try {
+    const instance = await loadPipeline(pipelineInstance?.model ?? 'Xenova/LaMini-Flan-T5-77M');
     const startTime = performance.now();
-    const result = await generator(prompt, {
+
+    const result = await instance.generator(prompt, {
       max_new_tokens: maxTokens,
       temperature: 0.8,
       top_p: 0.9,
@@ -79,10 +124,12 @@ async function handleGenerate(id: string, prompt: string, maxTokens: number): Pr
       ? (result[0]?.generated_text ?? '')
       : (result as { generated_text: string }).generated_text;
 
-    // Strip the original prompt from the output
-    const continuation = generatedText.startsWith(prompt)
-      ? generatedText.slice(prompt.length).trim()
-      : generatedText.trim();
+    // For decoder-only models (text-generation) the output includes the prompt.
+    // For encoder-decoder models (text2text-generation) the output is only the target text.
+    const continuation =
+      instance.task === 'text-generation' && generatedText.startsWith(prompt)
+        ? generatedText.slice(prompt.length).trim()
+        : generatedText.trim();
 
     const duration = Math.round(performance.now() - startTime);
 
@@ -96,7 +143,7 @@ async function handleGenerate(id: string, prompt: string, maxTokens: number): Pr
     postMessage({
       type: 'error',
       id,
-      message: err instanceof Error ? err.message : 'Generation failed',
+      message: err instanceof Error ? err.message : 'Falha na geração local',
     } satisfies WorkerResponse);
   }
 }
@@ -115,7 +162,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
       postMessage({
         type: 'error',
         id: 'unknown',
-        message: `Unknown message type: ${(msg as { type: string }).type}`,
+        message: `Tipo de mensagem desconhecido: ${(msg as { type: string }).type}`,
       } satisfies WorkerResponse);
   }
 };

@@ -49,17 +49,27 @@ export function createDefaultLLMProvider(): ILLMProvider {
 export function createCompositeLLMProvider(providers: ILLMProvider[]): ILLMProvider {
   return {
     async generate(request: LLMGenerateRequest): Promise<LLMGenerateResponse> {
+      const errors: string[] = [];
       for (const provider of providers) {
         if (provider.isAvailable()) {
           try {
             return await provider.generate(request);
-          } catch {
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            errors.push(`${provider.getModelType()}: ${message}`);
             // Try next provider
             continue;
           }
         }
       }
-      throw new Error('No LLM provider available');
+
+      if (errors.length > 0) {
+        throw new Error(`Nenhum provedor de IA disponível. Detalhes:\n${errors.join('\n')}`);
+      }
+
+      throw new Error(
+        'Nenhum provedor de IA disponível. Faça login para usar a nuvem ou habilite WebGPU/CPU para geração local.',
+      );
     },
 
     isAvailable(): boolean {

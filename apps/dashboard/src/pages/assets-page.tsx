@@ -348,8 +348,8 @@ export function AssetsPage() {
               </Box>
 
               {/* Info */}
-              <Box p={1.5}>
-                <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
+              <Box p={2}>
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
                   <Chip
                     label={getTypeLabel(asset.type)}
                     size="small"
@@ -379,7 +379,7 @@ export function AssetsPage() {
                 <Typography variant="caption" color="text.secondary">
                   {formatSize(asset.sizeBytes)} • {formatDate(asset.createdAt)}
                 </Typography>
-                <Box display="flex" gap={0.5} mt={0.5}>
+                <Box display="flex" gap={1} mt={1}>
                   <IconButton
                     size="small"
                     onClick={() => handlePreview(asset)}

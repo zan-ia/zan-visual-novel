@@ -246,7 +246,11 @@ export function PlayerPage() {
 
   if (!currentScene) {
     return (
-      <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4 }} aria-busy="true" aria-label="Carregando cena">
+      <Box
+        sx={{ maxWidth: 'var(--content-md)', mx: 'auto', mt: 4 }}
+        aria-busy="true"
+        aria-label="Carregando cena"
+      >
         {/* Skeleton da área da cena */}
         <Skeleton
           variant="rectangular"
@@ -268,7 +272,7 @@ export function PlayerPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', position: 'relative' }}>
+    <Box sx={{ maxWidth: 'var(--content-md)', mx: 'auto', position: 'relative' }}>
       {/* Top bar */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
         <Tooltip title="Voltar à biblioteca">

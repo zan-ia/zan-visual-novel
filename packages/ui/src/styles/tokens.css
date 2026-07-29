@@ -12,6 +12,20 @@
   --color-success: #4caf50;
   --color-node-bg: rgba(30, 30, 40, 0.95);
   --color-node-border: rgba(255, 255, 255, 0.15);
+
+  /* Spacing (8px grid) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+
+  /* Content max-widths */
+  --content-sm: 600px;
+  --content-md: 800px;
+  --content-lg: 1200px;
 }
 
 /* ── Reset ──────────────────────────────────────────────── */
