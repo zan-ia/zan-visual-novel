@@ -12,9 +12,17 @@
 
 import { pipeline, env } from '@huggingface/transformers';
 
-// Use the Hugging Face Hub and browser cache; local models are not bundled.
+// Use the Hugging Face Hub; disable browser cache to avoid Cache API errors
+// in Electron/VS Code's embedded browser. Models are re-downloaded each session.
 env.allowLocalModels = false;
-env.useBrowserCache = true;
+env.useBrowserCache = false;
+
+// Single-threaded, non-SIMD WASM avoids COOP/COEP header requirements and
+// loads the smaller ort-wasm.asyncify.wasm binary in constrained browsers.
+if (env.backends?.onnx?.wasm) {
+  env.backends.onnx.wasm.numThreads = 1;
+  env.backends.onnx.wasm.simd = false;
+}
 
 type WorkerMessage =
   | { type: 'init'; model: string }
@@ -62,9 +70,9 @@ async function loadPipeline(model: string): Promise<PipelineInstance> {
   const task = detectTask(model);
 
   // Try WebGPU first; fall back to WASM/CPU if it fails.
-  const devices: Array<{ device: 'webgpu' | undefined; label: string }> = [
+  const devices: Array<{ device: 'webgpu' | 'wasm'; label: string }> = [
     { device: 'webgpu', label: 'webgpu' },
-    { device: undefined, label: 'wasm' },
+    { device: 'wasm', label: 'wasm' },
   ];
 
   let lastError: Error | null = null;
@@ -78,9 +86,11 @@ async function loadPipeline(model: string): Promise<PipelineInstance> {
       pipelineInstance = { generator, model, device: label, task };
       return pipelineInstance;
     } catch (err: unknown) {
-      lastError = err instanceof Error ? err : new Error(String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[lfm-worker] Failed to load pipeline on ${label}: ${message}`, err);
+      lastError = err instanceof Error ? err : new Error(message);
       reportProgress({
-        status: `fallback-${label}`,
+        status: `fallback-${label}: ${message}`,
         progress: undefined,
       });
     }

@@ -21,7 +21,6 @@ import {
   FormControl,
   InputLabel,
   Snackbar,
-  Tooltip,
 } from '@mui/material';
 import { Switch, Slider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -643,7 +642,7 @@ export function VNEditorPage() {
   const selectedScene = scenes.find((s) => s.id === selectedSceneId);
 
   return (
-    <Box sx={{ maxWidth: 'var(--content-lg)' }}>
+    <Box sx={{ maxWidth: 1200 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h4">
           {isNew ? 'Nova Visual Novel' : title || 'Editor de VN'}
@@ -656,20 +655,14 @@ export function VNEditorPage() {
           >
             Preview
           </Button>
-          <Tooltip
-            title={chapters.length === 0 ? 'Adicione pelo menos um capítulo para publicar' : ''}
+          <Button
+            variant="contained"
+            startIcon={<PublishIcon />}
+            onClick={handlePublish}
+            disabled={loading}
           >
-            <span>
-              <Button
-                variant="contained"
-                startIcon={<PublishIcon />}
-                onClick={handlePublish}
-                disabled={loading || chapters.length === 0}
-              >
-                Publicar
-              </Button>
-            </span>
-          </Tooltip>
+            Publicar
+          </Button>
         </Box>
       </Box>
 
@@ -989,7 +982,7 @@ export function VNEditorPage() {
                     >
                       {isEditing ? (
                         /* ── Edit mode ── */
-                        <Box display="flex" flexDirection="column" gap={2}>
+                        <Box display="flex" flexDirection="column" gap={1.5}>
                           <Box display="flex" gap={1} alignItems="center">
                             <FormControl size="small" sx={{ minWidth: 130 }}>
                               <Select
@@ -1059,7 +1052,7 @@ export function VNEditorPage() {
                         /* ── Display mode ── */
                         <>
                           <Box display="flex" gap={1} mb={1} alignItems="center">
-                            <Box display="flex" gap={1} mr={1}>
+                            <Box display="flex" gap={0.5} mr={1}>
                               <IconButton
                                 size="small"
                                 disabled={i === 0}

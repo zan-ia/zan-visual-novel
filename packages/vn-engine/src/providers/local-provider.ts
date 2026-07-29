@@ -65,6 +65,19 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
   >();
   let nextId = 0;
 
+  /** Detect WebGPU support for hardware-accelerated inference. */
+  function detectWebGPU(): boolean {
+    try {
+      return (
+        'gpu' in navigator &&
+        typeof (navigator as unknown as { gpu?: { requestAdapter?: unknown } }).gpu
+          ?.requestAdapter === 'function'
+      );
+    } catch {
+      return false;
+    }
+  }
+
   /** Lazily initialise the inference worker. */
   async function initWorker(): Promise<void> {
     if (ready) return;
@@ -132,12 +145,11 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
       const hfModel = MODEL_MAP[config.modelType] ?? config.modelType;
       worker.postMessage({ type: 'init', model: hfModel } satisfies WorkerRequest);
 
-      // Wait for ready with timeout. First model download can take minutes,
-      // so allow a generous window while still reporting progress.
+      // Wait for ready with timeout
       await new Promise<void>((resolve, reject) => {
         const timeout = setTimeout(() => {
-          if (!ready) reject(new LocalProviderUnavailableError('Model load timeout (5 min)'));
-        }, 300_000);
+          if (!ready) reject(new LocalProviderUnavailableError('Model load timeout (30s)'));
+        }, 30_000);
 
         const check = setInterval(() => {
           if (ready) {
@@ -197,9 +209,7 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
     },
 
     isAvailable(): boolean {
-      // Local inference is available as long as the worker has not hard-failed.
-      // WebGPU is preferred, but the worker will fall back to WASM/CPU.
-      return !initError;
+      return detectWebGPU() && !initError;
     },
 
     getModelType(): string {
@@ -208,11 +218,7 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
   };
 }
 
-/** Map of LFM model types to HuggingFace model IDs.
- *
- * Models are chosen to be small enough to run in a browser, with ONNX
- * runtimes available on both WebGPU and WASM backends.
- */
+/** Map of LFM model types to HuggingFace model IDs. */
 const MODEL_MAP: Record<string, string> = {
   'lfm-230m': 'Xenova/LaMini-Flan-T5-77M',
   'lfm-350m': 'Xenova/gpt2',
