@@ -1,13 +1,27 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Box, Chip } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
 import { useAuth } from '../providers/auth-provider.js';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export function Layout() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const goOffline = () => setIsOffline(true);
+    const goOnline = () => setIsOffline(false);
+    window.addEventListener('offline', goOffline);
+    window.addEventListener('online', goOnline);
+    return () => {
+      window.removeEventListener('offline', goOffline);
+      window.removeEventListener('online', goOnline);
+    };
+  }, []);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -34,6 +48,16 @@ export function Layout() {
           >
             Zan VN
           </Typography>
+          {isOffline && (
+            <Chip
+              icon={<WifiOffIcon />}
+              label="Offline"
+              size="small"
+              color="warning"
+              variant="outlined"
+              sx={{ mr: 2 }}
+            />
+          )}
           {isAuthenticated ? (
             <>
               <Button
