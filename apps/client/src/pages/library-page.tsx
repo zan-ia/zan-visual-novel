@@ -6,6 +6,12 @@ import {
   Snackbar,
   Skeleton,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import SearchIcon from '@mui/icons-material/Search';
@@ -17,13 +23,15 @@ import { useAuth } from '../providers/auth-provider.js';
 import { useNavigate } from 'react-router-dom';
 
 export function LibraryPage() {
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const navigate = useNavigate();
   const [vns, setVNs] = useState<VisualNovel[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
+  const [spendDialog, setSpendDialog] = useState<VisualNovel | null>(null);
+  const [spending, setSpending] = useState(false);
 
   useEffect(() => {
     api
@@ -48,10 +56,32 @@ export function LibraryPage() {
         setEmptyMessage('Esta visual novel ainda não tem capítulos publicados.');
         return;
       }
+      if (vn.priceCredits > 0) {
+        setSpendDialog(vn);
+        return;
+      }
       navigate(`/play/${vn.id}`);
     },
     [navigate],
   );
+
+  const handleSpendConfirm = async () => {
+    if (!spendDialog) return;
+    setSpending(true);
+    try {
+      const res = await (api as any).spendCredits(spendDialog.id, spendDialog.priceCredits);
+      if (res.success) {
+        setSpendDialog(null);
+        navigate(`/play/${spendDialog.id}`);
+      } else {
+        setError(res.error?.message ?? 'Erro ao processar pagamento.');
+      }
+    } catch {
+      setError('Erro ao conectar com o servidor.');
+    } finally {
+      setSpending(false);
+    }
+  };
 
   const filtered = vns.filter(
     (vn) =>
@@ -137,6 +167,25 @@ export function LibraryPage() {
         message={emptyMessage ?? ''}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
+
+      {/* Spend confirmation dialog */}
+      <Dialog open={!!spendDialog} onClose={() => !spending && setSpendDialog(null)}>
+        <DialogTitle>Confirmar Compra</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Esta visual novel custa {spendDialog?.priceCredits} créditos.
+            Seu saldo: {user?.creditsBalance ?? 0} créditos.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSpendDialog(null)} disabled={spending}>
+            Cancelar
+          </Button>
+          <Button onClick={handleSpendConfirm} disabled={spending} variant="contained">
+            {spending ? 'Processando...' : 'Comprar e Jogar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
