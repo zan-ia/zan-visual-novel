@@ -101,7 +101,11 @@ const getOpenApiSpecSafe = () => {
       openApiSpecCache = getOpenApiSpec();
     } catch {
       // OpenAPI spec generation failed — serve basic fallback
-      openApiSpecCache = { openapi: '3.0.3', info: { title: 'Zan VN API', version: '0.1.0' }, paths: {} };
+      openApiSpecCache = {
+        openapi: '3.0.3',
+        info: { title: 'Zan VN API', version: '0.1.0' },
+        paths: {},
+      };
     }
   }
   return openApiSpecCache;
