@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -19,6 +19,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FolderIcon from '@mui/icons-material/Folder';
 import MenuIcon from '@mui/icons-material/Menu';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../providers/auth-provider.js';
 
 const DRAWER_WIDTH = 240;
@@ -26,6 +27,7 @@ const DRAWER_WIDTH = 240;
 export function StudioLayout() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,6 +37,7 @@ export function StudioLayout() {
       <Toolbar />
       <List sx={{ mt: 2 }}>
         <ListItemButton
+          selected={location.pathname === '/studio'}
           onClick={() => {
             navigate('/studio');
             setMobileOpen(false);
@@ -46,6 +49,7 @@ export function StudioLayout() {
           <ListItemText primary="Minhas VNs" />
         </ListItemButton>
         <ListItemButton
+          selected={location.pathname === '/assets'}
           onClick={() => {
             navigate('/assets');
             setMobileOpen(false);
@@ -57,6 +61,7 @@ export function StudioLayout() {
           <ListItemText primary="Assets" />
         </ListItemButton>
         <ListItemButton
+          selected={location.pathname === '/analytics'}
           onClick={() => {
             navigate('/analytics');
             setMobileOpen(false);
@@ -67,6 +72,55 @@ export function StudioLayout() {
           </ListItemIcon>
           <ListItemText primary="Analytics" />
         </ListItemButton>
+
+        {user?.role === 'admin' && (
+          <>
+            <Box sx={{ px: 2, mt: 2 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}
+              >
+                Admin
+              </Typography>
+            </Box>
+            <ListItemButton
+              selected={location.pathname.startsWith('/admin')}
+              onClick={() => {
+                navigate('/admin/users');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Usuários" />
+            </ListItemButton>
+            <ListItemButton
+              selected={location.pathname.startsWith('/admin')}
+              onClick={() => {
+                navigate('/admin/moderation');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Moderação" />
+            </ListItemButton>
+            <ListItemButton
+              selected={location.pathname.startsWith('/admin')}
+              onClick={() => {
+                navigate('/admin/credits');
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <AdminPanelSettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Créditos" />
+            </ListItemButton>
+          </>
+        )}
       </List>
     </>
   );
@@ -78,6 +132,7 @@ export function StudioLayout() {
         color="transparent"
         elevation={0}
         sx={{
+          background: 'rgba(15, 15, 35, 0.85)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(255,255,255,0.05)',
           zIndex: 1201,
@@ -100,7 +155,7 @@ export function StudioLayout() {
             sx={{ flexGrow: 1, fontFamily: '"Playfair Display", serif', cursor: 'pointer' }}
             onClick={() => navigate('/studio')}
           >
-            Creator Studio
+            Zan VN
           </Typography>
           {isAuthenticated ? (
             <>
@@ -112,7 +167,7 @@ export function StudioLayout() {
               </Button>
             </>
           ) : (
-            <Button color="inherit" onClick={() => navigate('/login')}>
+            <Button variant="outlined" color="inherit" onClick={() => navigate('/login')}>
               Entrar
             </Button>
           )}

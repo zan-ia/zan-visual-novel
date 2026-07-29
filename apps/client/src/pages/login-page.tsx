@@ -39,7 +39,7 @@ export function LoginPage() {
     >
       <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <Typography variant="h4" sx={{ mb: 1, textAlign: 'center' }}>
-          Zan Visual Novel
+          Zan VN
         </Typography>
         <Typography variant="body2" sx={{ mb: 3, textAlign: 'center', color: 'text.secondary' }}>
           {isRegister ? 'Crie sua conta' : 'Entre para continuar'}

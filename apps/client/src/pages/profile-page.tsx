@@ -1,5 +1,6 @@
 import { Box, Typography, Paper, Button } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from '../providers/auth-provider.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -49,7 +50,9 @@ export function ProfilePage() {
         <Typography variant="h4" color="primary" mb={3}>
           {user?.creditsBalance ?? 0} créditos
         </Typography>
-        <Button variant="contained">Comprar Créditos</Button>
+        <Button variant="contained" startIcon={<ShoppingCartIcon />} title="Comprar créditos na loja">
+          Comprar Créditos
+        </Button>
       </Paper>
     </Box>
   );
