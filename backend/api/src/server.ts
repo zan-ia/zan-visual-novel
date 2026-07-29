@@ -24,11 +24,14 @@ import { creditsRouter } from './routes/credits.routes.js';
 import { llmRouter } from './routes/llm.routes.js';
 import { assetsRouter } from './routes/assets.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
+import { analyticsRouter } from './routes/analytics.routes.js';
 import { stripeWebhookRouter } from './routes/stripe-webhook.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
 import { createStorageProvider, S3StorageProvider } from './lib/storage.js';
 import { connectRedis, pingRedis } from './lib/redis.js';
+import swaggerUi from 'swagger-ui-express';
+import { getOpenApiSpec } from './lib/openapi.js';
 
 // ── Storage Provider (configured singleton) ─────────────
 
@@ -87,6 +90,13 @@ app.use('/api/v1/credits', creditsRouter);
 app.use('/api/v1/llm', llmRouter);
 app.use('/api/v1/assets', assetsRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/analytics', analyticsRouter);
+
+// ── Swagger / OpenAPI Documentation ─────────────────────
+
+const openApiSpec = getOpenApiSpec();
+app.get('/api/v1/docs.json', (_req, res) => res.json(openApiSpec));
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 // ── Error Handling ──────────────────────────────────────
 

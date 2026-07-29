@@ -611,7 +611,8 @@ export function getOpenApiSpec() {
     method: 'get',
     path: '/api/v1/vns',
     summary: 'List visual novels',
-    description: 'Returns published VNs. When authenticated with ?creator=me, returns the current user\'s VNs.',
+    description:
+      "Returns published VNs. When authenticated with ?creator=me, returns the current user's VNs.",
     tags: [tags.vns],
     request: {
       query: paginationSchema,
@@ -1695,9 +1696,7 @@ export function getOpenApiSpec() {
         description: 'Config updated (placeholder)',
         content: {
           'application/json': {
-            schema: SuccessResponse(
-              z.object({ message: z.string() }),
-            ),
+            schema: SuccessResponse(z.object({ message: z.string() })),
           },
         },
       },
@@ -1773,8 +1772,6 @@ export function getOpenApiSpec() {
       description:
         'API for the Zan Visual Novel platform — visual novels, chapters, scenes, choices, saves, credits, LLM generation, assets, and analytics.',
     },
-    servers: [
-      { url: 'http://localhost:3001', description: 'Development server' },
-    ],
+    servers: [{ url: 'http://localhost:3001', description: 'Development server' }],
   });
 }

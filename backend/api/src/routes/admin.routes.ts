@@ -23,10 +23,7 @@ adminRouter.get('/users', async (req, res) => {
 
     if (search && typeof search === 'string') {
       conditions.push(
-        or(
-          like(schema.users.displayName, `%${search}%`),
-          like(schema.users.email, `%${search}%`),
-        ),
+        or(like(schema.users.displayName, `%${search}%`), like(schema.users.email, `%${search}%`)),
       );
     }
 
