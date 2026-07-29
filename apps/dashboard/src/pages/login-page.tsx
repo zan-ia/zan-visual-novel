@@ -27,7 +27,7 @@ export function LoginPage() {
     >
       <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <Typography variant="h4" mb={1} textAlign="center">
-          Creator Studio
+          Zan VN
         </Typography>
         <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
           Acesse seu painel de criação

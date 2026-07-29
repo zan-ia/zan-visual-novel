@@ -1,11 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from '../providers/auth-provider.js';
 import { useNavigate } from 'react-router-dom';
 
 export function Layout() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -13,12 +15,21 @@ export function Layout() {
         position="sticky"
         color="transparent"
         elevation={0}
-        sx={{ backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        sx={{
+          background: 'rgba(15, 15, 35, 0.85)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+        }}
       >
         <Toolbar>
           <Typography
             variant="h6"
-            sx={{ flexGrow: 1, fontFamily: '"Playfair Display", serif', cursor: 'pointer' }}
+            sx={{
+              flexGrow: 1,
+              fontFamily: '"Playfair Display", serif',
+              cursor: 'pointer',
+              color: location.pathname === '/library' ? 'primary.main' : 'inherit',
+            }}
             onClick={() => navigate('/library')}
           >
             Zan VN
@@ -29,6 +40,7 @@ export function Layout() {
                 color="inherit"
                 size="small"
                 onClick={() => navigate('/credits')}
+                startIcon={<ShoppingCartIcon />}
                 sx={{ mr: 1, textTransform: 'none' }}
               >
                 🪙 {user?.creditsBalance ?? 0} créditos
@@ -36,7 +48,10 @@ export function Layout() {
               <Button color="inherit" onClick={() => navigate('/transactions')} size="small" sx={{ mr: 1 }}>
                 Extrato
               </Button>
-              <Button color="inherit" onClick={() => navigate('/profile')}>
+              <Button
+                color={location.pathname.startsWith('/profile') ? 'primary' : 'inherit'}
+                onClick={() => navigate('/profile')}
+              >
                 {user?.displayName}
               </Button>
               <Button color="inherit" onClick={logout} sx={{ ml: 1 }}>
@@ -44,7 +59,7 @@ export function Layout() {
               </Button>
             </>
           ) : (
-            <Button color="inherit" onClick={() => navigate('/login')}>
+            <Button variant="outlined" color="inherit" onClick={() => navigate('/login')}>
               Entrar
             </Button>
           )}
