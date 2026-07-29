@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useCallback, useMemo, useRef, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from 'react';
 import type { User, AuthTokens } from '@zan-vn/shared';
 import { ApiClient } from '@zan-vn/lib';
 
@@ -42,35 +50,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   });
 
-  const api = useMemo(() => new ApiClient({
-    baseUrl: API_URL,
-    getAccessToken: () => localStorage.getItem('access_token'),
-    getRefreshToken: () => localStorage.getItem('refresh_token'),
-    onTokenRefreshed: (tokens: AuthTokens) => onTokenRefreshedRef.current(tokens),
-    onAuthError: () => onAuthErrorRef.current(),
-  }), []);
+  const api = useMemo(
+    () =>
+      new ApiClient({
+        baseUrl: API_URL,
+        getAccessToken: () => localStorage.getItem('access_token'),
+        getRefreshToken: () => localStorage.getItem('refresh_token'),
+        onTokenRefreshed: (tokens: AuthTokens) => onTokenRefreshedRef.current(tokens),
+        onAuthError: () => onAuthErrorRef.current(),
+      }),
+    [],
+  );
 
-  const login = useCallback(async (email: string, password: string) => {
-    const result = await api.login({ email, password });
-    if (result.success && result.data) {
-      localStorage.setItem('access_token', result.data.accessToken);
-      localStorage.setItem('refresh_token', result.data.refreshToken);
-      setUser(result.data.user);
-    } else {
-      throw new Error(result.error?.message ?? 'Login failed');
-    }
-  }, [api]);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const result = await api.login({ email, password });
+      if (result.success && result.data) {
+        localStorage.setItem('access_token', result.data.accessToken);
+        localStorage.setItem('refresh_token', result.data.refreshToken);
+        setUser(result.data.user);
+      } else {
+        throw new Error(result.error?.message ?? 'Login failed');
+      }
+    },
+    [api],
+  );
 
-  const register = useCallback(async (email: string, password: string, displayName: string) => {
-    const result = await api.register({ email, password, displayName });
-    if (result.success && result.data) {
-      localStorage.setItem('access_token', result.data.accessToken);
-      localStorage.setItem('refresh_token', result.data.refreshToken);
-      setUser(result.data.user);
-    } else {
-      throw new Error(result.error?.message ?? 'Registration failed');
-    }
-  }, [api]);
+  const register = useCallback(
+    async (email: string, password: string, displayName: string) => {
+      const result = await api.register({ email, password, displayName });
+      if (result.success && result.data) {
+        localStorage.setItem('access_token', result.data.accessToken);
+        localStorage.setItem('refresh_token', result.data.refreshToken);
+        setUser(result.data.user);
+      } else {
+        throw new Error(result.error?.message ?? 'Registration failed');
+      }
+    },
+    [api],
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem('access_token');
