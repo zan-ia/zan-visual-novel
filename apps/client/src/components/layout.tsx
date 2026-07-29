@@ -25,9 +25,17 @@ export function Layout() {
           </Typography>
           {isAuthenticated ? (
             <>
-              <Typography variant="body2" sx={{ mr: 2, color: 'text.secondary' }}>
-                {user?.creditsBalance ?? 0} créditos
-              </Typography>
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => navigate('/credits')}
+                sx={{ mr: 1, textTransform: 'none' }}
+              >
+                🪙 {user?.creditsBalance ?? 0} créditos
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/transactions')} size="small" sx={{ mr: 1 }}>
+                Extrato
+              </Button>
               <Button color="inherit" onClick={() => navigate('/profile')}>
                 {user?.displayName}
               </Button>

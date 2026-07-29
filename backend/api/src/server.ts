@@ -24,7 +24,6 @@ import { creditsRouter } from './routes/credits.routes.js';
 import { llmRouter } from './routes/llm.routes.js';
 import { assetsRouter } from './routes/assets.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
-import { analyticsRouter } from './routes/analytics.routes.js';
 import { stripeWebhookRouter } from './routes/stripe-webhook.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
@@ -88,7 +87,6 @@ app.use('/api/v1/credits', creditsRouter);
 app.use('/api/v1/llm', llmRouter);
 app.use('/api/v1/assets', assetsRouter);
 app.use('/api/v1/admin', adminRouter);
-app.use('/api/v1/analytics', analyticsRouter);
 
 // ── Error Handling ──────────────────────────────────────
 
