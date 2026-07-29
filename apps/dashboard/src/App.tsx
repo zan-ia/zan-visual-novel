@@ -7,6 +7,9 @@ import { VNEditorPage } from './pages/vn-editor-page.js';
 import { AnalyticsPage } from './pages/analytics-page.js';
 import { AssetsPage } from './pages/assets-page.js';
 import { LoginPage } from './pages/login-page.js';
+import { AdminUsersPage } from './pages/admin/users-page.js';
+import { AdminModerationPage } from './pages/admin/moderation-page.js';
+import { AdminCreditsConfigPage } from './pages/admin/credits-config-page.js';
 import { theme } from './theme.js';
 
 export function App() {
@@ -22,6 +25,9 @@ export function App() {
               <Route path="/studio/:vnId" element={<VNEditorPage />} />
               <Route path="/assets" element={<AssetsPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/moderation" element={<AdminModerationPage />} />
+              <Route path="/admin/credits" element={<AdminCreditsConfigPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/studio" replace />} />
           </Routes>

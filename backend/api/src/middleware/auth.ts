@@ -59,3 +59,14 @@ export function requireRole(...roles: string[]) {
     next();
   };
 }
+
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  if ((req as any).user?.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      error: { statusCode: 403, message: 'Acesso restrito a administradores', code: 'FORBIDDEN' },
+    });
+    return;
+  }
+  next();
+}
