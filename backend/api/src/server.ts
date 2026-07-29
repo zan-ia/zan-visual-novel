@@ -39,10 +39,21 @@ const PORT = Number(process.env.PORT) || 3001;
 
 app.use(
   cors({
-    origin: [
-      process.env.CLIENT_URL ?? 'http://localhost:5173',
-      process.env.DASHBOARD_URL ?? 'http://localhost:5174',
-    ],
+    origin: (origin, callback) => {
+      // In development, allow any localhost origin (Vite may auto-increment ports)
+      const allowedOrigins = [
+        process.env.CLIENT_URL,
+        process.env.DASHBOARD_URL,
+        // Fallback patterns for localhost dev servers on any port
+        ...Array.from({ length: 10 }, (_, i) => `http://localhost:${5173 + i}`),
+      ].filter(Boolean) as string[];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
   }),
 );

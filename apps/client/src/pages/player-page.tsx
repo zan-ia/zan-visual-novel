@@ -32,7 +32,7 @@ import { useAuth } from '../providers/auth-provider.js';
 
 export function PlayerPage() {
   const { vnId } = useParams<{ vnId: string }>();
-  const { api } = useAuth();
+  const { api, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const {
     currentScene,
@@ -101,7 +101,9 @@ export function PlayerPage() {
           setStoryTitle(vn.title ?? 'Visual Novel');
           setStoryData(vn);
           startGame(vn);
-          loadSaves();
+          if (isAuthenticated) {
+            loadSaves();
+          }
         } else {
           setError(vnRes.error?.message ?? 'Não foi possível carregar esta visual novel.');
         }
@@ -119,8 +121,12 @@ export function PlayerPage() {
     };
   }, [vnId]);
 
-  // Auto-save every 60 seconds (skips during transitions)
+  // Auto-save every 60 seconds (skips during transitions, requires auth)
+  const isAuthenticatedRef = useRef(isAuthenticated);
+  isAuthenticatedRef.current = isAuthenticated;
+
   useEffect(() => {
+    if (!isAuthenticatedRef.current) return;
     autoSaveTimer.current = setInterval(() => {
       if (currentScene && !isLoading) {
         handleQuickSave();
@@ -164,6 +170,7 @@ export function PlayerPage() {
   }, [vnId]);
 
   const handleQuickSave = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       const save = createSave(1, 'Auto Save');
       await api.createSave(save);
@@ -174,10 +181,14 @@ export function PlayerPage() {
     } catch {
       /* silent */
     }
-  }, [createSave, vnId]);
+  }, [createSave, vnId, isAuthenticated]);
 
   const handleSaveToSlot = useCallback(
     async (slot: number) => {
+      if (!isAuthenticated) {
+        setToast('Faça login para salvar seu progresso.');
+        return;
+      }
       try {
         const save = createSave(slot, `Save ${slot}`);
         await api.createSave(save);
@@ -190,7 +201,7 @@ export function PlayerPage() {
         setError('Erro ao salvar.');
       }
     },
-    [createSave, vnId],
+    [createSave, vnId, isAuthenticated],
   );
 
   const handleLoadSave = useCallback(

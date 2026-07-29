@@ -38,7 +38,15 @@ export function createCloudLLMProvider(config: CloudProviderConfig): ILLMProvide
       });
 
       if (!res.ok) {
-        throw new Error(`Cloud LLM failed: ${res.status}`);
+        let detail = '';
+        try {
+          const errBody = await res.json().catch(() => null);
+          detail = errBody?.error?.message ?? errBody?.message ?? '';
+        } catch {
+          /* ignore */
+        }
+        const reason = detail ? `: ${detail}` : ` (HTTP ${res.status})`;
+        throw new Error(`Falha na geração por IA${reason}`);
       }
 
       const data = (await res.json()) as LLMGenerateResponse;
@@ -51,8 +59,8 @@ export function createCloudLLMProvider(config: CloudProviderConfig): ILLMProvide
     },
 
     isAvailable(): boolean {
-      // Cloud is always reachable; failures surface at generate() time.
-      return true;
+      // Cloud requires authentication to work
+      return !!config.accessToken;
     },
 
     getModelType(): string {

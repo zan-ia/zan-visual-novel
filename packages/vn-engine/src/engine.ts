@@ -431,10 +431,9 @@ export class VNEngine {
         this.emit('llm:completed', { sceneId: placeholder.id });
       }
     } catch (err) {
-      placeholder.content = [
-        { type: 'narration', text: '[Falha ao gerar continuação. Tente novamente.]' },
-      ];
-      placeholder.metadata = { generatedByLLM: true, status: 'error', error: String(err) };
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      placeholder.content = [{ type: 'narration', text: `⚠️ ${errorMessage}` }];
+      placeholder.metadata = { generatedByLLM: true, status: 'error', error: errorMessage };
       const error = err instanceof Error ? err : new Error(String(err));
       this.emit('error', { error });
     }

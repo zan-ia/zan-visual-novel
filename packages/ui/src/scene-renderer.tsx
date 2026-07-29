@@ -24,6 +24,9 @@ export function SceneRenderer({
   const audioAssets =
     scene.assets?.filter((a: SceneAsset) => a.role === 'music' || a.role === 'sfx') ?? [];
   const hasVisuals = bgAsset || spriteAssets.length > 0;
+  const llmStatus = scene.metadata?.status as string | undefined;
+  const llmError = scene.metadata?.error as string | undefined;
+  const isLLMError = llmStatus === 'error';
 
   return (
     <div
@@ -77,7 +80,7 @@ export function SceneRenderer({
 
       {/* Text overlay */}
       <div className="vn-scene__text-overlay">
-        {isLLMGenerated && (
+        {isLLMGenerated && !isLLMError && (
           <Tooltip title="Este conteúdo foi gerado por Inteligência Artificial" arrow>
             <div
               className="vn-scene__llm-badge"
@@ -85,6 +88,17 @@ export function SceneRenderer({
               data-llm-generated="true"
             >
               ✦ IA
+            </div>
+          </Tooltip>
+        )}
+        {isLLMError && llmError && (
+          <Tooltip title={llmError} arrow>
+            <div
+              className="vn-scene__llm-badge vn-scene__llm-badge--error"
+              aria-label="Erro na geração por IA"
+              data-llm-error="true"
+            >
+              ⚠️ Erro IA
             </div>
           </Tooltip>
         )}
