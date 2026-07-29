@@ -94,9 +94,20 @@ app.use('/api/v1/analytics', analyticsRouter);
 
 // ── Swagger / OpenAPI Documentation ─────────────────────
 
-const openApiSpec = getOpenApiSpec();
-app.get('/api/v1/docs.json', (_req, res) => res.json(openApiSpec));
-app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+let openApiSpecCache: object | null = null;
+const getOpenApiSpecSafe = () => {
+  if (!openApiSpecCache) {
+    try {
+      openApiSpecCache = getOpenApiSpec();
+    } catch {
+      // OpenAPI spec generation failed — serve basic fallback
+      openApiSpecCache = { openapi: '3.0.3', info: { title: 'Zan VN API', version: '0.1.0' }, paths: {} };
+    }
+  }
+  return openApiSpecCache;
+};
+app.get('/api/v1/docs.json', (_req, res) => res.json(getOpenApiSpecSafe()));
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(getOpenApiSpecSafe()));
 
 // ── Error Handling ──────────────────────────────────────
 
