@@ -20,7 +20,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Snackbar,
+  Snackbar, Tooltip,
 } from '@mui/material';
 import { Switch, Slider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -655,14 +655,18 @@ export function VNEditorPage() {
           >
             Preview
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<PublishIcon />}
-            onClick={handlePublish}
-            disabled={loading}
-          >
-            Publicar
-          </Button>
+          <Tooltip title={chapters.length === 0 ? 'Adicione pelo menos um capítulo para publicar' : ''}>
+            <span>
+              <Button
+                variant="contained"
+                startIcon={<PublishIcon />}
+                onClick={handlePublish}
+                disabled={loading || chapters.length === 0}
+              >
+                Publicar
+              </Button>
+            </span>
+          </Tooltip>
         </Box>
       </Box>
 
