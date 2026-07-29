@@ -23,6 +23,7 @@ import { savesRouter } from './routes/saves.routes.js';
 import { creditsRouter } from './routes/credits.routes.js';
 import { llmRouter } from './routes/llm.routes.js';
 import { assetsRouter } from './routes/assets.routes.js';
+import { stripeWebhookRouter } from './routes/stripe-webhook.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
 import { createStorageProvider, S3StorageProvider } from './lib/storage.js';
@@ -57,6 +58,8 @@ app.use(
     credentials: true,
   }),
 );
+// Stripe webhook MUST be registered before express.json() — it needs raw body
+app.use('/api/v1/stripe/webhook', stripeWebhookRouter);
 app.use(express.json());
 app.use(rateLimiter);
 

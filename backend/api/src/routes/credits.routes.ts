@@ -7,6 +7,7 @@ import {
 } from '@zan-vn/shared';
 import { getDb, schema } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
+import { getStripe } from '../lib/stripe.js';
 import { eq, sql } from 'drizzle-orm';
 
 export const creditsRouter = Router();
@@ -29,40 +30,35 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
       return;
     }
 
-    // In production, this would create a Stripe Checkout Session
-    // For now, simulate direct credit addition (MVP mode)
-    const [user] = await getDb()
-      .select({ balance: schema.users.creditsBalance })
-      .from(schema.users)
-      .where(eq(schema.users.id, req.user!.userId))
-      .limit(1);
-    if (!user) {
-      res.status(404).json({
-        success: false,
-        error: { statusCode: 404, message: 'Usuário não encontrado', code: 'NOT_FOUND' },
-      });
-      return;
-    }
+    const userId = (req as any).user.userId;
+    const stripe = getStripe();
 
-    const newBalance = user.balance + pkg.credits;
-    await getDb()
-      .update(schema.users)
-      .set({ creditsBalance: newBalance })
-      .where(eq(schema.users.id, req.user!.userId));
-    await getDb()
-      .insert(schema.creditTransactions)
-      .values({
-        userId: req.user!.userId,
-        type: 'purchase',
-        amount: pkg.credits,
-        balanceBefore: user.balance,
-        balanceAfter: newBalance,
-        description: `Compra: ${pkg.name} (${pkg.credits} créditos)`,
-      });
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      success_url: `${process.env.CLIENT_URL ?? 'http://localhost:5173'}/credits/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL ?? 'http://localhost:5173'}/credits`,
+      metadata: {
+        userId,
+        packageId: pkg.id,
+      },
+      line_items: [
+        {
+          price_data: {
+            currency: 'brl',
+            product_data: {
+              name: pkg.name,
+              description: `${pkg.credits} créditos para visual novels`,
+            },
+            unit_amount: pkg.priceCents,
+          },
+          quantity: 1,
+        },
+      ],
+    });
 
     res.json({
       success: true,
-      data: { url: null, credits: newBalance, message: `${pkg.credits} créditos adicionados!` },
+      data: { url: session.url, sessionId: session.id },
     });
   } catch (err: any) {
     if (err.name === 'ZodError') {
@@ -74,7 +70,7 @@ creditsRouter.post('/checkout', authenticate, async (req, res) => {
     }
     res.status(500).json({
       success: false,
-      error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },
+      error: { statusCode: 500, message: 'Erro ao criar checkout', code: 'INTERNAL_ERROR' },
     });
   }
 });
