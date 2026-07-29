@@ -33,7 +33,7 @@ import { useAuth } from '../providers/auth-provider.js';
 
 export function PlayerPage() {
   const { vnId } = useParams<{ vnId: string }>();
-  const { api, isAuthenticated } = useAuth();
+  const { api, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const {
     currentScene,
@@ -66,6 +66,7 @@ export function PlayerPage() {
   const [saveDrawerOpen, setSaveDrawerOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [creditsGate, setCreditsGate] = useState<{ priceCredits: number } | null>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // New state for polish
@@ -100,6 +101,13 @@ export function PlayerPage() {
             return;
           }
           setStoryTitle(vn.title ?? 'Visual Novel');
+
+          // Anti-bypass: block direct URL access to paid VNs
+          if ((vn as any).priceCredits > 0) {
+            setCreditsGate({ priceCredits: (vn as any).priceCredits });
+            return;
+          }
+
           setStoryData(vn);
           startGame(vn);
           if (isAuthenticated) {
@@ -240,6 +248,29 @@ export function PlayerPage() {
             Voltar à Biblioteca
           </Button>
         </Box>
+      </Box>
+    );
+  }
+
+  if (creditsGate) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60dvh',
+          gap: 2,
+        }}
+      >
+        <Alert severity="warning" sx={{ maxWidth: 500 }}>
+          Esta visual novel requer {creditsGate.priceCredits} créditos para jogar.
+          Você tem {user?.creditsBalance ?? 0} créditos.
+        </Alert>
+        <Button variant="outlined" onClick={() => navigate('/library')}>
+          Voltar à Biblioteca
+        </Button>
       </Box>
     );
   }
