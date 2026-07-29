@@ -1,7 +1,7 @@
 ---
-description: 'Creates diagrams and visual artifacts — ERD, sequence, flowchart, class, state, C4 Model, Gantt, mindmap. The software-engineer agent leads using the diagramming skill and integrated Mermaid tools.'
+description: 'Creates diagrams and visual artifacts — ERD, sequence, flowchart, class, state, C4 Model, Gantt, mindmap. The orchestrator invokes the diagramming skill and integrated Mermaid tools.'
 argument-hint: "Describe the desired diagram (e.g., 'ERD diagram of the users and orders schema')"
-agent: 'software-engineer'
+agent: 'orchestrator'
 ---
 
 # Create Diagram
@@ -51,7 +51,7 @@ Depending on diagram type:
 - **C4:** System, containers, components, relationships
 - **Gantt:** Tasks, dates, dependencies, milestones
 
-Use `task-researcher` if code exploration is needed to extract information.
+Use `knowledge-researcher` if code exploration is needed to extract information.
 
 ### 4. Create the Diagram
 

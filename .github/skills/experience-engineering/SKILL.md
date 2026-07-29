@@ -3,7 +3,7 @@ name: experience-engineering
 description: 'Reference knowledge for user experience (UX) and experience engineering — user research, usability heuristics, information architecture, user journey mapping, and UX patterns. Use when: designing user flows, conducting user research, improving usability, mapping user journeys, or reviewing UX quality. Activates for: ux, user experience, usability, user research, persona, journey, flow, information architecture, hea, accessibility, conversion.'
 user-invocable: true
 disable-model-invocation: false
-context: fork
+context: inline
 ---
 
 # Experience Engineering — Reference Knowledge

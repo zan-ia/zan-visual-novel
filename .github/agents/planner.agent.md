@@ -12,14 +12,9 @@ tools:
   - 'vscode/askQuestions'
 agents:
   - Plan
-  - task-researcher
+  - knowledge-researcher
 user-invocable: true
 disable-model-invocation: false
-handoffs:
-  - label: '🔨 Start Implementation'
-    agent: implementer
-    prompt: 'Read the plan at .github/plans/ and implement all changes following project conventions defined in .github/instructions/. Run the project build/lint commands at the end.'
-    send: false
 ---
 
 # Implementation Planner

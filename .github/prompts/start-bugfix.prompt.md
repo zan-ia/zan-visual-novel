@@ -1,12 +1,12 @@
 ﻿---
-description: 'Initiates the bugfix pipeline. The engineer agent analyzes the bug and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR.'
+description: 'Initiates the bugfix pipeline. The orchestrator classifies the bug, invokes workflow analysis, then coordinates the Plan→Implement→Review cycle via specialist agents.'
 argument-hint: "Describe the bug found (e.g., 'The header shows wrong colors on mobile...')"
-agent: 'engineer'
+agent: 'orchestrator'
 ---
 
 # Start Bugfix Pipeline
 
-Engineer-first pipeline: the engineer agent creates a workflow artifact at .github/artifacts/workflow-{N}.md, then hands off to the orchestrator. See in `.github/instructions/pipeline-workflow.instructions.md`.
+The orchestrator receives your bug report and orchestrates the complete fix pipeline. See `.github/instructions/pipeline-workflow.instructions.md`.
 
 ## Procedure
 
@@ -67,7 +67,7 @@ After approval, execute the complete pipeline:
 1. Create branch `fix/short-description` from `main`
 2. Invoke `planner` (subagent) to analyze and plan
 3. Invoke `implementer` (subagent) to fix the bug
-4. Invoke `reviewer` (subagent) to validate the fix
+4. Invoke `code-reviewer` (subagent) to validate the fix
 5. If critical/major → re-plan (max. 3x)
 6. Commit with `fix:` + push
 7. Create PR with `Closes #N`

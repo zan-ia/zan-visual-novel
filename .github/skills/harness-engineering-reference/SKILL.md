@@ -4,6 +4,7 @@ description: 'Reference knowledge for harness engineering — tool naming conven
 argument-hint: '[audit | create-agent | fix-tools | learn] — what do you need?'
 user-invocable: true
 disable-model-invocation: false
+context: inline
 ---
 
 # Harness Engineering — Reference Knowledge
@@ -12,9 +13,9 @@ Complete reference for maintaining and evolving the Zan.IA project harness (agen
 
 ## Companion Skills
 
-| Skill                                                    | Purpose                                                                                                                                              |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`modelos-provedores`](./../modelos-provedores/SKILL.md) | Catálogo de modelos OpenCode Go / Zen com análise de custo × capacidade para cada papel do pipeline. **Source of truth** para atribuição de modelos. |
+| Skill                                              | Purpose                                                                                                                                              |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`model-providers`](./../model-providers/SKILL.md) | Catálogo de modelos OpenCode Go / Zen com análise de custo × capacidade para cada papel do pipeline. **Source of truth** para atribuição de modelos. |
 
 ---
 
@@ -166,210 +167,11 @@ This is the MOST IMPORTANT meta-lesson. Not all storage is equal.
 
 ---
 
-## 6. Agent Taxonomy — Classification System
+## 6. Official VS Code Copilot Primitives — Complete Field Reference
 
-Every agent MUST fit exactly one archetype. This determines tool permissions, invocation patterns, and design constraints.
+> **Process knowledge (agent taxonomy, 7-point template, KPIs, Chronicle queries, error recovery, versioning):** see `.github/skills/harness-audit/SKILL.md` — the audit skill contains the complete Continual Harness workflow.
 
-| Archetype       | Purpose                                                          | Tool Profile           | Invocation                       | Zan.IA Examples                                          |
-| --------------- | ---------------------------------------------------------------- | ---------------------- | -------------------------------- | -------------------------------------------------------- |
-| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates           | Full toolkit + `agent` | User-facing + subagent-invocable | `orchestrator`                                           |
-| **Worker**      | Executes a pipeline phase — structured input → structured output | Domain-specific        | Subagent-invocable               | `planner`, `implementer`, `reviewer`                     |
-| **Specialist**  | Deep domain expertise, operates independently                    | Domain-specific tools  | User-invocable or on-demand      | `content-creator`, `performance-auditor`, `refactor-css` |
-| **Auditor**     | Read-only analysis, produces reports — NEVER modifies            | read, search only      | On-demand or post-cycle          | `reviewer` (review mode)                                 |
-| **Gatekeeper**  | Enforces quality gates automatically                             | read, search, hooks    | Automatic (hooks)                | _(future)_                                               |
-
-### Archetype-Specific Rules
-
-| Rule                                                                          | Applies To  |
-| ----------------------------------------------------------------------------- | ----------- |
-| Only Coordinators have `handoffs:` to domain agents                           | Coordinator |
-| Workers receive structured context from Coordinator (plan path, issue number) | Worker      |
-| Specialists declare `agents: []` unless they orchestrate                      | Specialist  |
-| Auditors MUST NOT declare `edit` or `execute`                                 | Auditor     |
-| Every agent body follows the 7-point prompt structure                         | All         |
-
----
-
-## 7. Agent Body Structure — The 7-Point Prompt Engineering Template
-
-Every `.agent.md` body MUST follow this evidence-based structure. Structured prompts produce 40-60% more reliable outputs than prose-style instructions (Anthropic, OpenAI, Google DeepMind research).
-
-### Mandatory Sections (in order)
-
-```markdown
-# Agent Name — One-Line Purpose
-
-## Role
-
-[2-4 sentences: identity, domain, primary output]
-
-## Constraints
-
-[NEVER rules first, ALWAYS rules second — bold for emphasis]
-
-## Context Sources
-
-[Prioritized list of files/docs to consult before acting]
-
-## Procedure
-
-[Numbered steps with decision branches and edge cases]
-
-## Patterns & Examples
-
-[✅ Correct / ❌ Wrong pairs — at least 2-3 per critical pattern]
-
-## Output Format
-
-[File path, structure, success criteria: "Done when X is true"]
-
-## Reference Files
-
-[Canonical file list with brief descriptions]
-```
-
-### Prompt Engineering Principles
-
-| Principle                 | Application                                    | Example                                                                         |
-| ------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Chain-of-Thought**      | Procedure guides step-by-step reasoning        | "First identify file type → check applicable instructions → verify conventions" |
-| **Few-Shot Examples**     | Patterns section shows ✅/❌ pairs             | Correct `$state()` vs incorrect `let` side by side                              |
-| **Constraint Framing**    | NEVER before ALWAYS (negatives grab attention) | "NEVER use hardcoded colors. ALWAYS use var(--color-\*)"                        |
-| **Output Specification**  | Exact format, path, and "done when" condition  | "Save to .github/plans/issue-{N}-{slug}.md"                                     |
-| **Edge Case Enumeration** | Procedure branches for failures                | "If build fails → read errors → fix → retry (max 3x)"                           |
-| **Checklist Integration** | Embed ☐ checklists in Procedure                | "☐ Design tokens, ☐ BEM naming, ☐ No hex colors"                                |
-| **Persona Consistency**   | Role defines voice used throughout             | SvelteKit specialist → SvelteKit terminology throughout                         |
-
-### Common Agent Body Anti-Patterns
-
-| Anti-Pattern                                   | Why It Fails                                | Fix                                                             |
-| ---------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------- |
-| Prose-style instructions (long paragraphs)     | Rules buried in text, model skips them      | Use 7-point template with clear headings                        |
-| Missing constraints section                    | Agent invents solutions outside conventions | Add explicit NEVER/ALWAYS rules                                 |
-| No output format specified                     | Ambiguous completion, inconsistent results  | Define file path, format, success criteria                      |
-| Overloaded agent (3+ responsibilities)         | Context dilution, poor performance          | Split into single-responsibility agents                         |
-| Vague role ("you are a developer")             | No domain anchoring, generic output         | Specific: "Svelte 5 specialist for institutional landing pages" |
-| Happy path only (no edge cases)                | Silent failure on unexpected inputs         | Add "If X fails → Y" branches in Procedure                      |
-| Agent body >300 lines without skill extraction | Context bloat                               | Move reference material to SKILL.md, keep agent lean            |
-
----
-
-## 8. Context Budget Management
-
-Agent context windows are finite. These rules prevent degradation from context overflow.
-
-| Principle                  | Rule                                                    | Why                                                           |
-| -------------------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
-| **Single Responsibility**  | Each agent does ONE thing                               | Narrow scope = shorter instructions = more room for task data |
-| **Fork Heavy Skills**      | Skills reading >5 files → `context: fork`               | Isolated subagent, only result returned                       |
-| **Progressive Disclosure** | `AGENTS.md` ≤ 200 lines; `.instructions.md` ≤ 100 lines | Always-on instructions must be lean                           |
-| **Subagent Isolation**     | Workers via `runSubagent`, not inline                   | Parent context stays clean                                    |
-| **Structured Handoffs**    | Pass plan path + issue number, not full conversation    | Minimal data transfer between agents                          |
-
-### Decision: Split Agent?
-
-```
-Agent body > 300 lines?
-├── YES → Multiple distinct responsibilities?
-│   ├── YES → SPLIT into multiple agents
-│   └── NO  → Extract reference material to SKILL.md
-└── NO  → Healthy size
-```
-
-### Decision: Use `context: fork`?
-
-```
-Skill reads >5 files OR produces >100 lines?
-├── YES → Add `context: fork` to SKILL.md
-└── NO  → `context: inline` (default)
-```
-
----
-
-## 9. Error Recovery Patterns
-
-Multi-agent pipelines fail in predictable ways. Handle these gracefully.
-
-| Failure Mode               | Symptom                                   | Detection                    | Recovery                                                        |
-| -------------------------- | ----------------------------------------- | ---------------------------- | --------------------------------------------------------------- |
-| **Subagent Timeout**       | `runSubagent` returns nothing after 120s  | Missing output               | Retry 1x with simplified prompt; escalate to user if persistent |
-| **Subagent Hallucination** | Edits files not in plan, invents features | Reviewer detects scope creep | Revert, re-plan with stricter constraints, re-implement         |
-| **Infinite Review Loop**   | Same critical issue 3 times               | Iteration counter            | Hard stop at 3; document risks; proceed with caveats            |
-| **Build Break**            | `npm run build` fails                     | Implementer detects          | Fix errors (max 3 attempts); escalate if persistent             |
-| **Missing Context**        | Worker returns incomplete result          | Coordinator observes         | Enrich prompt with plan path, issue details, file list          |
-| **Stale Plan**             | Plan references changed files             | Implementer detects mismatch | Report to Coordinator → re-plan                                 |
-| **Tool Permission Denied** | Agent tries undeclared tool               | System blocks                | Harness engineer adds tool to agent declaration                 |
-| **Context Overflow**       | Output truncated mid-response             | Incomplete output            | Split task; use `context: fork`; reduce input size              |
-
-### Recovery Decision Tree
-
-```
-Pipeline step fails
-├── Current agent can fix? → Fix + retry (max 3x per step)
-└── Current agent can't fix? → Escalate to Coordinator
-    ├── Coordinator can fix? → Fix + resume pipeline
-    └── Coordinator can't fix? → 🛑 HITL: present failure + attempts + recommendation
-```
-
----
-
-## 10. Agent Performance Metrics (KPIs)
-
-Measure harness health with these quantitative and qualitative KPIs.
-
-### Quantitative (from Chronicle)
-
-| KPI                                                               | Healthy Range | Action if Violated                                 |
-| ----------------------------------------------------------------- | ------------- | -------------------------------------------------- |
-| Pipeline Success Rate (% cycles without critical findings)        | > 80%         | Investigate planner/implementer instructions       |
-| First-Pass Quality (% reviews with zero critical issues)          | > 60%         | Improve implementer constraints and patterns       |
-| Review Loop Count (avg iterations to PR approval)                 | < 1.5         | If > 2.0, planner missing key patterns             |
-| Session Turns per Task (avg per completed issue)                  | < 30          | If > 50, agent instructions vague or missing skill |
-| Checkpoint Rate (% sessions with ≥1 checkpoint)                   | > 70%         | Agents not tracking progress                       |
-| File Thrash Rate (files with >5 reads in a session)               | 0 files       | Add instruction with `applyTo` for that file       |
-| Quality Gate Compliance (% edit sessions running `npm run check`) | 100%          | Add hook or enforce in implementer constraints     |
-
-### Review Cadence
-
-- **Per-cycle:** Pipeline Success Rate, Review Loop Count, Quality Gate Compliance
-- **Weekly:** Session Turns per Task, Checkpoint Rate, File Thrash Rate
-- **Monthly:** Full KPI review + improvement planning
-
----
-
-## 11. Harness Versioning & Testing
-
-### Versioning Rules
-
-| Rule             | Practice                                              |
-| ---------------- | ----------------------------------------------------- |
-| Git-tracked      | All `.github/` files versioned in repository          |
-| Branch isolation | Harness changes in `harness/` prefixed branches       |
-| PR review        | Harness PRs reviewed by human (not auto-merged)       |
-| Changelog        | Every change in `/memories/repo/harness-changelog.md` |
-| Rollback         | Revert commit if change degrades performance          |
-
-### Change Impact Levels
-
-| Level             | Scope                                       | Review Required                                 |
-| ----------------- | ------------------------------------------- | ----------------------------------------------- |
-| **P0 — Critical** | Changes permissions, tools, `handoffs:`     | Full static analysis + Chronicle + human review |
-| **P1 — Major**    | Changes agent body instructions/constraints | Static analysis + build verify                  |
-| **P2 — Minor**    | Typos, wording, non-semantic changes        | Build verify only                               |
-| **P3 — Cosmetic** | Formatting, whitespace                      | None                                            |
-
-### Test Levels
-
-| Level             | What                                               | How                                       | When                              |
-| ----------------- | -------------------------------------------------- | ----------------------------------------- | --------------------------------- |
-| **L1 — Static**   | Frontmatter validity, tool names, cross-references | Audit checklist                           | Every change                      |
-| **L2 — Build**    | `npm run check` + `npm run build`                  | Run both commands                         | Every change touching paths/tools |
-| **L3 — Dry-Run**  | Trivial task through full pipeline                 | `/start-improvement` with cosmetic change | P0 and P1 changes                 |
-| **L4 — Baseline** | Compare KPIs before/after                          | Chronicle 7-day before/after comparison   | P0 changes, monthly               |
-
----
-
-## 12. Official VS Code Copilot Primitives — Complete Field Reference
+### `.agent.md` All Fields
 
 ### `.agent.md` All Fields
 
@@ -485,4 +287,4 @@ When available, use `session_store_sql` to detect:
 - **Long sessions** — >50 turns indicates planning failure
 - **Tool underuse** — `manage_todo_list` never used in multi-edit sessions
 
-See `harness-engineer.agent.md` for complete SQL templates and Chronicle analysis procedures.
+See `.github/skills/harness-audit/SKILL.md` for complete SQL templates and Chronicle analysis procedures.

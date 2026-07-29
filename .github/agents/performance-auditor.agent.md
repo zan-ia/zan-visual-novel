@@ -9,7 +9,6 @@ tools:
   - 'browser'
   - 'todo'
   - 'vscode/askQuestions'
-  - 'github/*'
 user-invocable: true
 disable-model-invocation: false
 ---

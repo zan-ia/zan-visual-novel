@@ -1,7 +1,7 @@
 ---
-description: 'Creates professional technical documentation — ADRs, API docs, README, architecture guides, and technical specifications. The software-engineer agent leads using the technical-documentation skill.'
+description: 'Creates professional technical documentation — ADRs, API docs, README, architecture guides, and technical specifications. The orchestrator invokes the technical-documentation skill.'
 argument-hint: "Describe what to document (e.g., 'ADR about database choice' or 'User API documentation')"
-agent: 'software-engineer'
+agent: 'orchestrator'
 ---
 
 # Create Documentation
@@ -46,7 +46,7 @@ Depending on the type:
 - **README:** Explore the project, stack, setup, architecture
 - **Guide:** Explore processes, conventions, workflows
 
-Use `task-researcher` if deep code exploration is needed.
+Use `knowledge-researcher` if deep code exploration is needed.
 
 ### 3. Create the Documentation
 

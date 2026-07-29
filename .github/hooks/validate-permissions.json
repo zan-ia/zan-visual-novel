@@ -1,6 +1,9 @@
 {
   "name": "validate-tool-permissions",
-  "events": ["PreToolUse", "PreSubagentUse"],
+  "events": [
+    "PreToolUse",
+    "PreSubagentUse"
+  ],
   "script": "validate-permissions.js",
-  "description": "Logs blocked tool/subagent attempts to /memories/repo/permission-violations.md for harness audit. When a tool or subagent invocation is blocked because it's not in the active agent's tools: or agents: list, the violation is recorded for analysis by the harness-engineer agent."
+  "description": "Logs blocked tool/subagent attempts to /memories/repo/permission-violations.md for harness audit. When a tool or subagent invocation is blocked because it's not in the active agent's tools: or agents: list, the violation is recorded for analysis by the software-engineer agent via the harness-audit skill."
 }

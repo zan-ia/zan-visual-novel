@@ -1,7 +1,7 @@
 ---
-description: 'Initiates the product definition process — vision, target audience, MVP, success metrics. The software-engineer agent leads the definition using the product-engineering and requirements-engineering skills.'
+description: 'Initiates the product definition process — vision, target audience, MVP, success metrics. The orchestrator invokes the product-engineering and requirements-engineering skills.'
 argument-hint: "Describe the product or initial idea (e.g., 'A web-based visual novel engine...')"
-agent: 'software-engineer'
+agent: 'orchestrator'
 ---
 
 # Define Product

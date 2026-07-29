@@ -3,7 +3,7 @@ name: backend-engineering
 description: 'Reference knowledge for backend engineering — API design, data modeling, authentication, integrations, and server-side best practices. Use when: designing APIs, modeling data, choosing authentication strategies, integrating external services, or reviewing server-side code. Activates for: api design, rest, graphql, database, schema, auth, backend, server, integration, microservice.'
 user-invocable: true
 disable-model-invocation: false
-context: fork
+context: inline
 ---
 
 # Backend Engineering — Reference Knowledge

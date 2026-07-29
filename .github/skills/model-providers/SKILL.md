@@ -3,7 +3,7 @@ name: model-providers
 description: 'Catalog of available models from OpenCode Go and OpenCode Zen providers, with cost analysis and capability mapping for each pipeline role (planner, implementer, reviewer, specialist). Use when: choosing which model to assign to an agent, optimizing cost, or auditing whether model assignments are consistent with task types.'
 user-invocable: true
 disable-model-invocation: false
-context: fork
+context: inline
 ---
 
 # Skill: Provider Models — OpenCode Go / Zen
@@ -80,18 +80,18 @@ Para tarefas que exigem mais capacidade que os modelos do Go. Preços por 1M tok
 
 This is the default assignment for project agents. Each role is mapped to the model com **best cost/capability ratio** for the task type.
 
-| Agente (papel)                                                  | Modelo recomendado | Justificativa                                                               | Alternativa mais barata                         |
-| --------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| **orchestrator** (Coordena, decisões de HITL, síntese)          | `claude-sonnet-5`  | Raciocínio forte, bom em síntese e julgamento; vale pagar pelo orchestrator | `minimax-m3` (3x mais barato)                   |
-| **planner** (Análise de issue, geração de plano)                | `claude-sonnet-5`  | Planos exigem raciocínio estruturado; longo contexto para ler codebase      | `deepseek-v4-pro` (1/3 do custo)                |
-| **implementer** (Edição de código, build)                       | `deepseek-v4-pro`  | Coding forte, custo acessível; usa muito token                              | `minimax-m3` (6x mais barato) ou `qwen3.5-plus` |
-| **reviewer** (Análise de diff, classificação)                   | `claude-haiku-4-5` | Read-only, tarefa de classificação — Haiku é ideal em custo                 | `deepseek-v4-flash` (5x mais barato)            |
-| **harness-engineer** (Auditoria, refatoração de harness)        | `claude-sonnet-5`  | Raciocínio estruturado sobre meta-problemas                                 | `minimax-m3`                                    |
-| **content-creator** (Geração de copy)                           | `gpt-5.4-mini`     | Geração criativa barata                                                     | `gemini-3-flash`                                |
-| **layout-designer** (Análise visual, auditoria UX)              | `gemini-3.1-pro`   | Vision nativo, pode analisar screenshots                                    | `gemini-3-flash`                                |
-| **performance-auditor** (Análise de métricas, code review perf) | `deepseek-v4-pro`  | Forte em code analysis                                                      | `minimax-m3`                                    |
-| **refactor-css** (Refatoração de CSS)                           | `qwen3.5-plus`     | Coding barato, foco em estilos                                              | `gemini-3-flash`                                |
-| **Agente de títulos de sessão** (auto, não-customizável)        | `gpt-5-nano`       | OpenCode usa por padrão                                                     | N/A                                             |
+| Agente (papel)                                                   | Modelo recomendado | Justificativa                                                               | Alternativa mais barata                         |
+| ---------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------- | ----------------------------------------------- |
+| **orchestrator** (Coordena, decisões de HITL, síntese)           | `claude-sonnet-5`  | Raciocínio forte, bom em síntese e julgamento; vale pagar pelo orchestrator | `minimax-m3` (3x mais barato)                   |
+| **planner** (Análise de issue, geração de plano)                 | `claude-sonnet-5`  | Planos exigem raciocínio estruturado; longo contexto para ler codebase      | `deepseek-v4-pro` (1/3 do custo)                |
+| **implementer** (Edição de código, build)                        | `deepseek-v4-pro`  | Coding forte, custo acessível; usa muito token                              | `minimax-m3` (6x mais barato) ou `qwen3.5-plus` |
+| **reviewer** (Análise de diff, classificação)                    | `claude-haiku-4-5` | Read-only, tarefa de classificação — Haiku é ideal em custo                 | `deepseek-v4-flash` (5x mais barato)            |
+| **software-engineer** (Produto, requisitos, docs, harness audit) | `claude-sonnet-5`  | Raciocínio estruturado sobre meta-problemas, orquestração de skills         | `minimax-m3`                                    |
+| **content-creator** (Geração de copy)                            | `gpt-5.4-mini`     | Geração criativa barata                                                     | `gemini-3-flash`                                |
+| **layout-designer** (Análise visual, auditoria UX)               | `gemini-3.1-pro`   | Vision nativo, pode analisar screenshots                                    | `gemini-3-flash`                                |
+| **performance-auditor** (Análise de métricas, code review perf)  | `deepseek-v4-pro`  | Forte em code analysis                                                      | `minimax-m3`                                    |
+| **refactor-css** (Refatoração de CSS)                            | `qwen3.5-plus`     | Coding barato, foco em estilos                                              | `gemini-3-flash`                                |
+| **Agente de títulos de sessão** (auto, não-customizável)         | `gpt-5-nano`       | OpenCode usa por padrão                                                     | N/A                                             |
 
 > **Custo mensal estimado (10 issues/mês):** ~$15-30 com a atribuição recomendada. Pode cair para ~$5 com alternativas baratas (MiniMax M3 em todos os lugares).
 
@@ -115,7 +115,7 @@ This is the default assignment for project agents. Each role is mapped to the mo
 {
   "agent": {
     "implementer": { "model": "opencode/deepseek-v4-pro" },
-    "reviewer": { "model": "opencode/claude-haiku-4-5" },
+    "code-reviewer": { "model": "opencode/claude-haiku-4-5" },
   },
 }
 ```
@@ -172,7 +172,7 @@ Execute esta skill mensalmente para:
 | `planner`             | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
 | `implementer`         | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
 | `reviewer`            | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
-| `harness-engineer`    | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
+| `software-engineer`   | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |
 | `content-creator`     | `OpenCode Go / Deepseek V4 Flash (opencodego)` |
 | `layout-designer`     | `OpenCode Go / Minimax M3 (opencodego)`        |
 | `performance-auditor` | `OpenCode Go / Deepseek V4 Pro (opencodego)`   |

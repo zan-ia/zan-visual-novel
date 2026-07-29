@@ -3,7 +3,7 @@ name: design-patterns
 description: 'Reference knowledge of classic and modern software design patterns (GoF, GRASP, enterprise, concurrency, anti-patterns). Use when: making architectural decisions, choosing how to structure components, refactoring existing code, evaluating design trade-offs, or reviewing code for design quality. Activates for: design pattern, architecture, refactoring strategy, decoupling, extensibility, anti-pattern, code smell.'
 user-invocable: true
 disable-model-invocation: false
-context: fork
+context: inline
 ---
 
 # Design Patterns — Reference Knowledge

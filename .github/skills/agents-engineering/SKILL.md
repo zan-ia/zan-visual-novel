@@ -3,13 +3,14 @@ name: agents-engineering
 description: 'Reference knowledge for designing and operating AI agent systems — agent architectures, prompt engineering, tool design, multi-agent coordination, evaluation, and Continual Harness principles. Use when: designing new agents, improving existing agents, debugging agent behavior, evaluating agent quality, or planning agent pipelines. Activates for: agent design, agent architecture, prompt engineering, tool design, multi-agent, agent evaluation, harness, agent loop, ReAct.'
 user-invocable: true
 disable-model-invocation: false
+context: inline
 ---
 
 # Agents Engineering — Reference Knowledge
 
 Knowledge for building robust AI agent systems. This is a **knowledge skill** — it provides reference material, not a workflow.
 
-For project-specific harness conventions, see the existing `harness-engineer` agent and the `harness-engineering-reference` skill in this project.
+For project-specific harness conventions, see the `harness-audit` skill (`.github/skills/harness-audit/SKILL.md`) and the `harness-engineering-reference` skill in this project.
 
 ---
 
@@ -197,4 +198,4 @@ Load this skill when:
 - Building a Continual Harness feedback loop
 - Training others on agent design
 
-For this project's specific agents, see the `.github/agents/` directory and the `harness-engineer` agent.
+For this project's specific agents, see the `.github/agents/` directory and the `software-engineer` agent (which invokes the `harness-audit` skill).

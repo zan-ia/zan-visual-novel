@@ -452,7 +452,7 @@ The orchestrator creates a research issue using `#tool:github/create_issue` with
 
 #### R-Phase 2: Investigation (subagent)
 
-The orchestrator delegates to the appropriate research agent (e.g., `performance-auditor`, `harness-engineer`, `layout-designer`) based on the research domain.
+The orchestrator delegates to the appropriate research agent (e.g., `performance-auditor`, `software-engineer`, `layout-designer`) based on the research domain.
 
 The research agent:
 
@@ -533,7 +533,7 @@ The orchestrator closes the research issue via `#tool:github/update_issue` (stat
 
 - **Issue:** [#N](url) — 🔬 R-XX: Title
 - **Type:** research
-- **Research Agent:** performance-auditor | harness-engineer | layout-designer
+- **Research Agent:** performance-auditor | software-engineer | layout-designer
 - **Current Phase:** investigation | hitl_findings | creating_cards | completed
 - **Findings:** [link to comment]
 - **Created Issues:** [list of issue numbers]

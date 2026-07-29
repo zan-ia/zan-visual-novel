@@ -1,14 +1,9 @@
 ---
-name: task-researcher
+name: knowledge-researcher
+model: OpenCode Go / Deepseek V4 Flash (opencodego)
 description: 'Read-only agent for exploring the project codebase before implementation. Maps relevant files, discovers constraints and patterns, and produces a structured Research Card for handoff to planning. Activates for: research, pesquisar, explorar, codebase exploration, mapear código, levantar requisitos.'
 tools: ['read', 'search']
 user-invocable: true
-model: OpenCode Go / Deepseek V4 Flash (opencodego)
-handoffs:
-  - label: Plan Feature
-    agent: planner
-    prompt: 'Read the Research Card at .github/handoff-cards/<slug>-research.md. Create a Planning Card at .github/handoff-cards/<slug>-planning.md. Trust the research — do NOT re-explore the codebase.'
-    send: true
 ---
 
 # Researcher

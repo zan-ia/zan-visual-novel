@@ -1,12 +1,12 @@
 ﻿---
-description: 'Initiates the new feature pipeline. The engineer agent analyzes the feature and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR.'
+description: 'Initiates the new feature pipeline. The orchestrator classifies the feature, invokes workflow analysis, then coordinates the Plan→Implement→Review cycle via specialist agents.'
 argument-hint: "Describe the new feature (e.g., 'Add a pricing section with 3 plans...')"
-agent: 'engineer'
+agent: 'orchestrator'
 ---
 
 # Start Feature Pipeline
 
-Engineer-first pipeline: the engineer agent creates a workflow artifact at .github/artifacts/workflow-{N}.md, then hands off to the orchestrator. See in `.github/instructions/pipeline-workflow.instructions.md`.
+The orchestrator receives your feature request and orchestrates the complete development pipeline. See `.github/instructions/pipeline-workflow.instructions.md`.
 
 ## Procedure
 
@@ -66,9 +66,9 @@ Create a GitHub issue in the project with:
 After approval, execute the complete pipeline:
 
 1. Create branch `feat/short-description` from `main`
-2. Invoke `planner` (subagent) — it should consult `criar-section` or `criar-pagina-institucional` skills if it's a new component
+2. Invoke `planner` (subagent) to analyze the codebase and generate an implementation plan
 3. Invoke `implementer` (subagent) to build the feature
-4. Invoke `reviewer` (subagent) to validate
+4. Invoke `code-reviewer` (subagent) to validate
 5. If critical/major → re-plan (max. 3x)
 6. Commit with `feat:` + push
 7. Create PR with `Closes #N`
@@ -79,13 +79,12 @@ After approval, execute the complete pipeline:
 ## Commit Template (Feature)
 
 ```
-feat(Solutions): add pricing plans section
+feat(scope): add feature description
 
-New Precos.svelte section with 3 plan cards (Basic, Pro, Enterprise).
-Each card uses glass-panel with differentiated highlight for the Pro plan.
-Integrated into +page.svelte between Solutions and Differential.
+Brief description of what was implemented.
+Key decisions and patterns used.
 
-Closes #43
+Closes #N
 ```
 
 ---
@@ -94,6 +93,4 @@ Closes #43
 
 - Complete pipeline: `.github/instructions/pipeline-workflow.instructions.md`
 - Tool usage: `.github/instructions/tool-usage.instructions.md`
-- Section creation skill: `criar-section`
-- Page creation skill: `criar-pagina-institucional`
 - Code conventions: `AGENTS.md`

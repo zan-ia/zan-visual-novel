@@ -1,7 +1,7 @@
 ---
-description: 'Initiates the requirements engineering process — elicitation, analysis, specification, and validation of functional requirements, non-functional requirements, and business rules. The software-engineer agent leads using the requirements-engineering skill.'
+description: 'Initiates the requirements engineering process — elicitation, analysis, specification, and validation of functional requirements, non-functional requirements, and business rules. The orchestrator invokes the requirements-engineering skill.'
 argument-hint: "Describe the scope for requirements gathering (e.g., 'Authentication and authorization module')"
-agent: 'software-engineer'
+agent: 'orchestrator'
 ---
 
 # Gather Requirements

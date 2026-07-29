@@ -1,12 +1,12 @@
 ﻿---
-description: 'Initiates the improvement/refactoring pipeline. The engineer agent analyzes the improvement and creates a workflow artifact, then hands off to the orchestrator who coordinates planning, implementation, review, and PR. Creates issue, improve/ branch, plans, implements, reviews, and opens PR.'
+description: 'Initiates the improvement/refactoring pipeline. The orchestrator classifies the improvement, invokes workflow analysis, then coordinates the Plan→Implement→Review cycle via specialist agents.'
 argument-hint: "Describe the desired improvement (e.g., 'Optimize Google Fonts loading...')"
-agent: 'engineer'
+agent: 'orchestrator'
 ---
 
 # Start Improvement Pipeline
 
-Engineer-first pipeline: the engineer agent creates a workflow artifact at .github/artifacts/workflow-{N}.md, then hands off to the orchestrator. See in `.github/instructions/pipeline-workflow.instructions.md`.
+The orchestrator receives your improvement request and orchestrates the complete pipeline. See `.github/instructions/pipeline-workflow.instructions.md`.
 
 ## Procedure
 
@@ -66,7 +66,7 @@ After approval, execute the complete pipeline:
 1. Create branch `improve/short-description` from `main`
 2. Invoke `planner` (subagent) — for CSS refactoring, consider using the `refactor-css` agent; for performance, consider the `performance-auditor` agent
 3. Invoke `implementer` (subagent) to execute the improvement
-4. Invoke `reviewer` (subagent) to validate
+4. Invoke `code-reviewer` (subagent) to validate
 5. If critical/major → re-plan (max. 3x)
 6. Commit with `improve:` + push
 7. Create PR with `Closes #N`
@@ -78,10 +78,10 @@ After approval, execute the complete pipeline:
 
 ### Performance
 
-- Image optimization (use `otimizar-imagens` skill)
+- Image optimization (use project build tooling and Lighthouse audits)
 - Fonts: check `display=swap` and `preconnect`
 - CSS: check `will-change` and `contain`
-- JS chunks: analyze `build/_app/immutable/chunks/`
+- JS chunks: analyze with build tools
 - Recommended agent: `performance-auditor`
 
 ### CSS / Design
@@ -93,7 +93,7 @@ After approval, execute the complete pipeline:
 
 ### Code / Architecture
 
-- Migrate `export let` → `$props()` (Svelte 5 Runes)
+- Improve type safety and component interfaces
 - Reorganize components
 - Improve names and documentation
 - Recommended agent: `planner` + `implementer`

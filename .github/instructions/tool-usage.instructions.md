@@ -464,18 +464,18 @@ It is possible to specify which model each subagent uses:
 
 ### 7.9 Subagents Available in the Project
 
-| Agent                 | user-invocable | agents                                  | Tools                                                                                     | Role                                       |
-| --------------------- | -------------- | --------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `orchestrator`        | `true`         | planner, implementer, reviewer, Explore | read, search, edit, execute, web, todo, vscode/askQuestions, agent, github/\*             | Coordinates complete pipeline              |
-| `planner`             | `true`         | Explore                                 | read, search, web, todo, vscode/askQuestions, agent, github/\*                            | Generates implementation plans (read-only) |
-| `implementer`         | `true`         | —                                       | read, search, edit, execute, todo, vscode/askQuestions                                    | Executes plans, modifies code              |
-| `reviewer`            | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Analyzes diffs, quality (read-only)        |
-| `harness-engineer`    | `true`         | orchestrator                            | read, search, edit, todo, vscode/askQuestions, memory/\*, vscode/memory, agent, github/\* | Harness audit and improvement              |
-| `refactor-css`        | `false`        | —                                       | read, search, edit, todo, vscode/askQuestions                                             | Refactors CSS (subagent only)              |
-| `content-creator`     | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Generates institutional content            |
-| `layout-designer`     | `true`         | —                                       | read, search, browser, todo, vscode/askQuestions                                          | UI/UX design audit                         |
-| `performance-auditor` | `true`         | —                                       | read, search, web, browser, todo, vscode/askQuestions, github/\*                          | Audits performance                         |
-| `Explore` (built-in)  | `true`         | —                                       | read, search                                                                              | Quick codebase exploration                 |
+| Agent                 | user-invocable | agents                                  | Tools                                                                                     | Role                                                                   |
+| --------------------- | -------------- | --------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `orchestrator`        | `true`         | planner, implementer, reviewer, Explore | read, search, edit, execute, web, todo, vscode/askQuestions, agent, github/\*             | Coordinates complete pipeline                                          |
+| `planner`             | `true`         | Explore                                 | read, search, web, todo, vscode/askQuestions, agent, github/\*                            | Generates implementation plans (read-only)                             |
+| `implementer`         | `true`         | —                                       | read, search, edit, execute, todo, vscode/askQuestions                                    | Executes plans, modifies code                                          |
+| `reviewer`            | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Analyzes diffs, quality (read-only)                                    |
+| `harness-engineer`    | `true`         | orchestrator                            | read, search, edit, todo, vscode/askQuestions, memory/\*, vscode/memory, agent, github/\* | ⚠️ DEPRECATED — replaced by software-engineer with harness-audit skill |
+| `refactor-css`        | `false`        | —                                       | read, search, edit, todo, vscode/askQuestions                                             | Refactors CSS (subagent only)                                          |
+| `content-creator`     | `true`         | —                                       | read, search, todo, vscode/askQuestions                                                   | Generates institutional content                                        |
+| `layout-designer`     | `true`         | —                                       | read, search, browser, todo, vscode/askQuestions                                          | UI/UX design audit                                                     |
+| `performance-auditor` | `true`         | —                                       | read, search, web, browser, todo, vscode/askQuestions, github/\*                          | Audits performance                                                     |
+| `Explore` (built-in)  | `true`         | —                                       | read, search                                                                              | Quick codebase exploration                                             |
 
 ---
 
@@ -508,7 +508,7 @@ MCP tools are referenced in agent frontmatter as `github/*` (wildcard for all to
 | ------------------ | ---------------------- | -------------------------------------------------------- |
 | `orchestrator`     | `github/*` (all tools) | Creates issues, branches, PRs, merges                    |
 | `planner`          | `github/*` (all tools) | Fetches issue details for planning                       |
-| `harness-engineer` | `github/*` (all tools) | Creates harness improvement issues/PRs                   |
+| `harness-engineer` | `github/*` (all tools) | ⚠️ DEPRECATED — use software-engineer agent instead      |
 | `implementer`      | ❌ None                | Only implements code — no GitHub operations              |
 | `reviewer`         | ❌ None                | Read-only review — delegates PR creation to orchestrator |
 | Other agents       | ❌ None                | No GitHub operations needed                              |

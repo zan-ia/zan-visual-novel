@@ -9,7 +9,6 @@ tools:
   - 'vscode/askQuestions'
 user-invocable: true
 disable-model-invocation: false
-agents: []
 ---
 
 # Content Creation Agent

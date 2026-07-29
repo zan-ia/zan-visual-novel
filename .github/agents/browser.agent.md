@@ -1,5 +1,6 @@
 ---
-name: task-browser
+name: browser-tester
+model: OpenCode Go / Mimo V2.5 (opencodego)
 description: 'Use when you need to navigate websites, inspect web pages, interact with UI elements, take screenshots, or extract information from the built-in browser in GitHub Copilot. Ideal for research, validation, form testing, visual verification, layout analysis, and UI review.'
 tools:
   - web
@@ -8,22 +9,8 @@ tools:
   - search
   - browser
   - vscode/askQuestions
-
-model: OpenCode Go / Mimo V2.5 (opencodego)
+  - agent
 user-invocable: true
-handoffs:
-  - label: Layout Analysis
-    agent: browser
-    prompt: 'Use the browser-layout-analysis skill to understand the structure and layout of the current page. Extract regions, hierarchy, spacing, and component relationships.'
-    send: false
-  - label: Visual Review
-    agent: browser
-    prompt: 'Use the browser-visual-review skill to compare the current page against the provided reference. Identify visual issues, missing elements, spacing problems, and hierarchy mismatches.'
-    send: false
-  - label: Code Review (UI Changes)
-    agent: reviewer
-    prompt: 'Review the UI changes made based on browser analysis. Check for layout consistency, responsive behavior, and visual quality against the reference.'
-    send: true
 ---
 
 # Browser Agent

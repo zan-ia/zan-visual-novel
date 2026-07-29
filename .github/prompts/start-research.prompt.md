@@ -1,12 +1,12 @@
 ---
-description: 'Initiates a research/spike pipeline. The engineer agent scopes the research question and creates a workflow artifact, then hands off to the orchestrator who delegates investigation.'
+description: 'Initiates a research/spike pipeline. The orchestrator classifies the research question, invokes workflow analysis, then delegates investigation to the appropriate specialist agent.'
 argument-hint: "Describe the research question (e.g., 'Should we use streaming or Promise for provider interfaces?')"
-agent: 'engineer'
+agent: 'orchestrator'
 ---
 
 # Start Research Pipeline
 
-Start the research/spike pipeline following the flow defined in `.github/instructions/pipeline-workflow.instructions.md` (Research Pipeline section).
+The orchestrator receives your research question and orchestrates the investigation. See `.github/instructions/pipeline-workflow.instructions.md`.
 
 ## Procedure
 
@@ -88,7 +88,7 @@ Based on the research domain, delegate to the appropriate agent via `runSubagent
 | Domain                | Agent                          |
 | --------------------- | ------------------------------ |
 | Performance / latency | `performance-auditor`          |
-| Harness / tooling     | `harness-engineer`             |
+| Harness / tooling     | `software-engineer`            |
 | UI / UX               | `layout-designer`              |
 | Code architecture     | `planner` (read-only analysis) |
 
