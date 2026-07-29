@@ -90,5 +90,5 @@ Report format:
 - Pipeline workflow: `.github/instructions/pipeline-workflow.instructions.md`
 - CSS conventions: `.github/instructions/css.instructions.md`
 - HTML conventions: `.github/instructions/html.instructions.md`
-- Svelte conventions: `.github/instructions/svelte.instructions.md`
+- React conventions: `.github/instructions/project-organization.instructions.md`
 - Tool usage rules: `.github/instructions/tool-usage.instructions.md`

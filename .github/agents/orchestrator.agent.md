@@ -4,10 +4,10 @@ model: OpenCode Go / Deepseek V4 Pro (opencodego)
 description: 'Conversational AI hub that receives ANY user request, classifies it, and delegates to the right specialist agent. Coordinates the complete Plan→Implement→Review pipeline. Use when: you are the user — the orchestrator is your single entry point for ALL development tasks. Never use other agents directly.'
 tools:
   - 'todo'
-  - 'vscode/askQuestions'
   - 'agent'
-  - 'github/*'
+  - 'vscode/askQuestions'
 agents:
+  - agent
   - software-engineer
   - planner
   - implementer

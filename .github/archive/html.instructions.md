@@ -1,6 +1,6 @@
 ---
-description: 'Use when: creating or editing Svelte components, writing markup in .svelte files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating src/app.html meta tags. Covers accessibility, headings hierarchy, images, and links.'
-applyTo: 'src/**/*.svelte, src/app.html'
+description: 'Use when: creating or editing React components, writing markup in .tsx files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating index.html meta tags. Covers accessibility, headings hierarchy, images, and links.'
+applyTo: 'src/**/*.tsx, apps/**/index.html'
 ---
 
 # HTML Rules and Patterns — SvelteKit
