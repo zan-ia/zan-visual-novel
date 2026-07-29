@@ -89,9 +89,9 @@ app.use(errorHandler);
 
 // ── Start ───────────────────────────────────────────────
 
-async function start(): Promise<void> {
-  // Initialize Redis (non-blocking — app works without it)
-  await connectRedis();
+export async function start(): Promise<void> {
+  // Initialize Redis in background — server starts immediately even without it
+  connectRedis();
 
   // Initialize S3 bucket when using S3-compatible storage
   if (storageProvider instanceof S3StorageProvider) {
@@ -107,6 +107,10 @@ async function start(): Promise<void> {
   });
 }
 
-start();
+// Only auto-start in production/development, not during tests
+// (tests create their own server with http.createServer(app))
+if (process.env.NODE_ENV !== 'test') {
+  start();
+}
 
 export default app;

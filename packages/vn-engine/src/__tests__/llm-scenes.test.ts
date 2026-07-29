@@ -203,7 +203,7 @@ describe('LLM Scenes — Error Path', () => {
     expect((finalScene.metadata as Record<string, unknown>).status).toBe('error');
     expect((finalScene.metadata as Record<string, unknown>).generatedByLLM).toBe(true);
     expect((finalScene.metadata as Record<string, unknown>).error).toBeDefined();
-    expect(finalScene.content[0]?.text).toContain('Falha ao gerar');
+    expect(finalScene.content[0]?.text).toContain('LLM failed');
   });
 });
 

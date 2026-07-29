@@ -11,7 +11,16 @@ let redisAvailable = false;
 
 function getRedis(): RedisClientType {
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
+    redisClient = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      socket: {
+        connectTimeout: 3000,
+        reconnectStrategy: (retries) => {
+          if (retries > 2) return new Error('Redis unavailable');
+          return Math.min(retries * 200, 1000);
+        },
+      },
+    });
     redisClient.on('error', () => {
       redisAvailable = false;
     });
