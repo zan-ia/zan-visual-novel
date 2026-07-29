@@ -38,7 +38,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return json;
 }
 
-const STATUS_COLORS: Record<VNStatus, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'> = {
+const STATUS_COLORS: Record<
+  VNStatus,
+  'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+> = {
   draft: 'default',
   published: 'success',
   archived: 'warning',

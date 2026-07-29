@@ -407,14 +407,22 @@ export function VNEditorPage() {
         const res = await api.deleteChapter(vnId, id);
         if (res.success) {
           setChapters((prev) => prev.filter((c) => c.id !== id));
-          if (selectedChapterId === id) { setSelectedChapterId(null); setScenes([]); }
+          if (selectedChapterId === id) {
+            setSelectedChapterId(null);
+            setScenes([]);
+          }
           setToast('Capítulo removido');
         }
       } else if (type === 'scene' && selectedChapterId) {
         const res = await api.deleteScene(vnId, selectedChapterId, id);
         if (res.success) {
           setScenes((prev) => prev.filter((s) => s.id !== id));
-          if (selectedSceneId === id) { setSelectedSceneId(null); setSceneContent([]); setChoices([]); setSceneTitle(''); }
+          if (selectedSceneId === id) {
+            setSelectedSceneId(null);
+            setSceneContent([]);
+            setChoices([]);
+            setSceneTitle('');
+          }
           setToast('Cena removida!');
         }
       } else if (type === 'choice' && selectedChapterId && selectedSceneId) {
@@ -425,7 +433,9 @@ export function VNEditorPage() {
         }
       }
     } catch {
-      setToast(`Erro ao remover ${type === 'chapter' ? 'capítulo' : type === 'scene' ? 'cena' : 'escolha'}`);
+      setToast(
+        `Erro ao remover ${type === 'chapter' ? 'capítulo' : type === 'scene' ? 'cena' : 'escolha'}`,
+      );
     } finally {
       setLoading(false);
       setDeleteConfirm(null);

@@ -173,8 +173,8 @@ export function LibraryPage() {
         <DialogTitle>Confirmar Compra</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Esta visual novel custa {spendDialog?.priceCredits} créditos.
-            Seu saldo: {user?.creditsBalance ?? 0} créditos.
+            Esta visual novel custa {spendDialog?.priceCredits} créditos. Seu saldo:{' '}
+            {user?.creditsBalance ?? 0} créditos.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -1,4 +1,13 @@
-import { Box, Typography, Button, Card, CardContent, CardActions, Chip, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  CircularProgress,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import StarIcon from '@mui/icons-material/Star';
@@ -13,12 +22,15 @@ export function CreditsShopPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.getCreditPackages().then((res) => {
-      if (res.success && Array.isArray(res.data)) setPackages(res.data as any);
-    }).catch(() => {});
+    api
+      .getCreditPackages()
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setPackages(res.data as any);
+      })
+      .catch(() => {});
   }, []);
 
-  const handleBuy = async (pkg: typeof CREDIT_PACKAGES[number]) => {
+  const handleBuy = async (pkg: (typeof CREDIT_PACKAGES)[number]) => {
     setLoadingId(pkg.id);
     setError(null);
     try {
@@ -45,13 +57,22 @@ export function CreditsShopPage() {
       </Typography>
 
       {error && (
-        <Typography color="error" mb={2}>{error}</Typography>
+        <Typography color="error" mb={2}>
+          {error}
+        </Typography>
       )}
 
       <Grid container spacing={3}>
         {packages.map((pkg) => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={pkg.id}>
-            <Card sx={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Card
+              sx={{
+                position: 'relative',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               {pkg.id === 'large' && (
                 <Chip
                   icon={<StarIcon />}
@@ -62,7 +83,9 @@ export function CreditsShopPage() {
                 />
               )}
               <CardContent sx={{ flex: 1 }}>
-                <Typography variant="h5" gutterBottom>{pkg.name}</Typography>
+                <Typography variant="h5" gutterBottom>
+                  {pkg.name}
+                </Typography>
                 <Typography variant="h3" color="primary" gutterBottom>
                   {pkg.credits}
                 </Typography>
@@ -70,14 +93,19 @@ export function CreditsShopPage() {
                   créditos para desbloquear conteúdo premium
                 </Typography>
                 <Typography variant="h6" mt={2}>
-                  {(pkg.priceCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {(pkg.priceCents / 100).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
                 </Typography>
               </CardContent>
               <CardActions>
                 <Button
                   fullWidth
                   variant="contained"
-                  startIcon={loadingId === pkg.id ? <CircularProgress size={16} /> : <ShoppingCartIcon />}
+                  startIcon={
+                    loadingId === pkg.id ? <CircularProgress size={16} /> : <ShoppingCartIcon />
+                  }
                   onClick={() => handleBuy(pkg)}
                   disabled={loadingId !== null}
                 >

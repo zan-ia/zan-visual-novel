@@ -1,4 +1,15 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+} from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../providers/auth-provider.js';
 
@@ -20,15 +31,20 @@ export function TransactionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getTransactions().then((res) => {
-      if (res.success && Array.isArray(res.data)) setTransactions(res.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    api
+      .getTransactions()
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setTransactions(res.data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>Extrato de Transações</Typography>
+      <Typography variant="h4" gutterBottom>
+        Extrato de Transações
+      </Typography>
 
       {loading ? (
         <Typography color="text.secondary">Carregando...</Typography>
@@ -59,7 +75,8 @@ export function TransactionsPage() {
                   </TableCell>
                   <TableCell>{tx.description ?? '-'}</TableCell>
                   <TableCell align="right">
-                    {tx.type === 'spend' ? '-' : '+'}{tx.amount} créditos
+                    {tx.type === 'spend' ? '-' : '+'}
+                    {tx.amount} créditos
                   </TableCell>
                   <TableCell align="right">{tx.balanceAfter} créditos</TableCell>
                 </TableRow>

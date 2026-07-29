@@ -76,9 +76,9 @@ export function createBackendLLMProvider(config: BackendProviderConfig): ILLMPro
       } catch (err) {
         clearTimeout(timeout);
         if (err instanceof Error && err.name === 'AbortError') {
-          throw new Error('Tempo limite excedido ao aguardar o modelo local no servidor');
+          throw new Error('Tempo limite excedido ao aguardar o modelo local no servidor', { cause: err });
         }
-        throw err;
+        throw new Error('Falha na geração local no servidor', { cause: err });
       } finally {
         clearTimeout(timeout);
       }

@@ -69,7 +69,12 @@ export function Layout() {
               >
                 🪙 {user?.creditsBalance ?? 0} créditos
               </Button>
-              <Button color="inherit" onClick={() => navigate('/transactions')} size="small" sx={{ mr: 1 }}>
+              <Button
+                color="inherit"
+                onClick={() => navigate('/transactions')}
+                size="small"
+                sx={{ mr: 1 }}
+              >
                 Extrato
               </Button>
               <Button

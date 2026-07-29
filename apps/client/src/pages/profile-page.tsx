@@ -50,7 +50,11 @@ export function ProfilePage() {
         <Typography variant="h4" color="primary" mb={3}>
           {user?.creditsBalance ?? 0} créditos
         </Typography>
-        <Button variant="contained" startIcon={<ShoppingCartIcon />} title="Comprar créditos na loja">
+        <Button
+          variant="contained"
+          startIcon={<ShoppingCartIcon />}
+          title="Comprar créditos na loja"
+        >
           Comprar Créditos
         </Button>
       </Paper>

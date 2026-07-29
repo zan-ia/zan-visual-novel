@@ -265,8 +265,8 @@ export function PlayerPage() {
         }}
       >
         <Alert severity="warning" sx={{ maxWidth: 500 }}>
-          Esta visual novel requer {creditsGate.priceCredits} créditos para jogar.
-          Você tem {user?.creditsBalance ?? 0} créditos.
+          Esta visual novel requer {creditsGate.priceCredits} créditos para jogar. Você tem{' '}
+          {user?.creditsBalance ?? 0} créditos.
         </Alert>
         <Button variant="outlined" onClick={() => navigate('/library')}>
           Voltar à Biblioteca

@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Chip,
-  CircularProgress,
-  Alert,
-} from '@mui/material';
+import { Box, Typography, Card, CardContent, Chip, CircularProgress, Alert } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -95,7 +87,12 @@ export function AdminCreditsConfigPage() {
                     <Typography variant="h5" color="primary" gutterBottom>
                       {formatPrice(pkg.priceCents)}
                     </Typography>
-                    <Chip label={`${pkg.credits} créditos`} size="small" color="primary" variant="outlined" />
+                    <Chip
+                      label={`${pkg.credits} créditos`}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                    />
                   </CardContent>
                 </Card>
               </Grid>

@@ -49,8 +49,6 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return json;
 }
 
-
-
 export function AdminUsersPage() {
   const [users, setUsers] = useState<(User & { deletedAt?: string | null })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +100,9 @@ export function AdminUsersPage() {
     try {
       await apiFetch(`/admin/users/${banTarget.id}/ban`, { method: 'POST' });
       setUsers((prev) =>
-        prev.map((u) => (u.id === banTarget.id ? { ...u, deletedAt: new Date().toISOString() } : u)),
+        prev.map((u) =>
+          u.id === banTarget.id ? { ...u, deletedAt: new Date().toISOString() } : u,
+        ),
       );
       setBanDialogOpen(false);
       setBanTarget(null);
@@ -193,7 +193,11 @@ export function AdminUsersPage() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Chip label={`${u.creditsBalance} créditos`} size="small" variant="outlined" />
+                      <Chip
+                        label={`${u.creditsBalance} créditos`}
+                        size="small"
+                        variant="outlined"
+                      />
                     </TableCell>
                     <TableCell align="center">
                       <IconButton
