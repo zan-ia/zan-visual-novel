@@ -37,7 +37,7 @@ export function ProfilePage() {
   }
 
   return (
-    <Box maxWidth={600} mx="auto">
+    <Box maxWidth="var(--content-sm)" mx="auto">
       <Typography variant="h3" mb={3}>
         Meu Perfil
       </Typography>

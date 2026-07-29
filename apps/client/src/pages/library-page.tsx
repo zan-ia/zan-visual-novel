@@ -61,7 +61,7 @@ export function LibraryPage() {
 
   if (error) {
     return (
-      <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+      <Box sx={{ maxWidth: 'var(--content-sm)', mx: 'auto', mt: 4 }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
