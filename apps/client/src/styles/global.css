@@ -8,7 +8,19 @@
   min-height: 60dvh;
   border-radius: 12px;
   overflow: hidden;
-  background: #1a1a2e;
+  background: linear-gradient(170deg, #1a1a2e 0%, #16213e 40%, #1a1a2e 100%);
+}
+
+.vn-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(124, 77, 255, 0.04) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 .vn-scene__visuals {
@@ -95,6 +107,10 @@
 }
 
 .vn-text--dialogue .vn-text__body {
+  /* Body text in dialogue uses normal weight — speaker name provides context */
+}
+
+.vn-text--thought .vn-text__body {
   font-style: italic;
 }
 
