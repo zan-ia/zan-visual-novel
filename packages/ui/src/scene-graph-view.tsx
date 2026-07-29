@@ -48,13 +48,13 @@ export interface SceneGraphViewProps {
   onPositionChange: (sceneId: string, position: { x: number; y: number }) => void;
 }
 
-// ── Color palette by scene type ──────────────────────────
+// ── Color mapping: scene type → CSS variable ─────────────
 
-const TYPE_COLORS: Record<string, string> = {
-  narration: '#4a90d9',
-  dialogue: '#9b59b6',
-  choice: '#e67e22',
-  ending: '#27ae60',
+const TYPE_COLOR_VARS: Record<string, string> = {
+  narration: 'var(--color-primary)',
+  dialogue: 'var(--color-secondary)',
+  choice: 'var(--color-warning)',
+  ending: 'var(--color-success)',
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -68,19 +68,21 @@ const TYPE_LABELS: Record<string, string> = {
 
 function SceneNode({ data: rawData, selected }: NodeProps) {
   const data = rawData as unknown as SceneNodeData;
-  const color = TYPE_COLORS[data.type] ?? '#666';
+  const color = TYPE_COLOR_VARS[data.type] ?? 'var(--color-text-dim)';
   return (
     <div
       style={{
-        background: selected ? 'rgba(255,255,255,0.12)' : 'rgba(30,30,40,0.95)',
-        border: `2px solid ${selected ? color : 'rgba(255,255,255,0.15)'}`,
+        background: selected ? 'rgba(255,255,255,0.12)' : 'var(--color-node-bg)',
+        border: `2px solid ${selected ? color : 'var(--color-node-border)'}`,
         borderRadius: 8,
         padding: '10px 14px',
         minWidth: 180,
         maxWidth: 220,
         cursor: 'pointer',
         transition: 'border-color 0.15s, box-shadow 0.15s',
-        boxShadow: selected ? `0 0 0 2px ${color}40` : '0 2px 8px rgba(0,0,0,0.3)',
+        boxShadow: selected
+          ? `0 0 0 2px color-mix(in srgb, ${color} 25%, transparent)`
+          : '0 2px 8px rgba(0,0,0,0.3)',
         fontFamily: 'system-ui, sans-serif',
       }}
     >
@@ -88,11 +90,16 @@ function SceneNode({ data: rawData, selected }: NodeProps) {
       <Handle
         type="target"
         position={Position.Top}
-        style={{ background: color, width: 10, height: 10, border: '2px solid #1e1e28' }}
+        style={{
+          background: color,
+          width: 10,
+          height: 10,
+          border: '2px solid var(--color-surface)',
+        }}
       />
 
       {/* Scene title */}
-      <div style={{ fontWeight: 600, fontSize: 13, color: '#fff', marginBottom: 4 }}>
+      <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text)', marginBottom: 4 }}>
         {data.title}
       </div>
 
@@ -103,17 +110,17 @@ function SceneNode({ data: rawData, selected }: NodeProps) {
             fontSize: 11,
             padding: '1px 6px',
             borderRadius: 4,
-            background: `${color}22`,
+            background: `color-mix(in srgb, ${color} 13%, transparent)`,
             color,
             fontWeight: 500,
           }}
         >
           {TYPE_LABELS[data.type] ?? data.type}
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+        <span style={{ fontSize: 11, color: 'var(--color-text-dim)' }}>
           {data.blockCount} blocos
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+        <span style={{ fontSize: 11, color: 'var(--color-text-dim)' }}>
           {data.choiceCount} escolhas
         </span>
       </div>
@@ -123,7 +130,7 @@ function SceneNode({ data: rawData, selected }: NodeProps) {
         <div
           style={{
             fontSize: 10,
-            color: '#ff6b6b',
+            color: 'var(--color-accent)',
             marginTop: 4,
             display: 'flex',
             alignItems: 'center',
@@ -138,7 +145,12 @@ function SceneNode({ data: rawData, selected }: NodeProps) {
       <Handle
         type="source"
         position={Position.Bottom}
-        style={{ background: color, width: 10, height: 10, border: '2px solid #1e1e28' }}
+        style={{
+          background: color,
+          width: 10,
+          height: 10,
+          border: '2px solid var(--color-surface)',
+        }}
       />
     </div>
   );
@@ -459,7 +471,9 @@ function SceneGraphViewInner(props: SceneGraphViewProps) {
             borderRadius: 8,
             border: '1px solid rgba(255,255,255,0.1)',
           }}
-          nodeColor={(node) => TYPE_COLORS[(node.data as SceneNodeData)?.type] ?? '#666'}
+          nodeColor={(node) =>
+            TYPE_COLOR_VARS[(node.data as SceneNodeData)?.type] ?? 'var(--color-text-dim)'
+          }
           maskColor="rgba(0,0,0,0.5)"
         />
       </ReactFlow>
