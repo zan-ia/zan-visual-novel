@@ -20,6 +20,7 @@ import {
   Skeleton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -307,19 +308,36 @@ export function PlayerPage() {
       </Box>
 
       {/* Progress bar */}
-      <Box
-        sx={{ width: '100%', height: 3, bgcolor: 'rgba(255,255,255,0.05)', mb: 3, borderRadius: 1 }}
+      <Tooltip
+        title={
+          currentScene?.chapterId
+            ? (storyData?.chapters.find((c) => c.id === currentScene.chapterId)?.title ??
+              `Capítulo ${Math.round(progress)}%`)
+            : ''
+        }
+        arrow
       >
         <Box
           sx={{
-            width: `${progress}%`,
-            height: '100%',
-            bgcolor: 'primary.main',
+            width: '100%',
+            height: 6,
+            bgcolor: 'rgba(255,255,255,0.05)',
+            mb: 3,
             borderRadius: 1,
-            transition: 'width 0.5s',
+            cursor: 'pointer',
           }}
-        />
-      </Box>
+        >
+          <Box
+            sx={{
+              width: `${progress}%`,
+              height: '100%',
+              bgcolor: 'secondary.main',
+              borderRadius: 1,
+              transition: 'width 0.5s',
+            }}
+          />
+        </Box>
+      </Tooltip>
 
       {/* Scene content */}
       <Box sx={{ mb: 2, minHeight: '40dvh' }}>
@@ -401,8 +419,9 @@ export function PlayerPage() {
             onClick={continueGame}
             fullWidth
             sx={{ py: 1.5, fontSize: '1.1rem', borderRadius: 3 }}
+            endIcon={<ArrowForwardIcon />}
           >
-            Continuar ▸
+            Continuar
           </Button>
         )}
       </Box>
