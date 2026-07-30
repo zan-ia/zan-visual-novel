@@ -17,7 +17,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Skeleton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -25,11 +24,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useVNEngine, useLLM } from '@zan-vn/lib';
+import { useVNEngine } from '@zan-vn/lib';
 import { SceneRenderer, ChoicePanel } from '@zan-vn/ui';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { SaveData, StoryData } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
+import { useModel } from '../providers/model-provider.js';
+import { ModelLoadingScreen } from '../components/model-loading-screen.js';
 
 export function PlayerPage() {
   const { vnId } = useParams<{ vnId: string }>();
@@ -48,12 +49,8 @@ export function PlayerPage() {
     setLLMProvider,
   } = useVNEngine();
 
-  // LLM provider setup — detect device capabilities and auto-select provider
-  const accessToken = useMemo(() => localStorage.getItem('access_token') ?? undefined, []);
-  const llmProvider = useLLM({
-    apiBaseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
-    accessToken,
-  });
+  // LLM provider from app-level ModelProvider (persists across navigations)
+  const { llmProvider, modelStatus, modelProgress, modelStatusText, modelDevice } = useModel();
 
   useEffect(() => {
     if (llmProvider) {
@@ -306,28 +303,12 @@ export function PlayerPage() {
 
   if (!currentScene) {
     return (
-      <Box
-        sx={{ maxWidth: 'var(--content-md)', mx: 'auto', mt: 4 }}
-        aria-busy="true"
-        aria-label="Carregando cena"
-      >
-        {/* Skeleton da área da cena */}
-        <Skeleton
-          variant="rectangular"
-          height={300}
-          sx={{ mb: 2, borderRadius: 1, bgcolor: 'rgba(124,77,255,0.08)' }}
-        />
-        {/* Skeleton do texto narrativo */}
-        <Skeleton variant="text" width="60%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 0.5 }} />
-        <Skeleton variant="text" width="40%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 3 }} />
-        {/* Skeleton do botão continuar */}
-        <Skeleton
-          variant="rounded"
-          height={48}
-          width={200}
-          sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
-        />
-      </Box>
+      <ModelLoadingScreen
+        status={isGeneratingLLM ? 'loading' : modelStatus}
+        progress={modelProgress}
+        statusText={isGeneratingLLM ? 'Gerando narrativa com IA...' : modelStatusText}
+        device={modelDevice}
+      />
     );
   }
 

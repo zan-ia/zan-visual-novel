@@ -1,13 +1,16 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Container, Box, Chip } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Box, Chip, Tooltip, Fade } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
+import MemoryIcon from '@mui/icons-material/Memory';
 import { useAuth } from '../providers/auth-provider.js';
+import { useModel } from '../providers/model-provider.js';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 export function Layout() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { modelStatus, modelProgress, modelStatusText, modelDevice, modelError } = useModel();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -60,6 +63,45 @@ export function Layout() {
           )}
           {isAuthenticated ? (
             <>
+              {/* Model loading indicator */}
+              <Fade in={modelStatus !== 'ready'}>
+                <Box>
+                  {modelStatus === 'error' ? (
+                    <Tooltip title={modelError || 'Erro ao carregar modelo'} arrow>
+                      <Chip
+                        icon={<MemoryIcon />}
+                        label="IA offline"
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                        sx={{ mr: 1 }}
+                      />
+                    </Tooltip>
+                  ) : modelStatus === 'fallback' ? (
+                    <Tooltip title={`IA local: ${modelDevice.toUpperCase()}`} arrow>
+                      <Chip
+                        icon={<MemoryIcon />}
+                        label="IA CPU"
+                        size="small"
+                        color="default"
+                        variant="outlined"
+                        sx={{ mr: 1 }}
+                      />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title={modelStatusText || 'Carregando modelo de IA...'} arrow>
+                      <Chip
+                        icon={<MemoryIcon />}
+                        label={`IA ${Math.round(modelProgress)}%`}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        sx={{ mr: 1 }}
+                      />
+                    </Tooltip>
+                  )}
+                </Box>
+              </Fade>
               <Button
                 color="inherit"
                 size="small"
