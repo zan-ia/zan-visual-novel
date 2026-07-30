@@ -169,6 +169,7 @@ creditsRouter.post('/spend', authenticate, async (req, res) => {
       });
       return;
     }
+    console.error('[credits] spend error:', err);
     res.status(500).json({
       success: false,
       error: { statusCode: 500, message: 'Erro interno', code: 'INTERNAL_ERROR' },

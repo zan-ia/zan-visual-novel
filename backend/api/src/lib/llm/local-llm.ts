@@ -18,10 +18,11 @@ env.useBrowserCache = false;
 
 // ── Model mapping ───────────────────────────────────────
 
-/** Maps internal model names to HuggingFace model IDs. */
+/** Maps internal model names to HuggingFace ONNX repo IDs. */
 const MODEL_MAP: Record<string, string> = {
-  'lfm-230m': 'Xenova/LaMini-Flan-T5-77M',
-  'lfm-350m': 'Xenova/gpt2',
+  'lfm-350m': 'LiquidAI/LFM2.5-350M-ONNX',
+  'lfm-1.2b-thinking': 'LiquidAI/LFM2.5-1.2B-Thinking-ONNX',
+  'lfm-vl-450m': 'LiquidAI/LFM2.5-VL-450M-ONNX',
 };
 
 // ── Pipeline singleton ──────────────────────────────────

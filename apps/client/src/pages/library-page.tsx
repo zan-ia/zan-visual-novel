@@ -56,7 +56,8 @@ export function LibraryPage() {
         setEmptyMessage('Esta visual novel ainda não tem capítulos publicados.');
         return;
       }
-      if (vn.priceCredits > 0) {
+      // Skip purchase dialog if user already has access
+      if (vn.priceCredits > 0 && !(vn as any).hasAccess) {
         setSpendDialog(vn);
         return;
       }

@@ -170,6 +170,10 @@ export class ApiClient {
     return this.get('/credits/transactions');
   }
 
+  async spendCredits(vnId: string, amount: number): Promise<ApiResponse<unknown>> {
+    return this.post('/credits/spend', { vnId, amount });
+  }
+
   // ── LLM ────────────────────────────────────────────────
 
   async generateLLM(data: unknown): Promise<ApiResponse<unknown>> {

@@ -29,6 +29,7 @@ const uuidSchema = z.string().uuid('ID inválido');
 // GET /api/v1/vns — List published VNs (public) or user's VNs (authenticated)
 vnRouter.get('/', optionalAuth, async (req, res) => {
   try {
+    console.log('[vn list] ENTERED, user:', (req as any).user?.userId ?? 'none');
     const { page, pageSize } = paginationSchema.parse(req.query);
     const offset = (page - 1) * pageSize;
 
@@ -65,6 +66,25 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
       }
     }
 
+    // Get access status for authenticated users
+    const userId = (req as any).user?.userId;
+    const accessSet = new Set<string>();
+    if (userId && vnIds.length > 0) {
+      const accessRows = await getDb()
+        .select()
+        .from(schema.userVNAccess)
+        .where(
+          and(
+            eq(schema.userVNAccess.userId, userId),
+            inArray(schema.userVNAccess.vnId, vnIds),
+          ),
+        );
+      console.log('[vn list] userId:', userId, 'accessRows:', accessRows.length, 'vnIds:', vnIds.length);
+      for (const row of accessRows) {
+        accessSet.add(row.vnId);
+      }
+    }
+
     const data = await Promise.all(
       vns.map(async (vn) => {
         const [creator] = await getDb()
@@ -72,7 +92,7 @@ vnRouter.get('/', optionalAuth, async (req, res) => {
           .from(schema.users)
           .where(eq(schema.users.id, vn.creatorId))
           .limit(1);
-        return { ...vn, creator: creator ?? null, tags: tags[vn.id] ?? [] };
+        return { ...vn, creator: creator ?? null, tags: tags[vn.id] ?? [], hasAccess: accessSet.has(vn.id) };
       }),
     );
 
@@ -197,7 +217,24 @@ vnRouter.get('/:id', optionalAuth, async (req, res) => {
         })),
     }));
 
-    res.json({ success: true, data: { ...vn, chapters: chaptersWithScenes } });
+    // Check if authenticated user already has access to this VN
+    let hasAccess = false;
+    const userId = (req as any).user?.userId;
+    if (userId) {
+      const [access] = await getDb()
+        .select()
+        .from(schema.userVNAccess)
+        .where(
+          and(
+            eq(schema.userVNAccess.userId, userId),
+            eq(schema.userVNAccess.vnId, vn.id),
+          ),
+        )
+        .limit(1);
+      hasAccess = !!access;
+    }
+
+    res.json({ success: true, data: { ...vn, chapters: chaptersWithScenes, hasAccess } });
   } catch {
     res.status(500).json({
       success: false,

@@ -5,6 +5,7 @@ import {
   useCallback,
   useMemo,
   useRef,
+  useEffect,
   type ReactNode,
 } from 'react';
 import type { User, AuthTokens } from '@zan-vn/shared';
@@ -13,6 +14,7 @@ import { ApiClient } from '@zan-vn/lib';
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
+  authReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => void;
@@ -31,6 +33,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
   // Stable callbacks that don't cause re-renders
   const onTokenRefreshedRef = useRef((tokens: AuthTokens) => {
@@ -61,6 +64,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
     [],
   );
+
+  // Restore session from localStorage on mount
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setAuthReady(true);
+      return;
+    }
+    api
+      .getProfile()
+      .then((res) => {
+        if (res.success && res.data) {
+          setUser(res.data);
+        } else {
+          // Token is invalid/expired and refresh also failed — clear
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      })
+      .finally(() => setAuthReady(true));
+  }, [api]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -99,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout, api }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, authReady, login, register, logout, api }}>
       {children}
     </AuthContext.Provider>
   );

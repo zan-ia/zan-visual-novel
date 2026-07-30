@@ -65,16 +65,17 @@
 └──────────────────────────────────────────────────┘
 ```
 
-## 🧠 Modelos LFM (Inferência)
+## 🧠 Modelos LFM 2.5 (Inferência)
 
-| Modelo               | Uso                                 | Execução  | Tamanho Q4 |
-| -------------------- | ----------------------------------- | --------- | ---------- |
-| LFM2.5-230M-ONNX     | Diálogos simples, respostas rápidas | Navegador | ~200 MB    |
-| LFM2.5-350M-ONNX     | Narrativa balanceada                | Navegador | ~350 MB    |
-| LFM2.5-1.2B-Thinking | Raciocínio complexo, plot twists    | Cloud API | ~1.2 GB    |
-| LFM2.5-Audio-1.5B    | Narração por voz                    | Cloud API | ~3 GB      |
-| LFM2.5-VL-450M       | Análise de cenas                    | Navegador | ~900 MB    |
-| LFM2.5-VL-1.6B       | Geração de assets visuais           | Cloud API | ~3.2 GB    |
+| Modelo                        | Uso                                 | Execução                          | Tamanho Q4  |
+| ----------------------------- | ----------------------------------- | --------------------------------- | ----------- |
+| LFM2.5-350M-ONNX              | Narrativa balanceada, diálogos      | Navegador (WebGPU / WASM)         | ~276 MB     |
+| LFM2.5-1.2B-Thinking-ONNX     | Raciocínio complexo, plot twists    | Cloud API / Dispositivo potente   | ~1.2 GB     |
+| LFM2.5-VL-450M-ONNX           | Análise de cenas                    | Cloud API / Dispositivo potente   | ~900 MB     |
+| LFM2.5-Audio-1.5B             | Narração por voz                    | Cloud API                         | ~3 GB       |
+| LFM2.5-VL-1.6B                | Geração de assets visuais           | Cloud API                         | ~3.2 GB     |
+
+> **Inferência local:** O modelo LFM2.5-350M-ONNX (Q4) roda diretamente no navegador via **ONNX Runtime Web + WebGPU**, com fallback para WASM/CPU. Os modelos maiores (>1GB) usam a API cloud do Liquid AI ou backend próprio com Transformers.js.
 
 ---
 

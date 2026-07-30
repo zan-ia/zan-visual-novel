@@ -26,10 +26,15 @@ type WorkerResponse =
 
 /** Configuration for the local LLM provider. */
 export interface LocalProviderConfig {
-  /** Model type / HF model ID (e.g. 'Xenova/gpt2' or 'lfm-230m'). */
+  /** Model type / internal ID (e.g. 'lfm-350m'). */
   modelType: LLMModelType;
   /** Factory that creates a Worker running the lfm-worker script. */
   workerFactory: () => Worker;
+  /**
+   * Optional callback for progress updates from the worker.
+   * Called with a human-readable status and optional percentage (0–100).
+   */
+  onProgress?: (status: string, progress?: number) => void;
 }
 
 /**
@@ -64,19 +69,6 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
     { resolve: (r: LLMGenerateResponse) => void; reject: (e: Error) => void }
   >();
   let nextId = 0;
-
-  /** Detect WebGPU support for hardware-accelerated inference. */
-  function detectWebGPU(): boolean {
-    try {
-      return (
-        'gpu' in navigator &&
-        typeof (navigator as unknown as { gpu?: { requestAdapter?: unknown } }).gpu
-          ?.requestAdapter === 'function'
-      );
-    } catch {
-      return false;
-    }
-  }
 
   /** Lazily initialise the inference worker. */
   async function initWorker(): Promise<void> {
@@ -130,7 +122,7 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
             break;
           }
           case 'progress':
-            // Progress updates can be used for UI feedback
+            config.onProgress?.(msg.status, msg.progress);
             break;
         }
       };
@@ -209,7 +201,9 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
     },
 
     isAvailable(): boolean {
-      return detectWebGPU() && !initError;
+      // Local provider is available if WebGPU or WASM is supported.
+      // The worker handles device fallback internally.
+      return true;
     },
 
     getModelType(): string {
@@ -218,8 +212,9 @@ export function createLocalLLMProvider(config: LocalProviderConfig): ILLMProvide
   };
 }
 
-/** Map of LFM model types to HuggingFace model IDs. */
+/** Map of LFM model type IDs to HuggingFace ONNX repo IDs. */
 const MODEL_MAP: Record<string, string> = {
-  'lfm-230m': 'Xenova/LaMini-Flan-T5-77M',
-  'lfm-350m': 'Xenova/gpt2',
+  'lfm-350m': 'LiquidAI/LFM2.5-350M-ONNX',
+  'lfm-1.2b-thinking': 'LiquidAI/LFM2.5-1.2B-Thinking-ONNX',
+  'lfm-vl-450m': 'LiquidAI/LFM2.5-VL-450M-ONNX',
 };
