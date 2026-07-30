@@ -80,7 +80,7 @@ function createMockLLMProvider(response?: Partial<LLMGenerateResponse>): ILLMPro
     async generate(): Promise<LLMGenerateResponse> {
       return {
         text: response?.text ?? 'Generated text',
-        modelUsed: response?.modelUsed ?? 'lfm-230m',
+        modelUsed: response?.modelUsed ?? 'lfm-350m',
         isLocal: response?.isLocal ?? false,
         tokensUsed: response?.tokensUsed ?? 10,
         duration: response?.duration ?? 100,
@@ -90,7 +90,7 @@ function createMockLLMProvider(response?: Partial<LLMGenerateResponse>): ILLMPro
       return true;
     },
     getModelType(): string {
-      return 'lfm-230m';
+      return 'lfm-350m';
     },
   };
 }
@@ -104,7 +104,7 @@ function createFailingLLMProvider(): ILLMProvider {
       return true;
     },
     getModelType(): string {
-      return 'lfm-230m';
+      return 'lfm-350m';
     },
   };
 }

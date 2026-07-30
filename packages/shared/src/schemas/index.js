@@ -94,12 +94,7 @@ export const spendCreditsSchema = z.object({
   amount: z.number().int().positive(),
 });
 // ── LLM Schemas ─────────────────────────────────────────
-export const llmModelTypeSchema = z.enum([
-  'lfm-230m',
-  'lfm-350m',
-  'lfm-1.2b-thinking',
-  'lfm-vl-450m',
-]);
+export const llmModelTypeSchema = z.enum(['lfm-350m', 'lfm-1.2b-thinking', 'lfm-vl-450m']);
 export const llmGenerateSchema = z.object({
   prompt: z.string().min(1).max(2000),
   context: z.object({

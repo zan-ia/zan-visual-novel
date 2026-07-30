@@ -23,7 +23,7 @@ export const CREDIT_PACKAGES = [
 // ── Saves ────────────────────────────────────────────────
 export const MAX_SAVE_SLOTS = 5;
 // ── LLM ──────────────────────────────────────────────────
-export const DEFAULT_LLM_MODEL = 'lfm-230m';
+export const DEFAULT_LLM_MODEL = 'lfm-350m';
 export const DEFAULT_LLM_TEMPERATURE = 0.7;
 export const DEFAULT_LLM_MAX_TOKENS = 500;
 export const DEFAULT_LLM_TOP_P = 0.9;

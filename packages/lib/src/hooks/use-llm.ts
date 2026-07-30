@@ -15,6 +15,8 @@ export interface UseLLMOptions {
   accessToken?: string;
   /** Callback invoked once the composite provider is ready. */
   onProviderReady?: (provider: ILLMProvider) => void;
+  /** Optional callback for model download/load progress updates. */
+  onProgress?: (status: string, progress?: number) => void;
 }
 
 /**
@@ -45,8 +47,9 @@ export function useLLM(options: UseLLMOptions): ILLMProvider | null {
     if (caps.recommendedProvider === 'local' || caps.webgpu) {
       providers.push(
         createLocalLLMProvider({
-          modelType: 'lfm-230m',
+          modelType: 'lfm-350m',
           workerFactory: createDefaultLFMWorker,
+          onProgress: options.onProgress,
         }),
       );
     }

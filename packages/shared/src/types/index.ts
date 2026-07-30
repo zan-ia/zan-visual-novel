@@ -266,9 +266,14 @@ export interface VNState {
 
 // ── LLM ──────────────────────────────────────────────────
 
-export type LLMModelType = 'lfm-230m' | 'lfm-350m' | 'lfm-1.2b-thinking' | 'lfm-vl-450m';
+/** Supported LFM 2.5 ONNX models for narrative generation. */
+export type LLMModelType =
+  | 'lfm-350m' // LFM2.5-350M-ONNX (Q4 ~276MB, browser WebGPU)
+  | 'lfm-1.2b-thinking' // LFM2.5-1.2B-Thinking-ONNX (~1.2GB, cloud API / powerful device)
+  | 'lfm-vl-450m'; // LFM2.5-VL-450M-ONNX (~900MB, cloud API / powerful device)
 
 export interface LLMConfig {
+  /** Model variant to use for generation. */
   modelType: LLMModelType;
   temperature: number;
   maxTokens: number;

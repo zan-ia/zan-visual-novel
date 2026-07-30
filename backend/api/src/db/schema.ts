@@ -254,7 +254,7 @@ export const userVNAccess = pgTable(
     firstAccessedAt: timestamp('first_accessed_at').notNull().defaultNow(),
     lastAccessedAt: timestamp('last_accessed_at').notNull().defaultNow(),
   },
-  (table) => [index('idx_vn_access_user').on(table.userId, table.vnId)],
+    (table) => [uniqueIndex('idx_vn_access_user').on(table.userId, table.vnId)],
 );
 
 export const userChapterProgress = pgTable(

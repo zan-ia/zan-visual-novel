@@ -37,7 +37,7 @@ export declare const CREDIT_PACKAGES: readonly [
   },
 ];
 export declare const MAX_SAVE_SLOTS = 5;
-export declare const DEFAULT_LLM_MODEL: 'lfm-230m';
+export declare const DEFAULT_LLM_MODEL: 'lfm-350m';
 export declare const DEFAULT_LLM_TEMPERATURE = 0.7;
 export declare const DEFAULT_LLM_MAX_TOKENS = 500;
 export declare const DEFAULT_LLM_TOP_P = 0.9;

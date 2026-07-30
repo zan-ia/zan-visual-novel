@@ -203,7 +203,7 @@ export class VNEngine {
         flags: Object.fromEntries(this.state.flags),
       },
       config: {
-        modelType: 'lfm-230m',
+        modelType: 'lfm-350m',
         temperature: 0.7,
         maxTokens: 500,
         topP: 0.9,

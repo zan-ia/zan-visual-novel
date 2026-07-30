@@ -211,7 +211,7 @@ export interface VNState {
   history: ChoiceRecord[];
   variables: Map<string, unknown>;
 }
-export type LLMModelType = 'lfm-230m' | 'lfm-350m' | 'lfm-1.2b-thinking' | 'lfm-vl-450m';
+export type LLMModelType = 'lfm-350m' | 'lfm-1.2b-thinking' | 'lfm-vl-450m';
 export interface LLMConfig {
   modelType: LLMModelType;
   temperature: number;

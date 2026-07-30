@@ -189,12 +189,7 @@ export type SpendCreditsInput = z.infer<typeof spendCreditsSchema>;
 
 // ── LLM Schemas ─────────────────────────────────────────
 
-export const llmModelTypeSchema = z.enum([
-  'lfm-230m',
-  'lfm-350m',
-  'lfm-1.2b-thinking',
-  'lfm-vl-450m',
-]);
+export const llmModelTypeSchema = z.enum(['lfm-350m', 'lfm-1.2b-thinking', 'lfm-vl-450m']);
 
 export const llmGenerateSchema = z.object({
   prompt: z.string().min(1).max(2000),
@@ -206,7 +201,7 @@ export const llmGenerateSchema = z.object({
     flags: z.record(z.unknown()).default({}),
   }),
   config: z.object({
-    modelType: llmModelTypeSchema.default('lfm-230m'),
+    modelType: llmModelTypeSchema.default('lfm-350m'),
     temperature: z.number().min(0).max(2).default(0.7),
     maxTokens: z.number().int().min(50).max(2000).default(500),
     topP: z.number().min(0).max(1).default(0.9),

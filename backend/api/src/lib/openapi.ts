@@ -371,7 +371,7 @@ export function getOpenApiSpec() {
     'LLMGenerateResponse',
     z.object({
       text: z.string(),
-      modelUsed: z.enum(['lfm-230m', 'lfm-350m', 'lfm-1.2b-thinking', 'lfm-vl-450m']),
+      modelUsed: z.enum(['lfm-350m', 'lfm-1.2b-thinking', 'lfm-vl-450m']),
       isLocal: z.boolean(),
       tokensUsed: z.number().int(),
       duration: z.number(),

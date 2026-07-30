@@ -67,6 +67,7 @@ export function PlayerPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creditsGate, setCreditsGate] = useState<{ priceCredits: number } | null>(null);
+  const [spending, setSpending] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // New state for polish
@@ -102,8 +103,8 @@ export function PlayerPage() {
           }
           setStoryTitle(vn.title ?? 'Visual Novel');
 
-          // Anti-bypass: block direct URL access to paid VNs
-          if ((vn as any).priceCredits > 0) {
+          // Anti-bypass: block direct URL access to paid VNs (unless already purchased)
+          if ((vn as any).priceCredits > 0 && !(vn as any).hasAccess) {
             setCreditsGate({ priceCredits: (vn as any).priceCredits });
             return;
           }
@@ -253,6 +254,25 @@ export function PlayerPage() {
   }
 
   if (creditsGate) {
+    const handleCreditsPurchase = async () => {
+      if (!vnId) return;
+      setSpending(true);
+      try {
+        const res = await (api as any).spendCredits(vnId, creditsGate.priceCredits);
+        if (res.success) {
+          setCreditsGate(null);
+          // Reload VN data to proceed
+          window.location.reload();
+        } else {
+          setError(res.error?.message ?? 'Erro ao processar pagamento.');
+        }
+      } catch {
+        setError('Erro ao conectar com o servidor.');
+      } finally {
+        setSpending(false);
+      }
+    };
+
     return (
       <Box
         sx={{
@@ -268,9 +288,18 @@ export function PlayerPage() {
           Esta visual novel requer {creditsGate.priceCredits} créditos para jogar. Você tem{' '}
           {user?.creditsBalance ?? 0} créditos.
         </Alert>
-        <Button variant="outlined" onClick={() => navigate('/library')}>
-          Voltar à Biblioteca
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" onClick={() => navigate('/library')}>
+            Voltar à Biblioteca
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleCreditsPurchase}
+            disabled={spending || (user?.creditsBalance ?? 0) < creditsGate.priceCredits}
+          >
+            {spending ? 'Processando...' : `Comprar (${creditsGate.priceCredits} créditos)`}
+          </Button>
+        </Box>
       </Box>
     );
   }
