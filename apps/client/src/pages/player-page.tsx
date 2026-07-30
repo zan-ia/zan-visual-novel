@@ -17,7 +17,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Skeleton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -30,6 +29,8 @@ import { SceneRenderer, ChoicePanel } from '@zan-vn/ui';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { SaveData, StoryData } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
+import { ModelLoadingScreen } from '../components/model-loading-screen.js';
+import type { ModelStatus } from '../components/model-loading-screen.js';
 
 export function PlayerPage() {
   const { vnId } = useParams<{ vnId: string }>();
@@ -53,6 +54,16 @@ export function PlayerPage() {
   const llmProvider = useLLM({
     apiBaseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
     accessToken,
+    onProgress: (status, progress) => {
+      setModelStatusText(status);
+      if (progress !== undefined) setModelProgress(progress);
+      if (status.toLowerCase().includes('webgpu')) setModelDevice('webgpu');
+      if (status.toLowerCase().includes('wasm') || status.toLowerCase().includes('cpu'))
+        setModelDevice('wasm');
+      if (status.toLowerCase().includes('baixando')) setModelStatus('downloading');
+      if (status.toLowerCase().includes('carregando') && !status.toLowerCase().includes('baixando'))
+        setModelStatus('loading');
+    },
   });
 
   useEffect(() => {
@@ -69,6 +80,12 @@ export function PlayerPage() {
   const [creditsGate, setCreditsGate] = useState<{ priceCredits: number } | null>(null);
   const [spending, setSpending] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
+
+  // Model loading progress tracking
+  const [modelStatus, setModelStatus] = useState<ModelStatus>('detecting');
+  const [modelProgress, setModelProgress] = useState(0);
+  const [modelStatusText, setModelStatusText] = useState('');
+  const [modelDevice, setModelDevice] = useState('');
 
   // New state for polish
   const [storyData, setStoryData] = useState<StoryData | null>(null);
@@ -306,28 +323,12 @@ export function PlayerPage() {
 
   if (!currentScene) {
     return (
-      <Box
-        sx={{ maxWidth: 'var(--content-md)', mx: 'auto', mt: 4 }}
-        aria-busy="true"
-        aria-label="Carregando cena"
-      >
-        {/* Skeleton da área da cena */}
-        <Skeleton
-          variant="rectangular"
-          height={300}
-          sx={{ mb: 2, borderRadius: 1, bgcolor: 'rgba(124,77,255,0.08)' }}
-        />
-        {/* Skeleton do texto narrativo */}
-        <Skeleton variant="text" width="60%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 0.5 }} />
-        <Skeleton variant="text" width="40%" sx={{ bgcolor: 'rgba(124,77,255,0.08)', mb: 3 }} />
-        {/* Skeleton do botão continuar */}
-        <Skeleton
-          variant="rounded"
-          height={48}
-          width={200}
-          sx={{ bgcolor: 'rgba(124,77,255,0.08)' }}
-        />
-      </Box>
+      <ModelLoadingScreen
+        status={isGeneratingLLM ? 'loading' : modelStatus}
+        progress={modelProgress}
+        statusText={isGeneratingLLM ? 'Gerando narrativa com IA...' : modelStatusText}
+        device={modelDevice}
+      />
     );
   }
 

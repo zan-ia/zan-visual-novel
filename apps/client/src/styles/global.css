@@ -1,5 +1,16 @@
 @import '@zan-vn/ui/styles/tokens.css';
 
+/* ── Particle Drift Animation ──────────────────────────── */
+
+@keyframes particleDrift {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+  100% {
+    background-position: -200px 40px, 100px -60px, -50px 80px, 150px 20px, -100px -40px, 50px 100px, -150px -20px;
+  }
+}
+
 /* ── Visual Novel Scene ────────────────────────────────── */
 
 .vn-scene {
