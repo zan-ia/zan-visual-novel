@@ -24,13 +24,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useVNEngine, useLLM } from '@zan-vn/lib';
+import { useVNEngine } from '@zan-vn/lib';
 import { SceneRenderer, ChoicePanel } from '@zan-vn/ui';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { SaveData, StoryData } from '@zan-vn/shared';
 import { useAuth } from '../providers/auth-provider.js';
+import { useModel } from '../providers/model-provider.js';
 import { ModelLoadingScreen } from '../components/model-loading-screen.js';
-import type { ModelStatus } from '../components/model-loading-screen.js';
 
 export function PlayerPage() {
   const { vnId } = useParams<{ vnId: string }>();
@@ -49,22 +49,8 @@ export function PlayerPage() {
     setLLMProvider,
   } = useVNEngine();
 
-  // LLM provider setup — detect device capabilities and auto-select provider
-  const accessToken = useMemo(() => localStorage.getItem('access_token') ?? undefined, []);
-  const llmProvider = useLLM({
-    apiBaseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
-    accessToken,
-    onProgress: (status, progress) => {
-      setModelStatusText(status);
-      if (progress !== undefined) setModelProgress(progress);
-      if (status.toLowerCase().includes('webgpu')) setModelDevice('webgpu');
-      if (status.toLowerCase().includes('wasm') || status.toLowerCase().includes('cpu'))
-        setModelDevice('wasm');
-      if (status.toLowerCase().includes('baixando')) setModelStatus('downloading');
-      if (status.toLowerCase().includes('carregando') && !status.toLowerCase().includes('baixando'))
-        setModelStatus('loading');
-    },
-  });
+  // LLM provider from app-level ModelProvider (persists across navigations)
+  const { llmProvider, modelStatus, modelProgress, modelStatusText, modelDevice } = useModel();
 
   useEffect(() => {
     if (llmProvider) {
@@ -80,12 +66,6 @@ export function PlayerPage() {
   const [creditsGate, setCreditsGate] = useState<{ priceCredits: number } | null>(null);
   const [spending, setSpending] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval>>(undefined);
-
-  // Model loading progress tracking
-  const [modelStatus, setModelStatus] = useState<ModelStatus>('detecting');
-  const [modelProgress, setModelProgress] = useState(0);
-  const [modelStatusText, setModelStatusText] = useState('');
-  const [modelDevice, setModelDevice] = useState('');
 
   // New state for polish
   const [storyData, setStoryData] = useState<StoryData | null>(null);
